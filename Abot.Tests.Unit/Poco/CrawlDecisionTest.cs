@@ -12,6 +12,8 @@ namespace Abot.Tests.Unit.Poco
             CrawlDecision unitUnderTest = new CrawlDecision();
             Assert.AreEqual(false, unitUnderTest.Allow);
             Assert.AreEqual("", unitUnderTest.Reason);
+            Assert.IsFalse(unitUnderTest.ShouldHardStopCrawl);
+            Assert.IsFalse(unitUnderTest.ShouldStopCrawl);
         }
     }
 }

@@ -193,6 +193,12 @@ namespace Abot.Core
         {
             get { return (int)this["maxCrawlDepth"]; }
         }
+
+        [ConfigurationProperty("isForcedLinkParsingEnabled", IsRequired = true)]
+        public bool IsForcedLinkParsingEnabled
+        {
+            get { return (bool)this["isForcedLinkParsingEnabled"]; }
+        }
     }
 
     public class ExtensionValueElement : ConfigurationElement

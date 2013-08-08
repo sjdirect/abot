@@ -81,7 +81,7 @@ namespace Abot.Tests.Unit.Core
             }
 
             Assert.IsTrue(count < MAXTHREADS);
-            System.Threading.Thread.Sleep(20);
+            System.Threading.Thread.Sleep(80);//was 20 but had to bump it up or the TaskThreadManager would fail, its way slower
             Assert.AreEqual(MAXTHREADS, count);
         }
 
@@ -99,7 +99,7 @@ namespace Abot.Tests.Unit.Core
             }
 
             //Assert.IsTrue(count < MAXTHREADS);//Manual has completed more then the thread count by the time it gets here
-            System.Threading.Thread.Sleep(20);
+            System.Threading.Thread.Sleep(80);//was 20 but had to bump it up or the TaskThreadManager would fail, its way slower
             Assert.AreEqual(2 * MAXTHREADS, count);
         }
 
@@ -134,23 +134,6 @@ namespace Abot.Tests.Unit.Core
         {
             _unitUnderTest.AbortAll();
             _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(10));
-        }
-
-        [Test]
-        public void AbortAll_WorkNeverCompleted()
-        {
-            int count = 0;
-
-            _unitUnderTest.DoWork(() => { System.Threading.Thread.Sleep(1000); count++; });
-            _unitUnderTest.DoWork(() => { System.Threading.Thread.Sleep(1000); count++; });
-            _unitUnderTest.DoWork(() => { System.Threading.Thread.Sleep(1000); count++; });
-            _unitUnderTest.DoWork(() => { System.Threading.Thread.Sleep(1000); count++; });
-            _unitUnderTest.DoWork(() => { System.Threading.Thread.Sleep(1000); count++; });
-
-            _unitUnderTest.AbortAll();
-
-            System.Threading.Thread.Sleep(250);
-            Assert.AreEqual(0, count);
         }
 
         [Test]

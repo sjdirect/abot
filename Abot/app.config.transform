@@ -1,10 +1,9 @@
-<?xml version="1.0"?>
 <configuration>
   <configSections>
     <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net"/>
     <section name="abot" type="Abot.Core.AbotConfigurationSectionHandler, Abot"/>
   </configSections>
-
+  
   <log4net>
     <appender name="ConsoleAppender" type="log4net.Appender.ConsoleAppender">
       <layout type="log4net.Layout.PatternLayout">
@@ -12,7 +11,7 @@
       </layout>
     </appender>
     <appender name="RollingFileAppender" type="log4net.Appender.RollingFileAppender">
-      <file value="log.txt"/>
+      <file value="abotlog.txt"/>
       <appendToFile value="true"/>
       <rollingStyle value="Size"/>
       <maxSizeRollBackups value="10"/>
@@ -33,23 +32,23 @@
     <crawlBehavior 
       maxConcurrentThreads="10" 
       maxPagesToCrawl="1000" 
-      maxPagesToCrawlPerDomain="0"
+      maxPagesToCrawlPerDomain="0" 
       maxPageSizeInBytes="0"
       userAgentString="Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; abot v@ABOTASSEMBLYVERSION@ http://code.google.com/p/abot)" 
       crawlTimeoutSeconds="0" 
-      downloadableContentTypes="text/html" 
+      downloadableContentTypes="text/html, text/plain" 
       isUriRecrawlingEnabled="false" 
-      isExternalPageCrawlingEnabled="true"
+      isExternalPageCrawlingEnabled="false" 
       isExternalPageLinksCrawlingEnabled="false"
       httpServicePointConnectionLimit="200"  
       httpRequestTimeoutInSeconds="15" 
       httpRequestMaxAutoRedirects="7" 
       isHttpRequestAutoRedirectsEnabled="true" 
-      isHttpRequestAutomaticDecompressionEnabled="false"      
+      isHttpRequestAutomaticDecompressionEnabled="false"
       minAvailableMemoryRequiredInMb="0"
       maxMemoryUsageInMb="0"
       maxMemoryUsageCacheTimeInSeconds="0"
-      maxCrawlDepth="100"
+      maxCrawlDepth="1000"
       isForcedLinkParsingEnabled="false"
       />
     <politeness 
@@ -61,5 +60,5 @@
       <add key="key1" value="value1"/>
       <add key="key2" value="value2"/>
     </extensionValues>
-  </abot>
-<startup><supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0"/></startup></configuration>
+  </abot>  
+</configuration>

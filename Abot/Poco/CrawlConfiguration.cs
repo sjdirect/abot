@@ -138,6 +138,11 @@ namespace Abot.Poco
         /// </summary>
         public int MaxCrawlDepth { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value that indicates whether the crawler should parse the page's links even if a CrawlDecision (like CrawlDecisionMaker.ShouldCrawlPageLinks()) determines that those links will not be crawled.
+        /// </summary>
+        public bool IsForcedLinkParsingEnabled { get; set; }
+
         #endregion
 
         #region politeness

@@ -2,10 +2,9 @@
 using Abot.Poco;
 using log4net;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Timers;
+using System.Threading;
 
 namespace Abot.Crawler
 {
@@ -80,6 +79,11 @@ namespace Abot.Crawler
         CrawlResult Crawl(Uri uri);
 
         /// <summary>
+        /// Begins a crawl using the uri param, and can be cancelled using the CancellationToken
+        /// </summary>
+        CrawlResult Crawl(Uri uri, CancellationTokenSource tokenSource);
+
+        /// <summary>
         /// Dynamic object that can hold any value that needs to be available in the crawl context
         /// </summary>
         dynamic CrawlBag { get; set; }
@@ -90,7 +94,8 @@ namespace Abot.Crawler
         static ILog _logger = LogManager.GetLogger(typeof(WebCrawler).FullName);
         protected bool _crawlComplete = false;
         protected bool _crawlStopReported = false;
-        protected Timer _timeoutTimer;
+        protected bool _crawlCancellationReported = false;
+        protected System.Timers.Timer _timeoutTimer;
         protected CrawlResult _crawlResult = null;
         protected CrawlContext _crawlContext;
         protected IThreadManager _threadManager;
@@ -160,10 +165,10 @@ namespace Abot.Crawler
             IMemoryManager memoryManager)
         {
             _crawlContext = new CrawlContext();
-            _crawlContext.CrawlConfiguration = crawlConfiguration ?? GetCrawlConfigurationFromConfigFile() ?? new CrawlConfiguration();
+            _crawlContext.CrawlConfiguration = crawlConfiguration ?? GetCrawlConfigurationFromConfigFile();
             CrawlBag = _crawlContext.CrawlBag;
 
-            _threadManager = threadManager ?? new ManualThreadManager(_crawlContext.CrawlConfiguration.MaxConcurrentThreads);
+            _threadManager = threadManager ?? new TaskThreadManager(_crawlContext.CrawlConfiguration.MaxConcurrentThreads > 0 ? _crawlContext.CrawlConfiguration.MaxConcurrentThreads: System.Environment.ProcessorCount);
             _scheduler = scheduler ?? new FifoScheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled);
             _httpRequester = httpRequester ?? new PageRequester(_crawlContext.CrawlConfiguration);
             _crawlDecisionMaker = crawlDecisionMaker ?? new CrawlDecisionMaker();
@@ -184,10 +189,21 @@ namespace Abot.Crawler
         /// </summary>
         public virtual CrawlResult Crawl(Uri uri)
         {
+            return Crawl(uri, null);
+        }
+
+        /// <summary>
+        /// Begins a synchronous crawl using the uri param, subscribe to events to process data as it becomes available
+        /// </summary>
+        public virtual CrawlResult Crawl(Uri uri, CancellationTokenSource cancellationTokenSource)
+        {
             if (uri == null)
                 throw new ArgumentNullException("uri");
 
             _crawlContext.RootUri = uri;
+
+            if (cancellationTokenSource != null)
+                _crawlContext.CancellationTokenSource = cancellationTokenSource;
 
             _crawlResult = new CrawlResult();
             _crawlResult.RootUri = _crawlContext.RootUri;
@@ -211,7 +227,7 @@ namespace Abot.Crawler
 
             if (_crawlContext.CrawlConfiguration.CrawlTimeoutSeconds > 0)
             {
-                _timeoutTimer = new Timer(_crawlContext.CrawlConfiguration.CrawlTimeoutSeconds * 1000);
+                _timeoutTimer = new System.Timers.Timer(_crawlContext.CrawlConfiguration.CrawlTimeoutSeconds * 1000);
                 _timeoutTimer.Elapsed += HandleCrawlTimeout;
                 _timeoutTimer.Start();
             }
@@ -447,14 +463,10 @@ namespace Abot.Crawler
 
         private CrawlConfiguration GetCrawlConfigurationFromConfigFile()
         {
-            AbotConfigurationSectionHandler configFromFile = null;
-            try{ configFromFile = AbotConfigurationSectionHandler.LoadFromXml(); } catch {}
+            AbotConfigurationSectionHandler configFromFile = AbotConfigurationSectionHandler.LoadFromXml();
 
             if (configFromFile == null)
-            {
-                _logger.DebugFormat("abot config section was NOT found");
-                return null;
-            }
+                throw new InvalidOperationException("abot config section was NOT found");
 
             _logger.DebugFormat("abot config section was found");
             return configFromFile.Convert();
@@ -494,6 +506,8 @@ namespace Abot.Crawler
         protected virtual void RunPreWorkChecks()
         {
             CheckMemoryUsage();
+            CheckForCancellationRequest();
+            CheckForHardStopRequest();
             CheckForStopRequest();
         }
 
@@ -521,24 +535,32 @@ namespace Abot.Crawler
             }
         }
 
-        protected virtual void CheckForStopRequest()
+        protected virtual void CheckForCancellationRequest()
         {
-            if (_crawlContext.IsCrawlStopRequested || _crawlContext.IsCrawlHardStopRequested)
+            if (_crawlContext.CancellationTokenSource.IsCancellationRequested)
+            {
+                if (!_crawlCancellationReported)
+                {
+                    string message = string.Format("Crawl cancellation requested for site [{0}]!", _crawlContext.RootUri);
+                    _logger.Fatal(message);
+                    _crawlResult.ErrorException = new OperationCanceledException(message, _crawlContext.CancellationTokenSource.Token);
+                    _crawlContext.IsCrawlHardStopRequested = true;
+                    _crawlCancellationReported = true;
+                }
+            }
+        }
+
+        protected virtual void CheckForHardStopRequest()
+        {
+            if (_crawlContext.IsCrawlHardStopRequested)
             {
                 if (!_crawlStopReported)
                 {
-                    if(_crawlContext.IsCrawlHardStopRequested)
-                        _logger.InfoFormat("Hard crawl stop requested for site [{0}]!", _crawlContext.RootUri);
-                    else
-                        _logger.InfoFormat("Crawl stop requested for site [{0}]!", _crawlContext.RootUri);
-
+                    _logger.InfoFormat("Hard crawl stop requested for site [{0}]!", _crawlContext.RootUri);
                     _crawlStopReported = true;
                 }
-                _scheduler.Clear(); 
-            }
 
-            if (_crawlContext.IsCrawlHardStopRequested)
-            {
+                _scheduler.Clear();
                 _threadManager.AbortAll();
                 _scheduler.Clear();//to be sure nothing was scheduled since first call to clear()
 
@@ -554,9 +576,22 @@ namespace Abot.Crawler
             }
         }
 
-        protected virtual void HandleCrawlTimeout(object sender, ElapsedEventArgs e)
+        protected virtual void CheckForStopRequest()
         {
-            Timer elapsedTimer = sender as Timer;
+            if (_crawlContext.IsCrawlStopRequested)
+            {
+                if (!_crawlStopReported)
+                {
+                    _logger.InfoFormat("Crawl stop requested for site [{0}]!", _crawlContext.RootUri);
+                    _crawlStopReported = true;
+                }
+                _scheduler.Clear();
+            }
+        }
+
+        protected virtual void HandleCrawlTimeout(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            System.Timers.Timer elapsedTimer = sender as System.Timers.Timer;
             if (elapsedTimer != null)
                 elapsedTimer.Stop();
 
@@ -574,16 +609,33 @@ namespace Abot.Crawler
                 if (!ShouldCrawlPage(pageToCrawl))
                     return;
 
+                ThrowIfCancellationRequested();
+
                 CrawledPage crawledPage = CrawlThePage(pageToCrawl);
 
                 if (PageSizeIsAboveMax(crawledPage))
                     return;
 
+                ThrowIfCancellationRequested();
+
+                bool shouldCrawlPageLinks = ShouldCrawlPageLinks(crawledPage);
+                if (shouldCrawlPageLinks || _crawlContext.CrawlConfiguration.IsForcedLinkParsingEnabled)
+                    ParsePageLinks(crawledPage);
+
+                ThrowIfCancellationRequested();
+
+                if (shouldCrawlPageLinks)
+                    SchedulePageLinks(crawledPage);
+
+                ThrowIfCancellationRequested();
+
                 FirePageCrawlCompletedEventAsync(crawledPage);
                 FirePageCrawlCompletedEvent(crawledPage);
-
-                if (ShouldCrawlPageLinks(crawledPage))
-                    SchedulePageLinks(crawledPage);
+            }
+            catch(OperationCanceledException oce)
+            {
+                _logger.DebugFormat("Thread cancelled while crawling/processing page [{0}]", pageToCrawl.Uri);
+                throw;
             }
             catch(Exception e)
             {
@@ -593,6 +645,12 @@ namespace Abot.Crawler
 
                 _crawlContext.IsCrawlHardStopRequested = true;
             }
+        }
+
+        protected virtual void ThrowIfCancellationRequested()
+        {
+            if (_crawlContext.CancellationTokenSource != null && _crawlContext.CancellationTokenSource.IsCancellationRequested)
+                _crawlContext.CancellationTokenSource.Token.ThrowIfCancellationRequested();
         }
 
         protected virtual bool PageSizeIsAboveMax(CrawledPage crawledPage)
@@ -620,6 +678,7 @@ namespace Abot.Crawler
                 FirePageLinksCrawlDisallowedEvent(crawledPage, shouldCrawlPageLinksDecision.Reason);
             }
 
+            SignalCrawlStopIfNeeded(shouldCrawlPageLinksDecision);
             return shouldCrawlPageLinksDecision.Allow;
         }
 
@@ -640,6 +699,7 @@ namespace Abot.Crawler
                 FirePageCrawlDisallowedEvent(pageToCrawl, shouldCrawlPageDecision.Reason);
             }
 
+            SignalCrawlStopIfNeeded(shouldCrawlPageDecision);
             return shouldCrawlPageDecision.Allow;
         }
 
@@ -676,10 +736,14 @@ namespace Abot.Crawler
             }
         }
 
+        protected virtual void ParsePageLinks(CrawledPage crawledPage)
+        {
+            crawledPage.ParsedLinks = _hyperLinkParser.GetLinks(crawledPage);            
+        }
+
         protected virtual void SchedulePageLinks(CrawledPage crawledPage)
         {
-            IEnumerable<Uri> crawledPageLinks = _hyperLinkParser.GetLinks(crawledPage);
-            foreach (Uri uri in crawledPageLinks)
+            foreach (Uri uri in crawledPage.ParsedLinks)
             {
                 //Added due to a bug in the Uri class related to this (http://stackoverflow.com/questions/2814951/system-uriformatexception-invalid-uri-the-hostname-could-not-be-parsed)
                 try
@@ -701,6 +765,7 @@ namespace Abot.Crawler
             if (decision.Allow)
                 decision = (_shouldDownloadPageContentDecisionMaker != null) ? _shouldDownloadPageContentDecisionMaker.Invoke(crawledPage, _crawlContext) : new CrawlDecision { Allow = true };
 
+            SignalCrawlStopIfNeeded(decision);
             return decision;
         }
 
@@ -718,6 +783,20 @@ namespace Abot.Crawler
             foreach (string key in config.ConfigurationExtensions.Keys)
             {
                 _logger.InfoFormat("{0}{1}: {2}", indentString, key, config.ConfigurationExtensions[key]);
+            }
+        }
+
+        protected virtual void SignalCrawlStopIfNeeded(CrawlDecision decision)
+        {
+            if (decision.ShouldHardStopCrawl)
+            {
+                _logger.InfoFormat("Decision marked crawl [Hard Stop] for site [{0}], [{1}]", _crawlContext.RootUri, decision.Reason);
+                _crawlContext.IsCrawlHardStopRequested = decision.ShouldHardStopCrawl;
+            }
+            else if (decision.ShouldStopCrawl)
+            {
+                _logger.InfoFormat("Decision marked crawl [Stop] for site [{0}], [{1}]", _crawlContext.RootUri, decision.Reason);
+                _crawlContext.IsCrawlStopRequested = decision.ShouldStopCrawl;
             }
         }
     }

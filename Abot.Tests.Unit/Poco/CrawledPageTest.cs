@@ -22,6 +22,7 @@ namespace Abot.Tests.Unit.Poco
             Assert.IsNotNull(unitUnderTest.CsQueryDocument);
             Assert.AreEqual("http://a.com/", unitUnderTest.Uri.AbsoluteUri);
             Assert.AreEqual(null, unitUnderTest.WebException);
+            Assert.AreEqual(null, unitUnderTest.ParsedLinks);
         }
 
         [Test]

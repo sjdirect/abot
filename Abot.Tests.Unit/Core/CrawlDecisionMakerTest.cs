@@ -29,7 +29,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Null page to crawl", result.Reason);
-            Assert.IsFalse(_crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -39,6 +40,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Null crawl context", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -59,7 +62,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
-            Assert.IsFalse(crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
 
         }
 
@@ -73,7 +77,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Link already crawled", result.Reason);
-            Assert.IsFalse(_crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -82,27 +87,32 @@ namespace Abot.Tests.Unit.Core
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("file:///C:/Users/")), _crawlContext);
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Scheme does not begin with http", result.Reason);
-            Assert.IsFalse(_crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
 
             result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("mailto:user@yourdomainname.com")), _crawlContext);
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Scheme does not begin with http", result.Reason);
-            Assert.IsFalse(_crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
 
             result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("ftp://user@yourdomainname.com")), _crawlContext);
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Scheme does not begin with http", result.Reason);
-            Assert.IsFalse(_crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
 
             result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("callto:+1234567")), _crawlContext);
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Scheme does not begin with http", result.Reason);
-            Assert.IsFalse(_crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
 
             result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("tel:+1234567")), _crawlContext);
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Scheme does not begin with http", result.Reason);
-            Assert.IsFalse(_crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -121,8 +131,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("MaxPagesToCrawl limit of [0] has been reached", result.Reason);
-            Assert.IsTrue(crawlContext.IsCrawlStopRequested);
-            Assert.IsFalse(crawlContext.IsCrawlHardStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsTrue(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -145,7 +155,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Link is external", result.Reason);
-            Assert.IsFalse(crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -169,7 +180,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
-            Assert.IsFalse(crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -193,7 +205,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
-            Assert.IsFalse(crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -217,7 +230,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
-            Assert.IsFalse(crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -246,7 +260,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("MaxPagesToCrawlPerDomain limit of [100] has been reached for domain [a.com]", result.Reason);
-            Assert.IsFalse(crawlContext.IsCrawlStopRequested);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -270,6 +285,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Crawl depth is above max", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -292,6 +309,9 @@ namespace Abot.Tests.Unit.Core
                 crawlContext);
 
             Assert.IsTrue(result.Allow);
+            Assert.AreEqual("", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
 
@@ -302,6 +322,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Null crawled page", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -311,6 +333,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Null crawl context", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -320,6 +344,8 @@ namespace Abot.Tests.Unit.Core
             
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Page has no content", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -329,6 +355,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Page has no content", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -338,6 +366,8 @@ namespace Abot.Tests.Unit.Core
             
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Page has no content", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -359,6 +389,8 @@ namespace Abot.Tests.Unit.Core
                 });
             Assert.AreEqual(false, result.Allow);
             Assert.AreEqual("Link is external", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -380,6 +412,8 @@ namespace Abot.Tests.Unit.Core
                 });
             Assert.AreEqual(true, result.Allow);
             Assert.AreEqual("", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -401,6 +435,8 @@ namespace Abot.Tests.Unit.Core
                 });
             Assert.AreEqual(true, result.Allow);
             Assert.AreEqual("", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -423,6 +459,8 @@ namespace Abot.Tests.Unit.Core
                 });
             Assert.AreEqual(false, result.Allow);
             Assert.AreEqual("Crawl depth is above max", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -445,6 +483,8 @@ namespace Abot.Tests.Unit.Core
                 });
             Assert.AreEqual(false, result.Allow);
             Assert.AreEqual("Crawl depth is above max", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
 
@@ -457,6 +497,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.AreEqual(true, result.Allow);
             Assert.AreEqual("", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -465,6 +507,8 @@ namespace Abot.Tests.Unit.Core
             CrawlDecision result = _unitUnderTest.ShouldDownloadPageContent(null, new CrawlContext());
             Assert.AreEqual(false, result.Allow);
             Assert.AreEqual("Null crawled page", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -474,6 +518,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Null crawl context", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -490,6 +536,8 @@ namespace Abot.Tests.Unit.Core
                 });
             Assert.AreEqual(false, result.Allow);
             Assert.AreEqual("Null HttpWebResponse", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -501,6 +549,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.AreEqual(false, result.Allow);
             Assert.AreEqual("HttpStatusCode is not 200", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -512,6 +562,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.AreEqual(false, result.Allow);
             Assert.AreEqual("Content type is not any of the following: text/html", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -530,6 +582,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Page size of [938] bytes is above the max allowable of [5] bytes", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]
@@ -548,6 +602,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         private HtmlDocument GetHtmlDocument(string html)

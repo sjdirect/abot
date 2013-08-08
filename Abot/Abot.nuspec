@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Abot</id>
+    <version>1.2.0</version>
+    <title>Abot Web Crawler</title>
+    <authors>Steven Jones</authors>
+    <owners>Steven Jones</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://code.google.com/p/abot/</projectUrl>
+    <iconUrl>https://code.google.com/p/abot/logo?cct=1364531651</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process.</description>
+    <releaseNotes>$version$ release notes may be found on https://code.google.com/p/abot/</releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>crawler robot spider</tags>
+    <dependencies>
+      <group targetFramework="net40">
+        <dependency id="AutoMapper" version="2.2.1" />
+        <dependency id="CsQuery" version="1.3.4" />
+        <dependency id="log4net" version="2.0.0" />        
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\release\Robots.dll" target="lib\net40\" /> 
+    <file src="bin\release\HtmlAgilityPack.dll" target="lib\net40\" /> 
+    <file src="web.config.transform" target="content\" /> 
+    <file src="app.config.transform" target="content\" /> 
+  </files>
+</package>

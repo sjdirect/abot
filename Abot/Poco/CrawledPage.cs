@@ -2,6 +2,7 @@
 using HtmlAgilityPack;
 using log4net;
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace Abot.Poco
@@ -63,6 +64,11 @@ namespace Abot.Poco
         /// The actual byte size of the page's raw content. This property is due to the Content-length header being untrustable.
         /// </summary>
         public long PageSizeInBytes { get; set; }
+
+        /// <summary>
+        /// Links parsed from page. This value is set by the WebCrawler.SchedulePageLinks() method only If the "ShouldCrawlPageLinks" rules return true or if the IsForcedLinkParsingEnabled config value is set to true.
+        /// </summary>
+        public IEnumerable<Uri> ParsedLinks { get; set; }
 
         private CQ InitializeCsQueryDocument()
         {

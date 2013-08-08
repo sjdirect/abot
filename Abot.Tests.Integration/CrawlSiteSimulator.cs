@@ -4,6 +4,8 @@ using Abot.Poco;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Abot.Tests.Integration
 {
@@ -58,6 +60,65 @@ namespace Abot.Tests.Integration
             crawler.Crawl(new Uri("http://localhost:1111/"));
 
             Assert.AreEqual(5, pagesCrawledCount);
+        }
+
+        [Test]
+        public void Crawl_CrawlTimeoutIs1Sec_TimesOut()
+        {
+            CrawlConfiguration configuration = new CrawlConfiguration();
+            configuration.CrawlTimeoutSeconds = 1;
+
+            int pagesCrawledCount = 0;
+
+            PoliteWebCrawler crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
+            crawler.PageCrawlCompletedAsync += (a, b) => pagesCrawledCount++;
+
+            CrawlResult result = crawler.Crawl(new Uri("http://localhost:1111/"));
+
+            Assert.IsFalse(result.ErrorOccurred);
+            Assert.IsTrue(result.Elapsed.TotalSeconds < 5);
+            Assert.IsTrue(pagesCrawledCount > 0);
+        }
+
+        [Test]
+        public void Crawl_Synchronous_CancellationTokenCancelled_StopsCrawl()
+        {
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            System.Timers.Timer timer = new System.Timers.Timer(800);
+            timer.Elapsed += (o, e) =>
+            {
+                cancellationTokenSource.Cancel();
+                timer.Stop();
+                timer.Dispose();
+            };
+            timer.Start();
+
+            PoliteWebCrawler crawler = new PoliteWebCrawler();
+            CrawlResult result = crawler.Crawl(new Uri("http://localhost:1111/"), cancellationTokenSource);
+
+            Assert.IsTrue(result.ErrorOccurred);
+            Assert.IsTrue(result.ErrorException is OperationCanceledException);
+        }
+
+        [Test]
+        public void Crawl_Asynchronous_CancellationTokenCancelled_StopsCrawl()
+        {
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            System.Timers.Timer timer = new System.Timers.Timer(800);
+            timer.Elapsed += (o, e) =>
+            {
+                cancellationTokenSource.Cancel();
+                timer.Stop();
+                timer.Dispose();
+            };
+            timer.Start();
+
+            PoliteWebCrawler crawler = new PoliteWebCrawler();
+            Task<CrawlResult> task = Task.Factory.StartNew<CrawlResult>(() => crawler.Crawl(new Uri("http://localhost:1111/"), cancellationTokenSource));
+            CrawlResult result = task.Result;
+
+            Assert.IsTrue(result.ErrorOccurred);
+            Assert.IsTrue(result.ErrorException is OperationCanceledException);
         }
 
         protected override List<PageResult> GetExpectedCrawlResult()

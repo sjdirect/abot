@@ -20,7 +20,7 @@ namespace Abot.Tests.Unit.Crawler
         Mock<IRobotsDotTextFinder> _fakeRobotsDotTextFinder;
         Mock<IRobotsDotText> _fakeRobotsDotText;
         FifoScheduler _dummyScheduler;
-        ProducerConsumerThreadManager _dummyThreadManager;
+        ManualThreadManager _dummyThreadManager;
         CrawlConfiguration _dummyConfiguration;
         Uri _rootUri;
 
@@ -36,7 +36,7 @@ namespace Abot.Tests.Unit.Crawler
             _fakeRobotsDotText = new Mock<IRobotsDotText>();
 
             _dummyScheduler = new FifoScheduler();
-            _dummyThreadManager = new ProducerConsumerThreadManager(1);
+            _dummyThreadManager = new ManualThreadManager(1);
             _dummyConfiguration = new CrawlConfiguration();
             _dummyConfiguration.ConfigurationExtensions.Add("somekey", "someval");
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 
 namespace Abot.Poco
 {
@@ -10,6 +11,7 @@ namespace Abot.Poco
                 throw new ArgumentNullException("uri");
 
             Uri = uri;
+            PageBag = new ExpandoObject();
         }
 
         /// <summary>
@@ -37,11 +39,15 @@ namespace Abot.Poco
         /// </summary>
         public bool IsInternal { get; set; }
 
-
         /// <summary>
         /// The depth from the root of the crawl. If this page is the homepage this value will be zero, if this page was found on the homepage this value will be 1 and so on.
         /// </summary>
         public int CrawlDepth { get; set; }
+
+        /// <summary>
+        /// Can store values of any type. Useful for adding custom values to the CrawledPage dynamically from event subscriber code
+        /// </summary>
+        public dynamic PageBag { get; set; }
 
         public override string ToString()
         {

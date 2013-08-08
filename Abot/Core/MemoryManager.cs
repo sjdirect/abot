@@ -54,7 +54,7 @@ namespace Abot.Core
             {
                 isAvailable = false;
             }
-            catch (NotImplementedException e)
+            catch (NotImplementedException)
             {
                 _logger.Warn("MemoryFailPoint is not implemented on this platform. The MemoryManager.IsSpaceAvailable() will just return true.");
             }
