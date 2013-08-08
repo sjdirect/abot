@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0CDCD537-4B0E-4514-966F-F425CDC92BA4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Abot</RootNamespace>
+    <AssemblyName>Abot</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\ExternalLib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="AutoMapper">
+      <HintPath>..\ExternalLib\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="CsQuery">
+      <HintPath>..\ExternalLib\CsQuery.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\ExternalLib\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Robots">
+      <HintPath>..\ExternalLib\Robots.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
+    <Compile Include="Core\CachedMemoryMonitor.cs" />
+    <Compile Include="Core\GcMemoryMonitor.cs" />
+    <Compile Include="Core\ManualThreadManager.cs" />
+    <Compile Include="Core\MemoryManager.cs" />
+    <Compile Include="Core\ProducerConsumerThreadManager.cs" />
+    <Compile Include="Core\HapHyperLinkParser.cs" />
+    <Compile Include="Core\CsQueryHyperLinkParser.cs" />
+    <Compile Include="Core\CrawlDecisionMaker.cs" />
+    <Compile Include="Core\DomainRateLimiter.cs" />
+    <Compile Include="Core\RateLimiter.cs" />
+    <Compile Include="Core\RobotsDotText.cs" />
+    <Compile Include="Core\RobotsDotTextFinder.cs" />
+    <Compile Include="Core\TaskThreadManager.cs" />
+    <Compile Include="Crawler\CrawlArgs.cs" />
+    <Compile Include="Crawler\PageLinksCrawlDisallowedArgs.cs" />
+    <Compile Include="Crawler\PageCrawlDisallowedArgs.cs" />
+    <Compile Include="Crawler\PageCrawlCompletedArgs.cs" />
+    <Compile Include="Crawler\PageCrawlStartingArgs.cs" />
+    <Compile Include="Crawler\PoliteWebCrawler.cs" />
+    <Compile Include="Poco\CrawlConfiguration.cs" />
+    <Compile Include="Poco\CrawlContext.cs" />
+    <Compile Include="Poco\CrawlDecision.cs" />
+    <Compile Include="Poco\CrawledPage.cs" />
+    <Compile Include="Poco\CrawlResult.cs" />
+    <Compile Include="Core\FifoScheduler.cs" />
+    <Compile Include="Core\HyperLinkParser.cs" />
+    <Compile Include="Core\PageRequester.cs" />
+    <Compile Include="Crawler\WebCrawler.cs" />
+    <Compile Include="Poco\PageToCrawl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

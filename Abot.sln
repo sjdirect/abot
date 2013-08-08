@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot", "Abot\Abot.csproj", "{0CDCD537-4B0E-4514-966F-F425CDC92BA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot.Tests.Unit", "Abot.Tests.Unit\Abot.Tests.Unit.csproj", "{61648674-8BE9-4CC6-BFFE-557C0CE54FAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot.Demo", "Abot.Demo\Abot.Demo.csproj", "{79F27061-3258-4D87-9339-2684CC9D3D42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot.Tests.Integration", "Abot.Tests.Integration\Abot.Tests.Integration.csproj", "{5A98E2DB-9B7B-46EF-B5AE-2AC651E11FCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot.SiteSimulator", "Abot.SiteSimulator\Abot.SiteSimulator.csproj", "{48CBD934-4E30-4F48-ABD4-BC10EEA239A3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CDCD537-4B0E-4514-966F-F425CDC92BA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CDCD537-4B0E-4514-966F-F425CDC92BA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CDCD537-4B0E-4514-966F-F425CDC92BA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CDCD537-4B0E-4514-966F-F425CDC92BA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61648674-8BE9-4CC6-BFFE-557C0CE54FAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61648674-8BE9-4CC6-BFFE-557C0CE54FAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61648674-8BE9-4CC6-BFFE-557C0CE54FAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61648674-8BE9-4CC6-BFFE-557C0CE54FAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A98E2DB-9B7B-46EF-B5AE-2AC651E11FCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A98E2DB-9B7B-46EF-B5AE-2AC651E11FCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A98E2DB-9B7B-46EF-B5AE-2AC651E11FCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A98E2DB-9B7B-46EF-B5AE-2AC651E11FCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48CBD934-4E30-4F48-ABD4-BC10EEA239A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48CBD934-4E30-4F48-ABD4-BC10EEA239A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48CBD934-4E30-4F48-ABD4-BC10EEA239A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48CBD934-4E30-4F48-ABD4-BC10EEA239A3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Abot.SiteSimulator\Abot.SiteSimulator.csproj
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.FileWidth = 120
+		$1.TabsToSpaces = False
+		$1.EolMarker = Windows
+		$1.inheritsSet = VisualStudio
+		$1.inheritsScope = text/plain
+		$1.scope = text/plain
+	EndGlobalSection
+EndGlobal
