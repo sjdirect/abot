@@ -12,8 +12,7 @@ namespace Abot.Tests.Unit.Poco
         {
             CrawlContext unitUnderTest = new CrawlContext();
             Assert.AreEqual(null, unitUnderTest.RootUri);
-            Assert.IsNotNull(unitUnderTest.CrawledUrls);
-            Assert.AreEqual(0, unitUnderTest.CrawledUrls.Count);
+            Assert.AreEqual(0, unitUnderTest.CrawledCount);
             Assert.IsNotNull(unitUnderTest.CrawlCountByDomain);
             Assert.AreEqual(0, unitUnderTest.CrawlCountByDomain.Count);
             Assert.IsNull(unitUnderTest.CrawlConfiguration);

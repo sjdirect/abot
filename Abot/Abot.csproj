@@ -55,6 +55,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -67,6 +68,8 @@
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
     <Compile Include="Core\GcMemoryMonitor.cs" />
+    <Compile Include="Core\ICrawledUrlRepository.cs" />
+    <Compile Include="Core\IPagesToCrawlRepository.cs" />
     <Compile Include="Core\ManualThreadManager.cs" />
     <Compile Include="Core\MemoryManager.cs" />
     <Compile Include="Core\HapHyperLinkParser.cs" />

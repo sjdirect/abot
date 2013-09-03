@@ -226,6 +226,8 @@ namespace Abot.Crawler
 
             PrintConfigValues(_crawlContext.CrawlConfiguration);
 
+            _scheduler.Add(new PageToCrawl(uri) { ParentUri = uri, IsInternal = true, IsRoot = true });
+
             _crawlContext.CrawlStartDate = DateTime.Now;
             Stopwatch timer = Stopwatch.StartNew();
 
@@ -238,10 +240,6 @@ namespace Abot.Crawler
 
             try
             {
-                PageToCrawl rootPage = new PageToCrawl(uri) { ParentUri = uri, IsInternal = true, IsRoot = true };
-                if (ShouldSchedulePageLink(rootPage))
-                    _scheduler.Add(rootPage);
-
                 VerifyRequiredAvailableMemory();
                 CrawlSite();
             }
@@ -493,20 +491,26 @@ namespace Abot.Crawler
         {
             while (!_crawlComplete)
             {
-                RunPreWorkChecks();
+                try
+                {
+                    RunPreWorkChecks();
 
-                if (_scheduler.Count > 0)
-                {
-                    _threadManager.DoWork(() => ProcessPage(_scheduler.GetNext()));
+                    if (_scheduler.Count > 0)
+                    {
+                        _threadManager.DoWork(() => ProcessPage(_scheduler.GetNext()));
+                    }
+                    else if (!_threadManager.HasRunningThreads())
+                    {
+                        _crawlComplete = true;
+                    }
+                    else
+                    {
+                        _logger.DebugFormat("Waiting for links to be scheduled...");
+                        System.Threading.Thread.Sleep(2500);
+                    }
                 }
-                else if (!_threadManager.HasRunningThreads())
+                catch (Exception e)
                 {
-                    _crawlComplete = true;
-                }
-                else
-                {
-                    _logger.DebugFormat("Waiting for links to be scheduled...");
-                    System.Threading.Thread.Sleep(2500);
                 }
             }
         }
@@ -758,9 +762,10 @@ namespace Abot.Crawler
         {
             foreach (Uri uri in crawledPage.ParsedLinks)
             {
+                //Added due to a bug in the Uri class related to this (http://stackoverflow.com/questions/2814951/system-uriformatexception-invalid-uri-the-hostname-could-not-be-parsed)
                 if (_shouldScheduleLinkDecisionMaker == null || _shouldScheduleLinkDecisionMaker.Invoke(uri, crawledPage, _crawlContext))
                 {
-                    try //Added due to a bug in the Uri class related to this (http://stackoverflow.com/questions/2814951/system-uriformatexception-invalid-uri-the-hostname-could-not-be-parsed)
+                    try
                     {
                         PageToCrawl page = new PageToCrawl(uri);
                         page.ParentUri = crawledPage.Uri;

@@ -68,20 +68,6 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        public void ShouldCrawlPage_Duplicate_ReturnsFalse()
-        {
-            _crawlContext.CrawledUrls = new ConcurrentDictionary<string, byte>();
-            _crawlContext.CrawledUrls.TryAdd("http://a.com/", 0);
-
-            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("http://a.com/")), _crawlContext);
-
-            Assert.IsFalse(result.Allow);
-            Assert.AreEqual("Link already crawled", result.Reason);
-            Assert.IsFalse(result.ShouldHardStopCrawl);
-            Assert.IsFalse(result.ShouldStopCrawl);
-        }
-
-        [Test]
         public void ShouldCrawlPage_NonHttpOrHttpsSchemes_ReturnsFalse()
         {
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("file:///C:/Users/")), _crawlContext);

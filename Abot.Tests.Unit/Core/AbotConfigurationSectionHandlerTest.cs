@@ -36,6 +36,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsNotNull(_config.Politeness);
             Assert.AreEqual(true, _config.Politeness.IsRespectRobotsDotTextEnabled);
+            Assert.AreEqual(true, _config.Politeness.IsRespectMetaRobotsNoFollowEnabled);
+            Assert.AreEqual(true, _config.Politeness.IsRespectAnchorRelNoFollowEnabled);
             Assert.AreEqual("zzzz", _config.Politeness.RobotsDotTextUserAgentString);
             Assert.AreEqual(55, _config.Politeness.MinCrawlDelayPerDomainMilliSeconds);
             Assert.AreEqual(5, _config.Politeness.MaxRobotsDotTextCrawlDelayInSeconds); 

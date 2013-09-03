@@ -9,6 +9,19 @@ namespace Abot.Tests.Unit.Poco
     public class PageToCrawlTest
     {
         [Test]
+        public void Constructor_CreatesInstance()
+        {
+            PageToCrawl unitUnderTest = new PageToCrawl();
+            Assert.AreEqual(false, unitUnderTest.IsRetry);
+            Assert.AreEqual(false, unitUnderTest.IsRoot);
+            Assert.AreEqual(false, unitUnderTest.IsInternal);
+            Assert.AreEqual(null, unitUnderTest.ParentUri);
+            Assert.IsNull(unitUnderTest.Uri);
+            Assert.AreEqual(0, unitUnderTest.CrawlDepth);
+            Assert.IsNull(unitUnderTest.PageBag);
+        }        
+
+        [Test]
         public void Constructor_ValidUri_CreatesInstance()
         {
             PageToCrawl unitUnderTest = new PageToCrawl(new Uri("http://a.com/"));

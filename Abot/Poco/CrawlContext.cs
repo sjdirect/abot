@@ -10,7 +10,6 @@ namespace Abot.Poco
     {
         public CrawlContext()
         {
-            CrawledUrls = new ConcurrentDictionary<string, byte>();
             CrawlCountByDomain = new ConcurrentDictionary<string, int>();
             CrawlBag = new ExpandoObject();
             CancellationTokenSource = new CancellationTokenSource();
@@ -22,14 +21,13 @@ namespace Abot.Poco
         public Uri RootUri { get; set; }
 
         /// <summary>
+        /// total number of pages that have been crawled
+        /// </summary>
+        public int CrawledCount = 0;
+        /// <summary>
         /// The datetime of the last unsuccessful http status (non 200) was requested
         /// </summary>
         public DateTime CrawlStartDate { get; set; }
-
-        /// <summary>
-        /// Threadsafe collection of urls that have been crawled
-        /// </summary>
-        public ConcurrentDictionary<string, byte> CrawledUrls { get; set; }
         
         /// <summary>
         /// Threadsafe dictionary of domains and how many pages were crawled in that domain

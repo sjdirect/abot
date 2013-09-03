@@ -42,7 +42,7 @@ namespace Abot.Core
         static ILog _logger = LogManager.GetLogger(typeof(FifoScheduler).FullName);
         ConcurrentQueue<PageToCrawl> _pagesToCrawl = new ConcurrentQueue<PageToCrawl>();
         ConcurrentDictionary<string, object> _scheduledOrCrawled = new ConcurrentDictionary<string, object>();
-         
+
         bool _allowUriRecrawling = false;
 
         public FifoScheduler()
@@ -90,7 +90,7 @@ namespace Abot.Core
 
         public void Add(IEnumerable<PageToCrawl> pages)
         {
-            if(pages == null)
+            if (pages == null)
                 throw new ArgumentNullException("pages");
 
             foreach (PageToCrawl page in pages)
@@ -104,7 +104,7 @@ namespace Abot.Core
         {
             PageToCrawl nextItem = null;
 
-            if(_pagesToCrawl.Count > 0)//issue 14: have to check this again since it may have changed since calling this method
+            if (_pagesToCrawl.Count > 0)//issue 14: have to check this again since it may have changed since calling this method
                 _pagesToCrawl.TryDequeue(out nextItem);
 
             return nextItem;

@@ -59,6 +59,18 @@ namespace Abot.Core
             get { return (bool)this["isRespectRobotsDotTextEnabled"]; }
         }
 
+        [ConfigurationProperty("isRespectMetaRobotsNoFollowEnabled", IsRequired = true)]
+        public bool IsRespectMetaRobotsNoFollowEnabled
+        {
+            get { return (bool)this["isRespectMetaRobotsNoFollowEnabled"]; }
+        }
+
+        [ConfigurationProperty("isRespectAnchorRelNoFollowEnabled", IsRequired = true)]
+        public bool IsRespectAnchorRelNoFollowEnabled
+        {
+            get { return (bool)this["isRespectAnchorRelNoFollowEnabled"]; }
+        }
+
         [ConfigurationProperty("robotsDotTextUserAgentString", IsRequired = true)]
         public string RobotsDotTextUserAgentString
         {

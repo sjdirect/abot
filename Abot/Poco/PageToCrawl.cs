@@ -5,6 +5,11 @@ namespace Abot.Poco
 {
     public class PageToCrawl
     {
+        //Needed for serialization
+        public PageToCrawl()
+        {
+        }
+
         public PageToCrawl(Uri uri)
         {
             if (uri == null)

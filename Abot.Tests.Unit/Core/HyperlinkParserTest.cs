@@ -16,13 +16,13 @@ namespace Abot.Tests.Unit.Core
         Uri _uri = new Uri("http://a.com/");
         CrawledPage _crawledPage;
 
-        protected abstract HyperLinkParser GetInstance();
+        protected abstract HyperLinkParser GetInstance(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanUrlDelegate = null);
 
         [SetUp]
         public void Setup()
         {
             _crawledPage = new CrawledPage(_uri){ HttpWebRequest = (HttpWebRequest)WebRequest.Create(_uri) };
-            _unitUnderTest = GetInstance();
+            _unitUnderTest = GetInstance(false, false);
         }
 
         [Test]
@@ -41,6 +41,30 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_AreaTags_ReturnsLinks()
         {
             _crawledPage.RawContent = "<area href=\"http://bbb.com\" /><area href=\"bbb/b.html\" />";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://bbb.com/", result.ElementAt(0).AbsoluteUri);
+            Assert.AreEqual("http://a.com/bbb/b.html", result.ElementAt(1).AbsoluteUri);
+        }
+
+        [Test]
+        public void GetLinks_AnchorTagsUpperCase_ReturnsLinks()
+        {
+            _crawledPage.RawContent = "<A HREF=\"http://aaa.com/\" ></A><A HREF=\"/aaa/a.html\" /></A>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(1).AbsoluteUri);
+        }
+
+        [Test]
+        public void GetLinks_AreaTagsUpperCase_ReturnsLinks()
+        {
+            _crawledPage.RawContent = "<AREA HREF=\"http://bbb.com\" /><AREA HREF=\"bbb/b.html\" />";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -254,5 +278,105 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual("http://zzz.com/aaa/a.html", result.ElementAt(0).AbsoluteUri);
             Assert.AreEqual("http://zzz.com/bbb/b.html", result.ElementAt(1).AbsoluteUri);
         }
+
+
+        [Test]
+        public void GetLinks_MetaNoIndexNoFollowNotSet_ReturnsLinks()
+        {
+            _unitUnderTest = GetInstance(false, false);
+            _crawledPage.RawContent = "<meta name=\"robots\" content=\"noindex, nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count());
+        }
+
+        [Test]
+        public void GetLinks_MetaNoIndexNoFollow_ReturnsEmptyList()
+        {
+            _unitUnderTest = GetInstance(true, false);
+            _crawledPage.RawContent = "<meta name=\"robots\" content=\"noindex, nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [Test]
+        public void GetLinks_MetaNoIndexNoFollowUpperCase_ReturnsEmptyList()
+        {
+            _unitUnderTest = GetInstance(true, false);
+            _crawledPage.RawContent = "<META NAME=\"ROBOTS\" CONTENT=\"NOINDEX, NOFOLLOW\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [Test]
+        public void GetLinks_NoFollow_NotReturned()
+        {
+            _unitUnderTest = GetInstance(true, false);
+            _crawledPage.RawContent = "<meta name=\"robots\" content=\"nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [Test]
+        public void GetLinks_MetaNoIndex_ReturnsLinks()
+        {
+            _unitUnderTest = GetInstance(true, false);
+            _crawledPage.RawContent = "<meta name=\"robots\" content=\"noindex\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count());
+        }
+
+
+        [Test]
+        public void GetLinks_RelNoFollow_NotReturned()
+        {
+            _unitUnderTest = GetInstance(false, true);
+            _crawledPage.RawContent = "<a href=\"/aaa/a.html\" rel=\"nofollow\"></a><a href=\"/bbb/b.html\" rel=\"nofollow\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [Test]
+        public void GetLinks_RelNoFollowUpperCase_NotReturned()
+        {
+            _unitUnderTest = GetInstance(false, true);
+            _crawledPage.RawContent = "<a href=\"/aaa/a.html\" REL=\"NOFOLLOW\"></a><a href=\"/bbb/b.html\" REL=\"NOFOLLOW\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [Test]
+        public void GetLinks_CleanUrlDelegateSet_ReturnsCleanLinks()
+        {
+            _unitUnderTest = GetInstance(false, false, (x) => x.Replace("a", "x").Replace("b", "y"));
+            _crawledPage.RawContent = "<a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://a.com/xxx/x.html", result.ElementAt(0).AbsoluteUri);
+            Assert.AreEqual("http://a.com/yyy/y.html", result.ElementAt(1).AbsoluteUri);
+        }        
     }
 }

@@ -148,9 +148,19 @@ namespace Abot.Poco
         #region politeness
 
         /// <summary>
-        /// Whether the crawler should retrieve and respect the robotsdottext file.
+        /// Whether the crawler should retrieve and respect the robots.txt file.
         /// </summary>
         public bool IsRespectRobotsDotTextEnabled { get; set; }
+
+        /// <summary>
+        /// Whether the crawler should ignore links on pages that have a <meta name="robots" content="nofollow" /> tag
+        /// </summary>
+        public bool IsRespectMetaRobotsNoFollowEnabled { get; set; }
+
+        /// <summary>
+        /// Whether the crawler should ignore links that have a <a href="whatever" rel="nofollow">...
+        /// </summary>
+        public bool IsRespectAnchorRelNoFollowEnabled { get; set; }
 
         /// <summary>
         /// The user agent string to use when checking robots.txt file for specific directives.  Some examples of other crawler's user agent values are "googlebot", "slurp" etc...
