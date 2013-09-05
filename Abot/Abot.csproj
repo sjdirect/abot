@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
+    <Compile Include="Core\EncodingManager.cs" />
     <Compile Include="Core\GcMemoryMonitor.cs" />
     <Compile Include="Core\ICrawledUrlRepository.cs" />
     <Compile Include="Core\IPagesToCrawlRepository.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Core\HyperLinkParser.cs" />
     <Compile Include="Core\PageRequester.cs" />
     <Compile Include="Crawler\WebCrawler.cs" />
+    <Compile Include="Poco\EncodedData.cs" />
     <Compile Include="Poco\PageToCrawl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
