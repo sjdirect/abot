@@ -67,6 +67,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\CachedMemoryMonitorTest.cs" />
+    <Compile Include="Core\WebContentExtracterTest.cs" />
     <Compile Include="Core\ManualThreadManagerTest.cs" />
     <Compile Include="Core\GcMemoryMonitorTest.cs" />
     <Compile Include="Core\MemoryManagerTest.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Crawler\WebCrawlerTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Poco\PageContentTest.cs" />
     <Compile Include="Poco\CrawlContextTest.cs" />
     <Compile Include="Poco\CrawlConfigurationTest.cs" />
     <Compile Include="Poco\CrawlDecisionTest.cs" />

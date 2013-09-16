@@ -6,40 +6,38 @@ using System.Net;
 using System.Text;
 namespace Abot.Core
 {
-    public interface IEncodingManager
+    public interface IWebContentExtractor
     {
-        EncodedData GetEncodingData(WebResponse response);
+        PageContent GetContent(WebResponse response);
     }
 
-    public class EncodingManager : IEncodingManager
+    public class WebContentExtracter : IWebContentExtractor
     {
-        public EncodedData GetEncodingData(WebResponse response)
+        public PageContent GetContent(WebResponse response)
         {
-            MemoryStream rawdata = GetRawData(response);
+            MemoryStream memoryStream = GetRawData(response);
 
             String charset = GetCharsetFromHeaders(response);
 
             if (charset == null)
-                charset = GetCharsetFromBody(rawdata);
+                charset = GetCharsetFromBody(memoryStream);
 
-
-            rawdata.Seek(0, SeekOrigin.Begin);
+            memoryStream.Seek(0, SeekOrigin.Begin);
 
             Encoding e = GetEncoding(charset);
             string content = "";
-            using (StreamReader sr = new StreamReader(rawdata, e))
+            using (StreamReader sr = new StreamReader(memoryStream, e))
             {
                 content = sr.ReadToEnd();
             }
 
-            EncodedData eData = new EncodedData();
-            eData.CharsetString = charset;
-            eData.Content = content;
-            eData.Data = e.GetBytes(eData.Content);
-            eData.PageSizeInBytes = eData.Data.Length;
-            eData.Encoding = e;
+            PageContent pageContent = new PageContent();
+            pageContent.Bytes = e.GetBytes(content);
+            pageContent.Charset = charset;
+            pageContent.Encoding = e;
+            pageContent.Text = content;
 
-            return eData;
+            return pageContent;
         }
 
         private string GetCharsetFromHeaders(WebResponse webResponse)
@@ -62,11 +60,10 @@ namespace Abot.Core
             MemoryStream ms = rawdata;
             ms.Seek(0, SeekOrigin.Begin);
 
-            String meta = "";
-            using (StreamReader srr = new StreamReader(ms, Encoding.ASCII))
-            {
-                meta = srr.ReadToEnd();
-            }
+            
+            //Do not wrapp in closing statement to prevent closing of the is stream
+            StreamReader srr = new StreamReader(ms, Encoding.ASCII);
+            String meta = srr.ReadToEnd();
 
             if (meta != null)
             {
@@ -104,7 +101,7 @@ namespace Abot.Core
 
         private MemoryStream GetRawData(WebResponse webResponse)
         {
-            MemoryStream rawdata = new MemoryStream();
+            MemoryStream rawData = new MemoryStream();
 
             using (Stream rs = webResponse.GetResponseStream())
             {
@@ -112,12 +109,12 @@ namespace Abot.Core
                 int read = rs.Read(buffer, 0, buffer.Length);
                 while (read > 0)
                 {
-                    rawdata.Write(buffer, 0, read);
+                    rawData.Write(buffer, 0, read);
                     read = rs.Read(buffer, 0, buffer.Length);
                 }
             }
 
-            return rawdata;
+            return rawData;
         }
 
     }
