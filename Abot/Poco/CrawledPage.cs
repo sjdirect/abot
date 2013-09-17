@@ -17,14 +17,15 @@ namespace Abot.Poco
         public CrawledPage(Uri uri)
             : base(uri)
         {
-            RawContent = "";
             _htmlDocument = new Lazy<HtmlDocument>(() => InitializeHtmlAgilityPackDocument() );
             _csQueryDocument = new Lazy<CQ>(() => InitializeCsQueryDocument());
+            Content = new PageContent();
         }
 
         /// <summary>
         /// The raw content of the request
         /// </summary>
+        [Obsolete("Please use CrawledPage.Content.Text instead", true)]
         public string RawContent { get; set; }
 
         /// <summary>
@@ -63,6 +64,7 @@ namespace Abot.Poco
         /// <summary>
         /// The actual byte size of the page's raw content. This property is due to the Content-length header being untrustable.
         /// </summary>
+        [Obsolete("Please use CrawledPage.Content.Bytes.Length instead", true)]
         public long PageSizeInBytes { get; set; }
 
         /// <summary>
@@ -70,12 +72,17 @@ namespace Abot.Poco
         /// </summary>
         public IEnumerable<Uri> ParsedLinks { get; set; }
 
+        /// <summary>
+        /// The content of page request
+        /// </summary>
+        public PageContent Content { get; set; }
+
         private CQ InitializeCsQueryDocument()
         {
             CQ csQueryObject;
             try
             {
-                csQueryObject = CQ.Create(RawContent);
+                csQueryObject = CQ.Create(Content.Text);
             }
             catch (Exception e)
             {
@@ -93,7 +100,7 @@ namespace Abot.Poco
             hapDoc.OptionMaxNestedChildNodes = 5000;//did not make this an externally configurable property since it is really an internal issue to hap
             try
             {
-                hapDoc.LoadHtml(RawContent);
+                hapDoc.LoadHtml(Content.Text);
             }
             catch (Exception e)
             {

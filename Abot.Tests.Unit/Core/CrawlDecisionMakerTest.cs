@@ -315,7 +315,13 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPageLinks_NullCrawlContext_ReturnsFalse()
         {
-            CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(new CrawledPage(new Uri("http://a.com/a.html")){ RawContent = "aaaa" }, null);
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(new CrawledPage(new Uri("http://a.com/a.html"))
+                {
+                    Content = new PageContent
+                    {
+                        Text = "aaaa"
+                    }
+                }, null);
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Null crawl context", result.Reason);
@@ -326,7 +332,13 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPageLinks_NullHtmlContent_ReturnsFalse()
         {
-            CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(new CrawledPage(new Uri("http://a.com/")) { RawContent = null }, new CrawlContext());
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(new CrawledPage(new Uri("http://a.com/"))
+                {
+                    Content = new PageContent
+                    {
+                        Text = null
+                    }
+                }, new CrawlContext());
             
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Page has no content", result.Reason);
@@ -337,7 +349,13 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPageLinks_WhitespaceHtmlContent_ReturnsFalse()
         {
-            CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(new CrawledPage(new Uri("http://a.com/")) { RawContent = "     " }, new CrawlContext());
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(new CrawledPage(new Uri("http://a.com/"))
+                {
+                    Content = new PageContent
+                    {
+                        Text = "     "
+                    }
+                }, new CrawlContext());
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Page has no content", result.Reason);
@@ -348,7 +366,13 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPageLinks_EmptyHtmlContent_ReturnsFalse()
         {
-            CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(new CrawledPage(new Uri("http://a.com/")) { RawContent = "" }, new CrawlContext());
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(new CrawledPage(new Uri("http://a.com/"))
+                {
+                    Content = new PageContent
+                    {
+                        Text = ""
+                    }
+                }, new CrawlContext());
             
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Page has no content", result.Reason);
@@ -362,7 +386,10 @@ namespace Abot.Tests.Unit.Core
             CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(
                 new CrawledPage(new Uri("http://b.com/a.html"))
                 {
-                    RawContent = "aaaa",
+                    Content = new PageContent
+                    {
+                        Text = "aaaa"
+                    },
                     IsInternal = false
                 },
                 new CrawlContext
@@ -385,7 +412,10 @@ namespace Abot.Tests.Unit.Core
             CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(
                 new CrawledPage(new Uri("http://b.com/a.html"))
                 {
-                    RawContent = "aaaa",
+                    Content = new PageContent
+                    {
+                        Text = "aaaa"
+                    },
                     IsInternal = true
                 },
                 new CrawlContext
@@ -408,7 +438,10 @@ namespace Abot.Tests.Unit.Core
             CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(
                 new CrawledPage(new Uri("http://b.com/a.html"))
                 {
-                    RawContent = "aaaa",
+                    Content = new PageContent
+                    {
+                        Text = "aaaa"
+                    },
                     IsInternal = true
                 },
                 new CrawlContext
@@ -431,7 +464,10 @@ namespace Abot.Tests.Unit.Core
             CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(
                 new CrawledPage(new Uri("http://b.com/a.html"))
                 {
-                    RawContent = "aaaa",
+                    Content = new PageContent
+                    {
+                        Text = "aaaa"
+                    },
                     IsInternal = true,
                     CrawlDepth = 2
                 },
@@ -455,7 +491,10 @@ namespace Abot.Tests.Unit.Core
             CrawlDecision result = _unitUnderTest.ShouldCrawlPageLinks(
                 new CrawledPage(new Uri("http://b.com/a.html"))
                 {
-                    RawContent = "aaaa",
+                    Content = new PageContent
+                    {
+                        Text = "aaaa"
+                    },
                     IsInternal = true,
                     CrawlDepth = 3
                 },

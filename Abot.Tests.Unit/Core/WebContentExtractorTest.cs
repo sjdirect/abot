@@ -8,16 +8,16 @@ using System.Text;
 namespace Abot.Tests.Unit.Core
 {
     [TestFixture]
-    public class WebContentExtracterTest
+    public class WebContentExtractorTest
     {
-        WebContentExtracter _uut;
+        WebContentExtractor _uut;
         Uri _utf8 = new Uri("http://localhost:1111/");
         Uri _japan = new Uri("http://aaa.jp");
 
         [SetUp]
         public void Setup()
         {
-            _uut = new WebContentExtracter();
+            _uut = new WebContentExtractor();
         }
 
         [Test]

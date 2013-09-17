@@ -10,7 +10,7 @@ namespace Abot.Poco
         }
 
         /// <summary>
-        /// The raw bytes data of the web response
+        /// The raw data bytes taken from the web response
         /// </summary>
         public byte[] Bytes { get; set; }
 
@@ -25,7 +25,7 @@ namespace Abot.Poco
         public Encoding Encoding { get; set; }
 
         /// <summary>
-        /// The raw text of the web response
+        /// The raw text taken from the web response
         /// </summary>
         public string Text { get; set; }
     }

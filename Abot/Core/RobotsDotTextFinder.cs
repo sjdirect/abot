@@ -47,7 +47,7 @@ namespace Abot.Core
             }
 
             _logger.DebugFormat("Found robots.txt file at [{0}]", robotsUri);
-            return new RobotsDotText(rootUri, page.RawContent);
+            return new RobotsDotText(rootUri, page.Content.Text);
         }
     }
 }

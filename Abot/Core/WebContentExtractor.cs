@@ -1,5 +1,6 @@
 ﻿
 using Abot.Poco;
+using log4net;
 using System;
 using System.IO;
 using System.Net;
@@ -11,8 +12,10 @@ namespace Abot.Core
         PageContent GetContent(WebResponse response);
     }
 
-    public class WebContentExtracter : IWebContentExtractor
+    public class WebContentExtractor : IWebContentExtractor
     {
+        static ILog _logger = LogManager.GetLogger(typeof(WebContentExtractor).FullName);
+
         public PageContent GetContent(WebResponse response)
         {
             MemoryStream memoryStream = GetRawData(response);
@@ -103,15 +106,23 @@ namespace Abot.Core
         {
             MemoryStream rawData = new MemoryStream();
 
-            using (Stream rs = webResponse.GetResponseStream())
+            try
             {
-                byte[] buffer = new byte[1024];
-                int read = rs.Read(buffer, 0, buffer.Length);
-                while (read > 0)
+                using (Stream rs = webResponse.GetResponseStream())
                 {
-                    rawData.Write(buffer, 0, read);
-                    read = rs.Read(buffer, 0, buffer.Length);
+                    byte[] buffer = new byte[1024];
+                    int read = rs.Read(buffer, 0, buffer.Length);
+                    while (read > 0)
+                    {
+                        rawData.Write(buffer, 0, read);
+                        read = rs.Read(buffer, 0, buffer.Length);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _logger.WarnFormat("Error occurred while downloading content of url {0}", webResponse.ResponseUri.AbsoluteUri);
+                _logger.Warn(e);
             }
 
             return rawData;

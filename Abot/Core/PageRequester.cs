@@ -1,10 +1,8 @@
 ﻿using Abot.Poco;
 using log4net;
 using System;
-using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Text;
 
 namespace Abot.Core
 {
@@ -27,8 +25,15 @@ namespace Abot.Core
 
         protected CrawlConfiguration _config;
         protected string _userAgentString;
+        protected IWebContentExtractor _extractor;
 
         public PageRequester(CrawlConfiguration config)
+            : this(config, null)
+        {
+
+        }
+
+        public PageRequester(CrawlConfiguration config, IWebContentExtractor contentExtractor)
         {
             if (config == null)
                 throw new ArgumentNullException("config");
@@ -38,6 +43,8 @@ namespace Abot.Core
 
             if (_config.HttpServicePointConnectionLimit > 0)
                 ServicePointManager.DefaultConnectionLimit = _config.HttpServicePointConnectionLimit;
+
+            _extractor = contentExtractor ?? new WebContentExtractor();
         }
 
         /// <summary>
@@ -89,15 +96,11 @@ namespace Abot.Core
                     crawledPage.HttpWebResponse = response;
                     CrawlDecision shouldDownloadContentDecision = shouldDownloadContent(crawledPage);
                     if (shouldDownloadContentDecision.Allow)
-                    {
-                        crawledPage.RawContent = GetRawHtml(response, uri);
-                        crawledPage.PageSizeInBytes = Encoding.UTF8.GetBytes(crawledPage.RawContent).Length;
-                    }
+                        crawledPage.Content = _extractor.GetContent(response);
                     else
-                    {
                         _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
-                    }
-                    response.Close();
+
+                    response.Close();//Should already be closed by _extractor but just being safe
                 }
             }
             
@@ -121,26 +124,6 @@ namespace Abot.Core
                 request.Timeout = _config.HttpRequestTimeoutInSeconds * 1000;
 
             return request;
-        }
-
-        protected virtual string GetRawHtml(HttpWebResponse response, Uri requestUri)
-        {
-            string rawHtml = "";
-            try
-            {
-                using (StreamReader sr = new StreamReader(response.GetResponseStream()))
-                {
-                    rawHtml = sr.ReadToEnd();
-                    sr.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.WarnFormat("Error occurred while downloading content of url {0}", requestUri.AbsoluteUri);
-                _logger.Warn(e);
-            }
-
-            return rawHtml;
         }
     }
 }

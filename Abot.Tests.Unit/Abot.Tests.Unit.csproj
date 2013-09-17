@@ -67,7 +67,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\CachedMemoryMonitorTest.cs" />
-    <Compile Include="Core\WebContentExtracterTest.cs" />
+    <Compile Include="Core\WebContentExtractorTest.cs" />
     <Compile Include="Core\ManualThreadManagerTest.cs" />
     <Compile Include="Core\GcMemoryMonitorTest.cs" />
     <Compile Include="Core\MemoryManagerTest.cs" />

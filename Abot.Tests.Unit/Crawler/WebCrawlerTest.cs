@@ -68,7 +68,13 @@ namespace Abot.Tests.Unit.Crawler
             Uri uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
             Uri uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
 
-            CrawledPage homePage = new CrawledPage(_rootUri) { RawContent = "content here" };
+            CrawledPage homePage = new CrawledPage(_rootUri)
+            {
+                Content = new PageContent
+                {
+                    Text = "content here"
+                }
+            };
             CrawledPage page1 = new CrawledPage(uri1);
             CrawledPage page2 = new CrawledPage(uri2);
 

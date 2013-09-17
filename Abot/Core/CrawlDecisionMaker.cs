@@ -69,7 +69,7 @@ namespace Abot.Core
             if (crawlContext == null)
                 return new CrawlDecision { Allow = false, Reason = "Null crawl context" };
 
-            if(string.IsNullOrWhiteSpace(crawledPage.RawContent))
+            if(string.IsNullOrWhiteSpace(crawledPage.Content.Text))
                 return new CrawlDecision { Allow = false, Reason = "Page has no content" };
 
             if (!crawlContext.CrawlConfiguration.IsExternalPageLinksCrawlingEnabled && !crawledPage.IsInternal)
@@ -109,7 +109,7 @@ namespace Abot.Core
                 return new CrawlDecision { Allow = false, Reason = "Content type is not any of the following: " + crawlContext.CrawlConfiguration.DownloadableContentTypes };
 
             if (crawlContext.CrawlConfiguration.MaxPageSizeInBytes > 0 && crawledPage.HttpWebResponse.ContentLength > crawlContext.CrawlConfiguration.MaxPageSizeInBytes)
-                return new CrawlDecision { Allow = false, Reason = string.Format("Page size of [{0}] bytes is above the max allowable of [{1}] bytes", crawledPage.PageSizeInBytes, crawlContext.CrawlConfiguration.MaxPageSizeInBytes) };
+                return new CrawlDecision { Allow = false, Reason = string.Format("Page size of [{0}] bytes is above the max allowable of [{1}] bytes", crawledPage.HttpWebResponse.ContentLength, crawlContext.CrawlConfiguration.MaxPageSizeInBytes) };
 
             return new CrawlDecision { Allow = true };            
         }

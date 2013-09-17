@@ -671,10 +671,11 @@ namespace Abot.Crawler
         {
             bool isAboveMax = false;
             if (_crawlContext.CrawlConfiguration.MaxPageSizeInBytes > 0 &&
-                crawledPage.PageSizeInBytes > _crawlContext.CrawlConfiguration.MaxPageSizeInBytes)
+                crawledPage.Content.Bytes != null && 
+                crawledPage.Content.Bytes.Length > _crawlContext.CrawlConfiguration.MaxPageSizeInBytes)
             {
                 isAboveMax = true;
-                _logger.DebugFormat("Page [{0}] has a page size of [{1}] bytes which is above the [{2}] byte max", crawledPage.Uri, crawledPage.PageSizeInBytes, _crawlContext.CrawlConfiguration.MaxPageSizeInBytes);
+                _logger.DebugFormat("Page [{0}] has a page size of [{1}] bytes which is above the [{2}] byte max", crawledPage.Uri, crawledPage.Content.Bytes.Length, _crawlContext.CrawlConfiguration.MaxPageSizeInBytes);
             }
             return isAboveMax;
         }

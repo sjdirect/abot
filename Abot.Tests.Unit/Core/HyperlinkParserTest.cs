@@ -28,7 +28,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_AnchorTags_ReturnsLinks()
         {
-            _crawledPage.RawContent = "<a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>"; 
+            _crawledPage.Content.Text = "<a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>"; 
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
             
@@ -40,7 +40,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_AreaTags_ReturnsLinks()
         {
-            _crawledPage.RawContent = "<area href=\"http://bbb.com\" /><area href=\"bbb/b.html\" />";
+            _crawledPage.Content.Text = "<area href=\"http://bbb.com\" /><area href=\"bbb/b.html\" />";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -52,7 +52,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_AnchorTagsUpperCase_ReturnsLinks()
         {
-            _crawledPage.RawContent = "<A HREF=\"http://aaa.com/\" ></A><A HREF=\"/aaa/a.html\" /></A>";
+            _crawledPage.Content.Text = "<A HREF=\"http://aaa.com/\" ></A><A HREF=\"/aaa/a.html\" /></A>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -64,7 +64,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_AreaTagsUpperCase_ReturnsLinks()
         {
-            _crawledPage.RawContent = "<AREA HREF=\"http://bbb.com\" /><AREA HREF=\"bbb/b.html\" />";
+            _crawledPage.Content.Text = "<AREA HREF=\"http://bbb.com\" /><AREA HREF=\"bbb/b.html\" />";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -76,7 +76,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_NoLinks_NotReturned()
         {
-            _crawledPage.RawContent = "<html></html>";
+            _crawledPage.Content.Text = "<html></html>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -86,7 +86,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_AnyScheme_Returned()
         {
-            _crawledPage.RawContent = "<a href=\"mailto:aaa@gmail.com\" /><a href=\"tel:+123456789\" /><a href=\"callto:+123456789\" /><a href=\"ftp://user@yourdomainname.com/\" /><a href=\"file:///C:/Users/\" />";
+            _crawledPage.Content.Text = "<a href=\"mailto:aaa@gmail.com\" /><a href=\"tel:+123456789\" /><a href=\"callto:+123456789\" /><a href=\"ftp://user@yourdomainname.com/\" /><a href=\"file:///C:/Users/\" />";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -101,7 +101,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_InvalidFormatUrl_NotReturned()
         {
-            _crawledPage.RawContent = "<a href=\"http://////\" />";
+            _crawledPage.Content.Text = "<a href=\"http://////\" />";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -111,7 +111,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_LinksInComments_NotReturned()
         {
-            _crawledPage.RawContent = @"<html>
+            _crawledPage.Content.Text = @"<html>
                     <head>
                         <!--
                             <a href='http://a1.com' />
@@ -134,7 +134,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_LinksInScript_NotReturned()
         {
-            _crawledPage.RawContent = @"<html>
+            _crawledPage.Content.Text = @"<html>
                     <head>
                         <script>
                             <a href='http://a1.com' />
@@ -157,7 +157,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_LinksInStyleTag_NotReturned()
         {
-            _crawledPage.RawContent =  @"<html>
+            _crawledPage.Content.Text =  @"<html>
                     <head>
                         <style>
                             <a href='http://a1.com' />
@@ -180,7 +180,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_DuplicateLinks_ReturnsOnlyOne()
         {
-            _crawledPage.RawContent = "<a href=\"/aaa/a.html\" ></a><a href=\"/aaa/a.html\" /></a>";
+            _crawledPage.Content.Text = "<a href=\"/aaa/a.html\" ></a><a href=\"/aaa/a.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -191,7 +191,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_NamedAnchors_Ignores()
         {
-            _crawledPage.RawContent =  "<a href=\"/aaa/a.html\" ></a><a href=\"/aaa/a.html#top\" ></a><a href=\"/aaa/a.html#bottom\" /></a>";
+            _crawledPage.Content.Text =  "<a href=\"/aaa/a.html\" ></a><a href=\"/aaa/a.html#top\" ></a><a href=\"/aaa/a.html#bottom\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -202,7 +202,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_EmptyHtml()
         {
-            _crawledPage.RawContent =  "";
+            _crawledPage.Content.Text =  "";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -213,7 +213,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_WhiteSpaceHtml()
         {
-            _crawledPage.RawContent = "         ";
+            _crawledPage.Content.Text = "         ";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -224,7 +224,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_ValidBaseTagPresent_ReturnsRelativeLinksUsingBase()
         {
-            _crawledPage.RawContent = "<base href=\"http://bbb.com\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
+            _crawledPage.Content.Text = "<base href=\"http://bbb.com\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -236,7 +236,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_RelativeBaseTagPresent_ReturnsRelativeLinksPageUri()
         {
-            _crawledPage.RawContent =  "<base href=\"/images\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
+            _crawledPage.Content.Text =  "<base href=\"/images\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -248,7 +248,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_InvalidBaseTagPresent_ReturnsRelativeLinksPageUri()
         {
-            _crawledPage.RawContent =  "<base href=\"http:http://http:\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
+            _crawledPage.Content.Text =  "<base href=\"http:http://http:\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -267,7 +267,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void GetLinks_ResponseUriDiffFromRequestUri_UsesResponseUri()
         {
-            _crawledPage.RawContent = "<a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+            _crawledPage.Content.Text = "<a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
 
             //This sets the Address properties backing field which does not have a public set method
             ValueHelper.SetFieldValue(_crawledPage.HttpWebRequest, "_Uri", new Uri("http://zzz.com/"));
@@ -284,7 +284,7 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_MetaNoIndexNoFollowNotSet_ReturnsLinks()
         {
             _unitUnderTest = GetInstance(false, false);
-            _crawledPage.RawContent = "<meta name=\"robots\" content=\"noindex, nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+            _crawledPage.Content.Text = "<meta name=\"robots\" content=\"noindex, nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -296,7 +296,7 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_MetaNoIndexNoFollow_ReturnsEmptyList()
         {
             _unitUnderTest = GetInstance(true, false);
-            _crawledPage.RawContent = "<meta name=\"robots\" content=\"noindex, nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+            _crawledPage.Content.Text = "<meta name=\"robots\" content=\"noindex, nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -308,7 +308,7 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_MetaNoIndexNoFollowUpperCase_ReturnsEmptyList()
         {
             _unitUnderTest = GetInstance(true, false);
-            _crawledPage.RawContent = "<META NAME=\"ROBOTS\" CONTENT=\"NOINDEX, NOFOLLOW\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+            _crawledPage.Content.Text = "<META NAME=\"ROBOTS\" CONTENT=\"NOINDEX, NOFOLLOW\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -320,7 +320,7 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_NoFollow_NotReturned()
         {
             _unitUnderTest = GetInstance(true, false);
-            _crawledPage.RawContent = "<meta name=\"robots\" content=\"nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+            _crawledPage.Content.Text = "<meta name=\"robots\" content=\"nofollow\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -332,7 +332,7 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_MetaNoIndex_ReturnsLinks()
         {
             _unitUnderTest = GetInstance(true, false);
-            _crawledPage.RawContent = "<meta name=\"robots\" content=\"noindex\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+            _crawledPage.Content.Text = "<meta name=\"robots\" content=\"noindex\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -345,7 +345,7 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_RelNoFollow_NotReturned()
         {
             _unitUnderTest = GetInstance(false, true);
-            _crawledPage.RawContent = "<a href=\"/aaa/a.html\" rel=\"nofollow\"></a><a href=\"/bbb/b.html\" rel=\"nofollow\" /></a>";
+            _crawledPage.Content.Text = "<a href=\"/aaa/a.html\" rel=\"nofollow\"></a><a href=\"/bbb/b.html\" rel=\"nofollow\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -357,7 +357,7 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_RelNoFollowUpperCase_NotReturned()
         {
             _unitUnderTest = GetInstance(false, true);
-            _crawledPage.RawContent = "<a href=\"/aaa/a.html\" REL=\"NOFOLLOW\"></a><a href=\"/bbb/b.html\" REL=\"NOFOLLOW\" /></a>";
+            _crawledPage.Content.Text = "<a href=\"/aaa/a.html\" REL=\"NOFOLLOW\"></a><a href=\"/bbb/b.html\" REL=\"NOFOLLOW\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -369,7 +369,7 @@ namespace Abot.Tests.Unit.Core
         public void GetLinks_CleanUrlDelegateSet_ReturnsCleanLinks()
         {
             _unitUnderTest = GetInstance(false, false, (x) => x.Replace("a", "x").Replace("b", "y"));
-            _crawledPage.RawContent = "<a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+            _crawledPage.Content.Text = "<a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
