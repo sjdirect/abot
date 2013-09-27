@@ -47,6 +47,9 @@ namespace Abot.Core
 
         public bool IsUrlAllowed(string url, string userAgentString)
         {
+            if (!_rootUri.IsBaseOf(new Uri(url)))
+                return true;
+
             return _robotsDotTextUtil.Allowed(url, userAgentString);
         }
 

@@ -138,6 +138,32 @@ Sitemap: http://b.com/sitemap.xml
         }
 
         [Test]
+        public void IsUrlAllowed_ExternalPages_ReturnsTrue()
+        {
+            Uri externalUri = new Uri("http://yahoo.com/");
+            string userAgentString = _userAgentString;
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri, userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "allowedfolder/aa.html", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "allowedfolder/bb.html", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "allowedfile2", userAgentString));
+
+            //User agent "userAgentCrawlDelayIs1" doesn't specify anything to disallow so should allow all ("*" is not inherited)
+            userAgentString = "userAgentCrawlDelayIs1";
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri, userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "disallowedfile.txt", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "disallowedfolder", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "disallowedfolder/", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "disallowedfolder/subfolder", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "disallowedfolder/subfolder/", userAgentString));
+
+            //Allows all since "userAgentCrawlDelayIs1" does not specify allow or disallow
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri, userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "allowedfolder/aa.html", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "allowedfolder/bb.html", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "allowedfile2", userAgentString));
+        }
+
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void IsUrlAllowed_NullRobotsContent()
         {
