@@ -44,6 +44,24 @@ namespace Abot.Tests.Integration
         }
 
         [Test]
+        public void Crawl_MaxPagesTo25_OnlyCrawls25Pages()
+        {
+            new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
+
+            CrawlConfiguration configuration = new CrawlConfiguration();
+            configuration.MaxPagesToCrawl = 25;
+
+            int pagesCrawledCount = 0;
+
+            PoliteWebCrawler crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
+            crawler.PageCrawlCompletedAsync += (a, b) => pagesCrawledCount++;
+
+            crawler.Crawl(new Uri("http://localhost:1111/"));
+
+            Assert.AreEqual(25, pagesCrawledCount);
+        }
+
+        [Test]
         public void Crawl_MaxPagesTo5_WithCrawlDelay_OnlyCrawls5Pages()
         {
             new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));

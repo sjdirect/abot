@@ -104,7 +104,6 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPage_OverMaxPageToCrawlLimit_ReturnsFalse()
         {
-
             CrawlContext crawlContext = new CrawlContext
                 {
                     CrawlConfiguration = new CrawlConfiguration
@@ -118,7 +117,7 @@ namespace Abot.Tests.Unit.Core
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("MaxPagesToCrawl limit of [0] has been reached", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
-            Assert.IsTrue(result.ShouldStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
         }
 
         [Test]

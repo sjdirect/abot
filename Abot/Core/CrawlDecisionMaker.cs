@@ -43,7 +43,7 @@ namespace Abot.Core
 
             if (crawlContext.CrawledCount + 1 > crawlContext.CrawlConfiguration.MaxPagesToCrawl)
             {
-                return new CrawlDecision { Allow = false, ShouldStopCrawl = true, Reason = string.Format("MaxPagesToCrawl limit of [{0}] has been reached", crawlContext.CrawlConfiguration.MaxPagesToCrawl) };
+                return new CrawlDecision { Allow = false, Reason = string.Format("MaxPagesToCrawl limit of [{0}] has been reached", crawlContext.CrawlConfiguration.MaxPagesToCrawl) };
             }
 
             int pagesCrawledInThisDomain = 0;
