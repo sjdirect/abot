@@ -6,37 +6,7 @@ using System.Collections.Generic;
 
 namespace Abot.Core
 {
-    /// <summary>
-    /// Handles managing the priority of what pages need to be crawled
-    /// </summary>
-    public interface IScheduler
-    {
-        /// <summary>
-        /// Count of remaining items that are currently scheduled
-        /// </summary>
-        int Count { get; }
-
-        /// <summary>
-        /// Schedules the param to be crawled
-        /// </summary>
-        void Add(PageToCrawl page);
-
-        /// <summary>
-        /// Schedules the param to be crawled
-        /// </summary>
-        void Add(IEnumerable<PageToCrawl> pages);
-
-        /// <summary>
-        /// Gets the next page to crawl
-        /// </summary>
-        PageToCrawl GetNext();
-
-        /// <summary>
-        /// Clear all currently scheduled pages
-        /// </summary>
-        void Clear();
-    }
-
+    [Obsolete("Please use Scheduler.cs instead", false)]
     public class FifoScheduler : IScheduler
     {
         static ILog _logger = LogManager.GetLogger(typeof(FifoScheduler).FullName);

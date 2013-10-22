@@ -1,0 +1,98 @@
+﻿using Abot.Poco;
+using System;
+using System.Collections.Generic;
+
+namespace Abot.Core
+{
+    /// <summary>
+    /// Handles managing the priority of what pages need to be crawled
+    /// </summary>
+    public interface IScheduler
+    {
+        /// <summary>
+        /// Count of remaining items that are currently scheduled
+        /// </summary>
+        int Count { get; }
+
+        /// <summary>
+        /// Schedules the param to be crawled
+        /// </summary>
+        void Add(PageToCrawl page);
+
+        /// <summary>
+        /// Schedules the param to be crawled
+        /// </summary>
+        void Add(IEnumerable<PageToCrawl> pages);
+
+        /// <summary>
+        /// Gets the next page to crawl
+        /// </summary>
+        PageToCrawl GetNext();
+
+        /// <summary>
+        /// Clear all currently scheduled pages
+        /// </summary>
+        void Clear();
+    }
+
+    public class Scheduler : IScheduler
+    {
+        ICrawledUrlRepository _crawledUrlRepo;
+        IPagesToCrawlRepository _pagesToCrawlRepo;
+        bool _allowUriRecrawling;
+
+        public Scheduler()
+            :this(false, null, null)
+        {
+        }
+
+        public Scheduler(bool allowUriRecrawling, ICrawledUrlRepository crawledUrlRepo, IPagesToCrawlRepository pagesToCrawlRepo)
+        {
+            _allowUriRecrawling = allowUriRecrawling;
+            _crawledUrlRepo = _crawledUrlRepo ?? new InMemoryCrawledUrlRepository();
+            _pagesToCrawlRepo = _pagesToCrawlRepo ?? new InMemoryPagesToCrawlRepository();
+        }
+
+        public int Count
+        {
+            get { return _pagesToCrawlRepo.Count(); }
+        }
+
+        public void Add(PageToCrawl page)
+        {
+            if (page == null)
+                throw new ArgumentNullException("page");
+
+            if (_allowUriRecrawling)
+            {
+                _pagesToCrawlRepo.Add(page);
+            }
+            else
+            {
+                if (_crawledUrlRepo.AddIfNew(page.Uri))
+                    _pagesToCrawlRepo.Add(page);
+            }
+        }
+
+        public void Add(IEnumerable<PageToCrawl> pages)
+        {
+            if (pages == null)
+                throw new ArgumentNullException("pages");
+
+            foreach (PageToCrawl page in pages)
+                Add(page);
+        }
+
+        public PageToCrawl GetNext()
+        {
+            PageToCrawl nextItem = _pagesToCrawlRepo.GetNext();
+
+            return nextItem;
+        }
+
+        public void Clear()
+        {
+            _pagesToCrawlRepo.Clear();
+        }
+    }
+}

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Abot.Tests.Unit.Core
 {
+    [Obsolete("Remove test when FifoScheduler is removed", false)]
     [TestFixture]
     public class FifoSchedulerTest
     {
