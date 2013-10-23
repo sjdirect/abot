@@ -1,6 +1,9 @@
 ﻿using Abot.Core;
+using Abot.Poco;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace Abot.Tests.Unit.Core
 {
@@ -8,32 +11,146 @@ namespace Abot.Tests.Unit.Core
     public class SchedulerTest
     {
         Scheduler _unitUnderTest;
+        Mock<ICrawledUrlRepository> _fakeCrawledUrlRepo;
+        Mock<IPagesToCrawlRepository> _fakePagesToCrawlRepo;
+        PageToCrawl _page = new PageToCrawl { Uri = new Uri("http://a.com/") };
+        List<PageToCrawl> _pages = new List<PageToCrawl> { new PageToCrawl { Uri = new Uri("http://a.com/") }, new PageToCrawl { Uri = new Uri("http://b.com/") } };
 
         [SetUp]
         public void SetUp()
         {
-            _unitUnderTest = new Scheduler(false, new Mock<ICrawledUrlRepository>().Object, new Mock<IPagesToCrawlRepository>().Object);
+            _fakeCrawledUrlRepo = new Mock<ICrawledUrlRepository>();
+            _fakePagesToCrawlRepo = new Mock<IPagesToCrawlRepository>();
+
+            _unitUnderTest = new Scheduler(false, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
         }
 
         [Test]
-        public void Add_ValidPageToCrawl_IsAdded()
+        public void Constructor_NoParams()
         {
-            Assert.Fail("Implement these tests");
-            //_unitUnderTest.Add(new PageToCrawl(new Uri("http://a.com/")));
-
-            //Assert.AreEqual(1, _unitUnderTest.Count);
+            Assert.IsNotNull(new Scheduler());
         }
 
-        //[Test]
-        //public void Add_IsUriRecrawlingIsFalse_DuplicateNotAdded()
-        //{
-        //    //_unitUnderTest = new FifoScheduler(false);//this is the default
-        //    //_unitUnderTest.Add(new PageToCrawl(new Uri("http://a.com/")));
-        //    //_unitUnderTest.Add(new PageToCrawl(new Uri("http://a.com/")));
-        //    //_unitUnderTest.Add(new PageToCrawl(new Uri("http://a.com/")));
+        [Test]
+        public void Count_ReturnsPagesToCrawlRepoCount()
+        {
+            _fakePagesToCrawlRepo.Setup(f => f.Count()).Returns(11);
 
-        //    //Assert.AreEqual(1, _unitUnderTest.Count);
-        //}
+            int result = _unitUnderTest.Count;
+
+            Assert.AreEqual(11, result);
+            _fakePagesToCrawlRepo.VerifyAll();
+        }
+
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Add_NullPage()
+        {
+            PageToCrawl nullPage = null;
+            _unitUnderTest.Add(nullPage);
+        }
+
+        [Test]
+        public void Add_UriRecrawlingDisabled_UrlHasNotBeenCrawled_AddsToBothRepos()
+        {
+            _fakeCrawledUrlRepo.Setup(f => f.AddIfNew(_page.Uri)).Returns(true);
+
+            _unitUnderTest.Add(_page);
+
+            _fakeCrawledUrlRepo.VerifyAll();
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_page));
+        }
+
+        [Test]
+        public void Add_UriRecrawlingDisabled_UrlHasBeenCrawled_DoesNotAddToPagesToCrawlRepo()
+        {
+            _fakeCrawledUrlRepo.Setup(f => f.AddIfNew(_page.Uri)).Returns(false);
+
+            _unitUnderTest.Add(_page);
+
+            _fakeCrawledUrlRepo.VerifyAll();
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_page), Times.Never());
+        }
+
+        [Test]
+        public void Add_UriRecrawlingEnabled_AddsToPagesToCrawlRepo()
+        {
+            _unitUnderTest = new Scheduler(true, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
+
+            _unitUnderTest.Add(_page);
+
+            _fakeCrawledUrlRepo.Verify(f => f.AddIfNew(_page.Uri), Times.Never());
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_page));
+        }
+
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Add_NullPages()
+        {
+            IEnumerable<PageToCrawl> nullPages = null;
+            _unitUnderTest.Add(nullPages);
+        }
+
+        [Test]
+        public void Add_UriRecrawlingDisabled_UrlCollectionHasNotBeenCrawled_AddsToBothRepos()
+        {
+            _fakeCrawledUrlRepo.Setup(f => f.AddIfNew(_pages[0].Uri)).Returns(true);
+            _fakeCrawledUrlRepo.Setup(f => f.AddIfNew(_pages[1].Uri)).Returns(true);
+
+            _unitUnderTest.Add(_pages);
+
+            _fakeCrawledUrlRepo.VerifyAll();
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_pages[0]));
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_pages[1]));
+        }
+
+        [Test]
+        public void Add_UriRecrawlingDisabled_1UrlHasBeenCrawled_AddsOnly1ToPagesToCrawlRepo()
+        {
+            _fakeCrawledUrlRepo.Setup(f => f.AddIfNew(_pages[0].Uri)).Returns(true);
+            _fakeCrawledUrlRepo.Setup(f => f.AddIfNew(_pages[1].Uri)).Returns(false);
+
+            _unitUnderTest.Add(_pages);
+
+            _fakeCrawledUrlRepo.VerifyAll();
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_pages[0]));
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_pages[1]), Times.Never());
+        }
+
+        [Test]
+        public void Add_UriRecrawlingEnabled_AddsBothToPagesToCrawlRepo()
+        {
+            _unitUnderTest = new Scheduler(true, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
+
+            _unitUnderTest.Add(_pages);
+
+            _fakeCrawledUrlRepo.Verify(f => f.AddIfNew(It.IsAny<Uri>()), Times.Never());
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_pages[0]));
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_pages[1]));
+        }
+
+
+        [Test]
+        public void GetNext_ReturnsNextPageToCrawlFromRepo()
+        {
+            _fakePagesToCrawlRepo.Setup(f => f.GetNext()).Returns(_page);
+
+            PageToCrawl result = _unitUnderTest.GetNext();
+
+            _fakePagesToCrawlRepo.VerifyAll();
+            Assert.AreSame(_page, result);
+        }
+
+        [Test]
+        public void Clear_ClearsPageToCrawlRepo()
+        {
+            _unitUnderTest.Clear();
+
+            _fakePagesToCrawlRepo.Verify(f => f.Clear());
+        }
+
 
         //[Test]
         //public void Add_IEnumerableParam_IsUriRecrawlingIsFalse_DuplicateNotAdded()

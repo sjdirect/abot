@@ -49,8 +49,8 @@ namespace Abot.Core
         public Scheduler(bool allowUriRecrawling, ICrawledUrlRepository crawledUrlRepo, IPagesToCrawlRepository pagesToCrawlRepo)
         {
             _allowUriRecrawling = allowUriRecrawling;
-            _crawledUrlRepo = _crawledUrlRepo ?? new InMemoryCrawledUrlRepository();
-            _pagesToCrawlRepo = _pagesToCrawlRepo ?? new InMemoryPagesToCrawlRepository();
+            _crawledUrlRepo = crawledUrlRepo ?? new InMemoryCrawledUrlRepository();
+            _pagesToCrawlRepo = pagesToCrawlRepo ?? new InMemoryPagesToCrawlRepository();
         }
 
         public int Count
