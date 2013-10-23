@@ -33,6 +33,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(27, _config.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
             Assert.AreEqual(28, _config.CrawlBehavior.MaxCrawlDepth);
             Assert.AreEqual(true, _config.CrawlBehavior.IsForcedLinkParsingEnabled);
+            Assert.AreEqual(true, _config.CrawlBehavior.IsDeepCrawlEnabled);
 
             Assert.IsNotNull(_config.Politeness);
             Assert.AreEqual(true, _config.Politeness.IsRespectRobotsDotTextEnabled);
@@ -75,6 +76,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(result.MaxMemoryUsageCacheTimeInSeconds, _config.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
             Assert.AreEqual(result.MaxCrawlDepth, _config.CrawlBehavior.MaxCrawlDepth);
             Assert.AreEqual(result.IsForcedLinkParsingEnabled, _config.CrawlBehavior.IsForcedLinkParsingEnabled);
+            Assert.AreEqual(result.IsDeepCrawlEnabled, _config.CrawlBehavior.IsDeepCrawlEnabled);
             
             Assert.AreEqual(result.IsRespectRobotsDotTextEnabled, _config.Politeness.IsRespectRobotsDotTextEnabled);
             Assert.AreEqual(result.RobotsDotTextUserAgentString, _config.Politeness.RobotsDotTextUserAgentString);

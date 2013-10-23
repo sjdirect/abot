@@ -143,6 +143,11 @@ namespace Abot.Poco
         /// </summary>
         public bool IsForcedLinkParsingEnabled { get; set; }
 
+        /// <summary>
+        /// Whether the crawl is expected to encounter 100k or greater links to crawl. If true Abot will store crawled urls to disk instead of in memory to avoid OutOfMemory exceptions.
+        /// </summary>
+        public bool IsDeepCrawlEnabled { get; set; }
+
         #endregion
 
         #region politeness
