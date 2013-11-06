@@ -87,6 +87,8 @@
     <Compile Include="Core\RateLimiterTest.cs" />
     <Compile Include="Core\RobotsDotTextFinderTest.cs" />
     <Compile Include="Core\RobotsDotTextTest.cs" />
+    <Compile Include="Crawler\ShallowWebCrawlerTest.cs" />
+    <Compile Include="Crawler\DeepWebCrawlerTest.cs" />
     <Compile Include="Crawler\CrawlArgsTest.cs" />
     <Compile Include="Crawler\PageLinksCrawlDisallowedArgsTest.cs" />
     <Compile Include="Crawler\PageCrawlDisallowedArgsTest.cs" />

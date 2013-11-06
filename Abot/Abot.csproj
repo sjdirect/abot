@@ -85,11 +85,13 @@
     <Compile Include="Core\TaskThreadManager.cs" />
     <Compile Include="Core\ThreadManager.cs" />
     <Compile Include="Crawler\CrawlArgs.cs" />
+    <Compile Include="Crawler\DeepWebCrawler.cs" />
     <Compile Include="Crawler\PageLinksCrawlDisallowedArgs.cs" />
     <Compile Include="Crawler\PageCrawlDisallowedArgs.cs" />
     <Compile Include="Crawler\PageCrawlCompletedArgs.cs" />
     <Compile Include="Crawler\PageCrawlStartingArgs.cs" />
     <Compile Include="Crawler\PoliteWebCrawler.cs" />
+    <Compile Include="Crawler\ShallowWebCrawler.cs" />
     <Compile Include="Poco\CrawlConfiguration.cs" />
     <Compile Include="Poco\CrawlContext.cs" />
     <Compile Include="Poco\CrawlDecision.cs" />
