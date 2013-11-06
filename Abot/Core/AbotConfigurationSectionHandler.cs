@@ -211,12 +211,6 @@ namespace Abot.Core
         {
             get { return (bool)this["isForcedLinkParsingEnabled"]; }
         }
-
-        [ConfigurationProperty("isDeepCrawlEnabled", IsRequired = true)]
-        public bool IsDeepCrawlEnabled
-        {
-            get { return (bool)this["isDeepCrawlEnabled"]; }
-        }
     }
 
     public class ExtensionValueElement : ConfigurationElement

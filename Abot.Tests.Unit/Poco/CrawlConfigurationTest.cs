@@ -39,7 +39,6 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual(0, unitUnderTest.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(100, unitUnderTest.MaxCrawlDepth);
             Assert.AreEqual(false, unitUnderTest.IsForcedLinkParsingEnabled);
-            Assert.AreEqual(false, unitUnderTest.IsDeepCrawlEnabled);
         }
     }
 }
