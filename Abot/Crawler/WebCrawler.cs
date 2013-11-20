@@ -369,7 +369,7 @@ namespace Abot.Crawler
             }
         }
 
-        protected virtual void FirePageCrawlCompletedEventAsync(CrawledPage crawledPage)
+        protected virtual void FirePageCrawlCompletedEventAsync(CrawledPage crawledPage, bool wait)
         {
             EventHandler<PageCrawlCompletedArgs> threadSafeEvent = PageCrawlCompletedAsync;
             if (threadSafeEvent != null)
@@ -377,7 +377,13 @@ namespace Abot.Crawler
                 //Fire each subscribers delegate async
                 foreach (EventHandler<PageCrawlCompletedArgs> del in threadSafeEvent.GetInvocationList())
                 {
-                    del.BeginInvoke(this, new PageCrawlCompletedArgs(_crawlContext, crawledPage), null, null);
+                    IAsyncResult result = del.BeginInvoke(this, new PageCrawlCompletedArgs(_crawlContext, crawledPage), null, null);
+
+                    if (wait)
+                    {
+                        result.AsyncWaitHandle.WaitOne();
+                    }
+
                 }
             }
         }
@@ -579,7 +585,7 @@ namespace Abot.Crawler
                 if (PageSizeIsAboveMax(crawledPage))
                     return;
 
-                FirePageCrawlCompletedEventAsync(crawledPage);
+                FirePageCrawlCompletedEventAsync(crawledPage, _scheduler.Count == 0);
                 FirePageCrawlCompletedEvent(crawledPage);
 
                 if (ShouldCrawlPageLinks(crawledPage))
