@@ -3,13 +3,13 @@ using System.Collections.Concurrent;
 
 namespace Abot.Core
 {
-    public interface ICrawledUrlRepository
+    public interface ICrawledUrlRepository : IDisposable
     {
         bool Contains(Uri uri);
         bool AddIfNew(Uri uri);
     }
 
-    public class InMemoryCrawledUrlRepository : ICrawledUrlRepository, IDisposable
+    public class InMemoryCrawledUrlRepository : ICrawledUrlRepository
     {
         ConcurrentDictionary<string, byte> _urlRepository = new ConcurrentDictionary<string, byte>();
 

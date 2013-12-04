@@ -13,5 +13,10 @@ namespace Abot.Core
         {
             throw new NotImplementedException();
         }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
