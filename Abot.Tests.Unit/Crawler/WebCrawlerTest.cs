@@ -22,7 +22,7 @@ namespace Abot.Tests.Unit.Crawler
         Mock<IRobotsDotTextFinder> _fakeRobotsDotTextFinder;
         
         FifoScheduler _dummyScheduler;
-        ProducerConsumerThreadManager _dummyThreadManager;
+        IThreadManager _dummyThreadManager;
         CrawlConfiguration _dummyConfiguration;
         Uri _rootUri;
 
@@ -340,12 +340,19 @@ namespace Abot.Tests.Unit.Crawler
         [Test]
         public void Crawl_PageCrawlCompletedEvent_IsSynchronous()
         {
+            _dummyThreadManager = new TaskThreadManager(1);
+            _unitUnderTest = new PoliteWebCrawler(_dummyConfiguration, _fakeCrawlDecisionMaker.Object, _dummyThreadManager, _dummyScheduler, _fakeHttpRequester.Object, _fakeHyperLinkParser.Object, _fakeMemoryManager.Object, _fakeDomainRateLimiter.Object, _fakeRobotsDotTextFinder.Object);
+
             int elapsedTimeForLongJob = 1000;
 
             _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(new CrawledPage(_rootUri));
-            _fakeHyperLinkParser.Setup(f => f.GetLinks(It.IsAny<CrawledPage>())).Returns(new List<Uri>());
+            _fakeHyperLinkParser.Setup(f => f.GetLinks(It.Is<CrawledPage>(p => p.Uri == _rootUri))).Returns(new List<Uri>(){
+                new Uri(_rootUri.AbsolutePath + "/page2.html"), //should be fired sync
+                new Uri(_rootUri.AbsolutePath + "/page3.html"), //should be fired sync
+                new Uri(_rootUri.AbsolutePath + "/page4.html"),  //should be fired sync
+                new Uri(_rootUri.AbsolutePath + "/page5.html")}); //should be fired sync since its the last page to be crawled
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
-            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false, Reason = "aaaa" });
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
 
             _unitUnderTest.PageCrawlCompleted += new EventHandler<PageCrawlCompletedArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
 
@@ -353,7 +360,7 @@ namespace Abot.Tests.Unit.Crawler
             _unitUnderTest.Crawl(_rootUri);
             timer.Stop();
 
-            Assert.IsTrue(timer.ElapsedMilliseconds > 800);
+            Assert.IsTrue(timer.ElapsedMilliseconds > 4 * elapsedTimeForLongJob);
         }
 
         [Test]
@@ -603,16 +610,22 @@ namespace Abot.Tests.Unit.Crawler
             Assert.IsTrue(timer.ElapsedMilliseconds < elapsedTimeForLongJob);
         }
 
-        //This test shoud be commented out because the last page has to be crawled asyncronously, causing this test to fail
         [Test]
         public void Crawl_PageCrawlCompletedAsyncEvent_IsAsynchronous()
         {
-            int elapsedTimeForLongJob = 5000;
+            _dummyThreadManager = new TaskThreadManager(1);
+            _unitUnderTest = new PoliteWebCrawler(_dummyConfiguration, _fakeCrawlDecisionMaker.Object, _dummyThreadManager, _dummyScheduler, _fakeHttpRequester.Object, _fakeHyperLinkParser.Object, _fakeMemoryManager.Object, _fakeDomainRateLimiter.Object, _fakeRobotsDotTextFinder.Object);
+
+            int elapsedTimeForLongJob = 2000;
 
             _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(new CrawledPage(_rootUri));
-            _fakeHyperLinkParser.Setup(f => f.GetLinks(It.IsAny<CrawledPage>())).Returns(new List<Uri>());
+            _fakeHyperLinkParser.Setup(f => f.GetLinks(It.Is<CrawledPage>(p => p.Uri == _rootUri))).Returns(new List<Uri>(){
+                new Uri(_rootUri.AbsolutePath + "/page2.html"), //should be fired async
+                new Uri(_rootUri.AbsolutePath + "/page3.html"), //should be fired async
+                new Uri(_rootUri.AbsolutePath + "/page4.html"),  //should be fired async
+                new Uri(_rootUri.AbsolutePath + "/page5.html")}); //should be fired SYNC since its the last page to be crawled
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
-            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false, Reason = "aaaa" });
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
 
             _unitUnderTest.PageCrawlCompletedAsync += new EventHandler<PageCrawlCompletedArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
 
@@ -620,7 +633,9 @@ namespace Abot.Tests.Unit.Crawler
             _unitUnderTest.Crawl(_rootUri);
             timer.Stop();
 
-            Assert.IsTrue(timer.ElapsedMilliseconds < elapsedTimeForLongJob);
+            //The root uri and last page should be fired synchronously but all other async
+            Assert.IsTrue(timer.ElapsedMilliseconds > 2 * elapsedTimeForLongJob); //Takes at least the time to process 1st and last page
+            Assert.IsTrue(timer.ElapsedMilliseconds < 4 * elapsedTimeForLongJob); //Takes no more than the time to process 4 pages since some of them should have been processed asyc
         }
 
         [Test]
@@ -709,7 +724,7 @@ namespace Abot.Tests.Unit.Crawler
             _unitUnderTest.Crawl(_rootUri);
 
             //Assert
-            System.Threading.Thread.Sleep(100);//sleep since the events are async and may not complete before returning
+            System.Threading.Thread.Sleep(150);//sleep since the events are async and may not complete before returning
 
             _fakeHttpRequester.Verify(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>()), Times.Once());
             _fakeHyperLinkParser.Verify(f => f.GetLinks(It.IsAny<CrawledPage>()), Times.Once());
