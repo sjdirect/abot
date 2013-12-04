@@ -396,7 +396,24 @@ namespace Abot.Crawler
         protected virtual void FirePageCrawlCompletedEventAsync(CrawledPage crawledPage)
         {
             EventHandler<PageCrawlCompletedArgs> threadSafeEvent = PageCrawlCompletedAsync;
-            if (threadSafeEvent != null)
+            
+            if (threadSafeEvent == null)
+                return;
+
+            if (_scheduler.Count == 0)
+            {
+                //Must be fired synchronously to avoid main thread exiting before completion of event handler for first or last page crawled
+                try
+                {
+                    threadSafeEvent(this, new PageCrawlCompletedArgs(_crawlContext, crawledPage));
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("An unhandled exception was thrown by a subscriber of the PageCrawlCompleted event for url:" + crawledPage.Uri.AbsoluteUri);
+                    _logger.Error(e);
+                }
+            }
+            else
             {
                 //Fire each subscribers delegate async
                 foreach (EventHandler<PageCrawlCompletedArgs> del in threadSafeEvent.GetInvocationList())
