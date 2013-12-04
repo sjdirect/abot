@@ -603,6 +603,7 @@ namespace Abot.Tests.Unit.Crawler
             Assert.IsTrue(timer.ElapsedMilliseconds < elapsedTimeForLongJob);
         }
 
+        //This test shoud be commented out because the last page has to be crawled asyncronously, causing this test to fail
         [Test]
         public void Crawl_PageCrawlCompletedAsyncEvent_IsAsynchronous()
         {
