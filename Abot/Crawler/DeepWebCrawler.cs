@@ -27,7 +27,7 @@ namespace Abot.Crawler
         {
             _scheduler = scheduler;
             if (_scheduler == null)
-                _scheduler = new Scheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, new OnDiskCrawledUrlRepository(), new InMemoryPagesToCrawlRepository());
+                _scheduler = new Scheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, new OnDiskCrawledUrlRepository(), new FifoPagesToCrawlRepository());
         }
     }
 }

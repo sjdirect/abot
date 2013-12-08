@@ -24,7 +24,7 @@ namespace Abot.Tests.Unit.Crawler
 
             IPagesToCrawlRepository setPagesToCrawlRepo = ValueHelper.GetFieldValue(setScheduler, "_pagesToCrawlRepo") as IPagesToCrawlRepository;
             Assert.IsNotNull(setPagesToCrawlRepo);
-            Assert.IsTrue(setPagesToCrawlRepo is InMemoryPagesToCrawlRepository);
+            Assert.IsTrue(setPagesToCrawlRepo is FifoPagesToCrawlRepository);
         }
 
         [Test]

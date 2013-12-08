@@ -50,7 +50,7 @@ namespace Abot.Core
         {
             _allowUriRecrawling = allowUriRecrawling;
             _crawledUrlRepo = crawledUrlRepo ?? new InMemoryCrawledUrlRepository();
-            _pagesToCrawlRepo = pagesToCrawlRepo ?? new InMemoryPagesToCrawlRepository();
+            _pagesToCrawlRepo = pagesToCrawlRepo ?? new FifoPagesToCrawlRepository();
         }
 
         public int Count

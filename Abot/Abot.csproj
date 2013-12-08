@@ -75,7 +75,7 @@
     <Compile Include="Core\WebContentExtractor.cs" />
     <Compile Include="Core\GcMemoryMonitor.cs" />
     <Compile Include="Core\InMemoryCrawledUrlRepository.cs" />
-    <Compile Include="Core\InMemoryPagesToCrawlRepository.cs" />
+    <Compile Include="Core\FifoPagesToCrawlRepository.cs" />
     <Compile Include="Core\ManualThreadManager.cs" />
     <Compile Include="Core\MemoryManager.cs" />
     <Compile Include="Core\HapHyperLinkParser.cs" />
