@@ -85,9 +85,7 @@ namespace Abot.Core
 
         public PageToCrawl GetNext()
         {
-            PageToCrawl nextItem = _pagesToCrawlRepo.GetNext();
-
-            return nextItem;
+            return _pagesToCrawlRepo.GetNext();
         }
 
         public void Clear()
