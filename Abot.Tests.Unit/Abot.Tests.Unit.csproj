@@ -66,7 +66,6 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\CachedMemoryMonitorTest.cs" />
-    <Compile Include="Core\BloomCrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\CrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\InMemoryPagesToCrawlRepositoryTest.cs" />
     <Compile Include="Core\OnDiskCrawledUrlRepositoryTest.cs" />

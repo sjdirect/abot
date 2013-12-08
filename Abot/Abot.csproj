@@ -70,7 +70,6 @@
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
-    <Compile Include="Core\BloomCrawledUrlRepository.cs" />
     <Compile Include="Core\OnDiskCrawledUrlRepository.cs" />
     <Compile Include="Core\Scheduler.cs" />
     <Compile Include="Core\WebContentExtractor.cs" />
