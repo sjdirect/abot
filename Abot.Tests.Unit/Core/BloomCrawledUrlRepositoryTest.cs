@@ -1,16 +1,15 @@
 ﻿using Abot.Core;
-using Commoner.Core.Testing;
+using Abot.Poco;
 using NUnit.Framework;
-using System;
 
 namespace Abot.Tests.Unit.Core
 {
     [TestFixture]
-    public class InMemoryCrawledUrlRepositoryTest : CrawledUrlRepositoryTest
+    public class BloomCrawledUrlRepositoryTest : CrawledUrlRepositoryTest
     {
         public override ICrawledUrlRepository GetInstance()
         {
-            return new InMemoryCrawledUrlRepository();
+            return new BloomCrawledUrlRepository(new CrawlConfiguration());
         }
     }
 }
