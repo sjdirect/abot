@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -67,6 +68,8 @@
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
+    <Compile Include="Core\Md5HashGenerator.cs" />
+    <Compile Include="Core\Murmur3HashGenerator.cs" />
     <Compile Include="Core\OnDiskCrawledUrlRepository.cs" />
     <Compile Include="Core\Scheduler.cs" />
     <Compile Include="Core\WebContentExtractor.cs" />

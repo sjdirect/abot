@@ -1,24 +1,27 @@
 ﻿using Abot.Core;
 using NUnit.Framework;
+using System.IO;
 
 namespace Abot.Tests.Unit.Core
 {
     [TestFixture]
-    public class OnDiskCrawledUrlRepositoryTest
+    public class OnDiskCrawledUrlRepositoryTest : CrawledUrlRepositoryTest
     {
-        OnDiskCrawledUrlRepository _unitUnderTest;
+        string _directoryName = "CrawledUrls";
 
-        [SetUp]
-        public void SetUp()
+        public override ICrawledUrlRepository GetInstance()
         {
-            _unitUnderTest = new OnDiskCrawledUrlRepository();
+            return new OnDiskCrawledUrlRepository(new Md5HashGenerator());
         }
 
         [Test]
-        public void AAAAAAAAAAAAA()
+        public void Dispose_DeletesCrawledUrlsDirectory()
         {
-            Assert.Fail("Implement these tests");
-        }
+            Assert.IsTrue(Directory.Exists(_directoryName));
 
+            _unitUnderTest.Dispose();
+
+            Assert.IsFalse(Directory.Exists(_directoryName));
+        }
     }
 }

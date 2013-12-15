@@ -1,5 +1,4 @@
 ﻿using Abot.Core;
-using Commoner.Core.Testing;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ namespace Abot.Tests.Unit.Core
     [TestFixture]
     public abstract class CrawledUrlRepositoryTest
     {
-        ICrawledUrlRepository _unitUnderTest;
+        protected ICrawledUrlRepository _unitUnderTest;
         Uri _uri1;
         Uri _uri2;
 
@@ -39,7 +38,6 @@ namespace Abot.Tests.Unit.Core
             Assert.IsFalse(result);
         }
 
-
         [Test]
         public void Contains_NonExistent_ReturnsFalse()
         {
@@ -50,18 +48,6 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsFalse(_unitUnderTest.Contains(_uri2));
         }
-
-
-        [Test]
-        public void Dispose_SetsInnerCollectionToNull()
-        {
-            Assert.IsNotNull(ValueHelper.GetFieldValue(_unitUnderTest, "_urlRepository"));
-            
-            _unitUnderTest.Dispose();
-
-            Assert.IsNull(ValueHelper.GetFieldValue(_unitUnderTest, "_urlRepository"));
-        }
-
 
         [Test]
         public void NoFalseNegativesTest()
