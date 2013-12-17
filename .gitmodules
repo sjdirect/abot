@@ -1,0 +1,6 @@
+[submodule "nrobots"]
+	path = nrobots
+	url = git@github.com:sjdirect/nrobots.git
+[submodule "commoner"]
+	path = commoner
+	url = git@github.com:sjdirect/commoner.git

@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Commoner.Core">
-      <HintPath>..\ExternalLib\Commoner.Core.dll</HintPath>
-    </Reference>
     <Reference Include="CsQuery">
       <HintPath>..\packages\CsQuery.1.3.4\lib\net40\CsQuery.dll</HintPath>
     </Reference>
@@ -119,7 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Abot.SiteSimulator\Abot.SiteSimulator.csproj">
@@ -129,6 +128,10 @@
     <ProjectReference Include="..\Abot\Abot.csproj">
       <Project>{0CDCD537-4B0E-4514-966F-F425CDC92BA4}</Project>
       <Name>Abot</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\commoner\Commoner.Core\Commoner.Core.csproj">
+      <Project>{f1f31e93-9e66-413e-a0c8-e68504ff8aa4}</Project>
+      <Name>Commoner.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
