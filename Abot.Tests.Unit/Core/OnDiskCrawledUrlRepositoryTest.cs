@@ -7,8 +7,6 @@ namespace Abot.Tests.Unit.Core
     [TestFixture]
     public class OnDiskCrawledUrlRepositoryTest : CrawledUrlRepositoryTest
     {
-        string _directoryName = "CrawledUrls";
-
         public override ICrawledUrlRepository GetInstance()
         {
             return new OnDiskCrawledUrlRepository(new Md5HashGenerator());
@@ -17,11 +15,15 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void Dispose_DeletesCrawledUrlsDirectory()
         {
-            Assert.IsTrue(Directory.Exists(_directoryName));
+            Assert.Fail("Directories never get deleted");
+            string directoryName = "CrawledUrlsTest";
+            OnDiskCrawledUrlRepository unitUnderTest = new OnDiskCrawledUrlRepository(new Md5HashGenerator(), 5000, true, directoryName);
+
+            Assert.IsTrue(Directory.Exists(directoryName));
 
             _unitUnderTest.Dispose();
 
-            Assert.IsFalse(Directory.Exists(_directoryName));
+            Assert.IsFalse(Directory.Exists(directoryName));
         }
     }
 }

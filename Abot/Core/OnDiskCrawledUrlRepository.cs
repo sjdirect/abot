@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Abot.Core
 {
@@ -12,12 +13,12 @@ namespace Abot.Core
         ICrawledUrlRepository _memoryUrlRepositoryCache;
         IHashGenerator _hashGenerator;
         ConcurrentQueue<Uri> _memoryURLRepositoryForWriting = new ConcurrentQueue<Uri>();
-        Thread _memoryFlusher = null;
         volatile bool _creatingDirectory = false;
         object _directoryLocker = new object();
         int _threadSleep = 5000;
         bool _useInMemoryCache = true;
-        string _directoryName = "CrawledUrls";
+        string _directoryName;
+        CancellationTokenSource _cancellationToken;
         
         static readonly string[] HexStringTable = new string[]{
             "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0A", "0B", "0C", "0D", "0E", "0F",
@@ -38,8 +39,10 @@ namespace Abot.Core
             "F0", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "FA", "FB", "FC", "FD", "FE", "FF"
         };
 
-        public OnDiskCrawledUrlRepository(IHashGenerator hashGenerator, int watcherDelayInMS = 5000, bool useInMemoryCache = true)
+        public OnDiskCrawledUrlRepository(IHashGenerator hashGenerator, int watcherDelayInMS = 5000, bool useInMemoryCache = true, string directoryName = null)
         {
+            _directoryName = directoryName ?? "CrawledUrls_" + Guid.NewGuid();
+
             if (useInMemoryCache)
             {
                 _useInMemoryCache = true;
@@ -47,12 +50,13 @@ namespace Abot.Core
             }
             if (Directory.Exists(_directoryName))
             {
-                Directory.Delete(_directoryName, true);
+                DeleteDirectory(_directoryName);
             }
             Directory.CreateDirectory(_directoryName);
-            _memoryFlusher = new Thread(new ThreadStart(monitorDisk));
-            _memoryFlusher.IsBackground = true;
-            _memoryFlusher.Start();
+
+            _cancellationToken = new CancellationTokenSource();
+            Task.Factory.StartNew(() => monitorDisk(), _cancellationToken.Token);
+
             _hashGenerator = hashGenerator;
         }
 
@@ -110,37 +114,37 @@ namespace Abot.Core
 
         public virtual void Dispose()
         {
-            _memoryFlusher.Abort();
+            _cancellationToken.Cancel();
+            
             if (Directory.Exists(_directoryName))
-            {
-                Directory.Delete(_directoryName, true);
-            }
+                DeleteDirectory(_directoryName);
         }
 
         protected bool Contains(string path)
         {
             while (_creatingDirectory == true)
-            {
                 Thread.Sleep(100);
-            }
+
             return Directory.Exists(path);
         }
         
         protected void monitorDisk()
         {
-            while (1 == 1)
+            while (true)
             {
+                if (_cancellationToken.IsCancellationRequested)
+                    break;
+
                 try
                 {
                     Uri cUri = null;
                     while (_memoryURLRepositoryForWriting.TryDequeue(out cUri))
-                    {
                         AddIfNewDisk(cUri);
-                    }
                 }
                 catch
                 {
                 }
+
                 Thread.Sleep(_threadSleep);
             }
         }
@@ -176,6 +180,35 @@ namespace Abot.Core
             var directoryName = ToHex(_hashGenerator.GenerateHash(ASCIIEncoding.ASCII.GetBytes(uri.AbsoluteUri)));
 
             return Path.Combine(_directoryName, uri.Authority, directoryName.Substring(0, 4), directoryName);
+        }
+
+        private void DeleteDirectory(string path)
+        {
+            //try
+            //{
+            //    Directory.Delete(path, false);
+            //}
+            //catch (IOException)
+            //{
+            //    Thread.Sleep(0);
+            //    Directory.Delete(path, false);
+            //}
+
+            string[] files = Directory.GetFiles(path);
+            string[] dirs = Directory.GetDirectories(path);
+
+            foreach (string file in files)
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+
+            foreach (string dir in dirs)
+            {
+                DeleteDirectory(dir);
+            }
+
+            Directory.Delete(path, false);
         }
     }
 }
