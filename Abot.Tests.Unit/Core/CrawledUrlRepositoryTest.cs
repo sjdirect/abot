@@ -22,6 +22,12 @@ namespace Abot.Tests.Unit.Core
             _uri2 = new Uri("http://b.com");
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            _unitUnderTest.Dispose();
+        }
+
         [Test]
         public void AddIfNew_AddingUniqueUri_ReturnsTrue()
         {
@@ -56,15 +62,18 @@ namespace Abot.Tests.Unit.Core
             List<Uri> inputs = GenerateRandomDataList(10000);
 
             // instantiate filter and populate it with the inputs
-            ICrawledUrlRepository uut = GetInstance();
-            foreach (Uri input in inputs)
-                Assert.IsTrue(uut.AddIfNew(input));
-
-            // check for each input. if any are missing, the test failed
-            foreach (Uri input in inputs)
+            using (ICrawledUrlRepository uut = GetInstance())
             {
-                if (uut.Contains(input) == false)
-                    Assert.Fail("False negative: {0}", input);
+                //If all were added successfully then they should all return "true" for Contains()
+                foreach (Uri input in inputs)
+                    Assert.IsTrue(uut.AddIfNew(input));
+
+                //If all were added successfully then they should all return "true" for Contains()
+                foreach (Uri input in inputs)
+                {
+                    if (!uut.Contains(input))
+                        Assert.Fail("False negative: {0}", input);
+                }
             }
         }
 

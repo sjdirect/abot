@@ -87,15 +87,11 @@ namespace Abot.Core
         public bool AddIfNew(Uri uri)
         {
             if (Contains(uri))
-            {
                 return false;
-            }
-            else
-            {
-                _memoryUrlRepositoryCache.AddIfNew(uri);
-                _memoryURLRepositoryForWriting.Enqueue(uri);
-                return true;
-            }
+            
+            _memoryUrlRepositoryCache.AddIfNew(uri);
+            _memoryURLRepositoryForWriting.Enqueue(uri);
+            return true;
         }
 
         public string ToHex(byte[] value)
@@ -115,7 +111,8 @@ namespace Abot.Core
         public virtual void Dispose()
         {
             _cancellationToken.Cancel();
-            
+            _memoryURLRepositoryForWriting = new ConcurrentQueue<Uri>();
+
             if (Directory.Exists(_directoryName))
                 DeleteDirectory(_directoryName);
         }
@@ -184,18 +181,13 @@ namespace Abot.Core
 
         private void DeleteDirectory(string path)
         {
-            //try
-            //{
-            //    Directory.Delete(path, false);
-            //}
-            //catch (IOException)
-            //{
-            //    Thread.Sleep(0);
-            //    Directory.Delete(path, false);
-            //}
+            DeleteDirectory(path, path);
+        }
 
-            string[] files = Directory.GetFiles(path);
-            string[] dirs = Directory.GetDirectories(path);
+        private void DeleteDirectory(string currentPath, string originalPath)
+        {
+            string[] files = Directory.GetFiles(currentPath);
+            string[] dirs = Directory.GetDirectories(currentPath);
 
             foreach (string file in files)
             {
@@ -205,10 +197,10 @@ namespace Abot.Core
 
             foreach (string dir in dirs)
             {
-                DeleteDirectory(dir);
+                DeleteDirectory(dir, originalPath);
             }
 
-            Directory.Delete(path, false);
+            Directory.Delete(originalPath, false);
         }
     }
 }

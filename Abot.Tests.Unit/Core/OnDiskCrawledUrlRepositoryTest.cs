@@ -15,13 +15,12 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void Dispose_DeletesCrawledUrlsDirectory()
         {
-            Assert.Fail("Directories never get deleted");
             string directoryName = "CrawledUrlsTest";
-            OnDiskCrawledUrlRepository unitUnderTest = new OnDiskCrawledUrlRepository(new Md5HashGenerator(), 5000, true, directoryName);
-
-            Assert.IsTrue(Directory.Exists(directoryName));
-
-            _unitUnderTest.Dispose();
+            
+            using (OnDiskCrawledUrlRepository unitUnderTest = new OnDiskCrawledUrlRepository(new Md5HashGenerator(), 50, false, directoryName))
+            {
+                Assert.IsTrue(Directory.Exists(directoryName));
+            }
 
             Assert.IsFalse(Directory.Exists(directoryName));
         }
