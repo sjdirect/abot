@@ -10,6 +10,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2E5344
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F9002DBB-E722-4693-969C-81F15C379169}"
+	ProjectSection(SolutionItems) = preProject
+		nrobots\LocalTestRun.testrunconfig = nrobots\LocalTestRun.testrunconfig
+		Robots.vsmdi = Robots.vsmdi
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Robots.vsmdi
