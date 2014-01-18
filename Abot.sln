@@ -10,13 +10,41 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2E5344
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NRobots", "NRobots", "{F34E4B60-1B60-4EFB-ABFF-C0C12CF28174}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F9002DBB-E722-4693-969C-81F15C379169}"
 	ProjectSection(SolutionItems) = preProject
 		nrobots\LocalTestRun.testrunconfig = nrobots\LocalTestRun.testrunconfig
 		Robots.vsmdi = Robots.vsmdi
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{2EF440EA-EA64-4A3A-ACE9-3EE8D6AB6C2A}"
+	ProjectSection(SolutionItems) = preProject
+		nrobots\Lib\xunit.dll = nrobots\Lib\xunit.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Robots", "nrobots\Robots\Robots.csproj", "{2583D0B0-9F70-4B5C-A190-673C86AF3318}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotsTests", "nrobots\RobotsTests\RobotsTests.csproj", "{4FAA1E98-061B-4B7C-9509-6BF03EE87CF8}"
+EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://tfs.campuslogic365.com:8080/tfs/studentverificationapplication
+		SccProjectUniqueName0 = nrobots\\Robots\\Robots.csproj
+		SccProjectTopLevelParentUniqueName0 = Abot.sln
+		SccProjectName0 = nrobots/Robots
+		SccAuxPath0 = http://tfs.campuslogic365.com:8080/tfs/studentverificationapplication
+		SccLocalPath0 = nrobots\\Robots
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName1 = nrobots\\RobotsTests\\RobotsTests.csproj
+		SccProjectTopLevelParentUniqueName1 = Abot.sln
+		SccProjectName1 = nrobots/RobotsTests
+		SccAuxPath1 = http://tfs.campuslogic365.com:8080/tfs/studentverificationapplication
+		SccLocalPath1 = nrobots\\RobotsTests
+		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Robots.vsmdi
 	EndGlobalSection
@@ -29,9 +57,22 @@ Global
 		{0CDCD537-4B0E-4514-966F-F425CDC92BA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CDCD537-4B0E-4514-966F-F425CDC92BA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CDCD537-4B0E-4514-966F-F425CDC92BA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FAA1E98-061B-4B7C-9509-6BF03EE87CF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FAA1E98-061B-4B7C-9509-6BF03EE87CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FAA1E98-061B-4B7C-9509-6BF03EE87CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FAA1E98-061B-4B7C-9509-6BF03EE87CF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2EF440EA-EA64-4A3A-ACE9-3EE8D6AB6C2A} = {F34E4B60-1B60-4EFB-ABFF-C0C12CF28174}
+		{2583D0B0-9F70-4B5C-A190-673C86AF3318} = {F34E4B60-1B60-4EFB-ABFF-C0C12CF28174}
+		{4FAA1E98-061B-4B7C-9509-6BF03EE87CF8} = {F34E4B60-1B60-4EFB-ABFF-C0C12CF28174}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
