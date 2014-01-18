@@ -1,5 +1,5 @@
 ﻿using log4net;
-using Robots;
+//using Robots;
 using System;
 
 namespace Abot.Core
@@ -25,7 +25,7 @@ namespace Abot.Core
     public class RobotsDotText : IRobotsDotText
     {
         ILog _logger = LogManager.GetLogger(typeof(RobotsDotText).FullName);
-        IRobots _robotsDotTextUtil = null;
+        //IRobots _robotsDotTextUtil = null;
         Uri _rootUri = null;
 
         public RobotsDotText(Uri rootUri, string content)
@@ -42,7 +42,7 @@ namespace Abot.Core
 
         public int GetCrawlDelay(string userAgentString)
         {
-            return _robotsDotTextUtil.GetCrawlDelay(userAgentString);
+            return 0;// _robotsDotTextUtil.GetCrawlDelay(userAgentString);
         }
 
         public bool IsUrlAllowed(string url, string userAgentString)
@@ -50,18 +50,18 @@ namespace Abot.Core
             if (!_rootUri.IsBaseOf(new Uri(url)))
                 return true;
 
-            return _robotsDotTextUtil.Allowed(url, userAgentString);
+            return false;// _robotsDotTextUtil.Allowed(url, userAgentString);
         }
 
         public bool IsUserAgentAllowed(string userAgentString)
         {
-            return _robotsDotTextUtil.Allowed(_rootUri.AbsoluteUri, userAgentString);
+            return false;// _robotsDotTextUtil.Allowed(_rootUri.AbsoluteUri, userAgentString);
         }
 
         private void Load(Uri rootUri, string content)
         {
-            _robotsDotTextUtil = new Robots.Robots();
-            _robotsDotTextUtil.LoadContent(content, rootUri.AbsoluteUri);
+            //_robotsDotTextUtil = new Robots.Robots();
+            //_robotsDotTextUtil.LoadContent(content, rootUri.AbsoluteUri);
         }
     }
 }

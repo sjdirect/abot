@@ -111,12 +111,6 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\nrobots\Robots\Robots.csproj">
-      <Project>{2583d0b0-9f70-4b5c-a190-673c86af3318}</Project>
-      <Name>Robots</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
