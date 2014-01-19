@@ -1,6 +1,7 @@
 ﻿
 using Abot.Core;
 using Abot.Poco;
+using Commoner.Core;
 namespace Abot.Crawler
 {
     /// <summary>
