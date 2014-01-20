@@ -36,8 +36,8 @@ namespace Abot.Core
             else
                 _uriDbDirectory = uriDbDirectory;
 
-            if (!uriDbDirectory.Exists)
-                uriDbDirectory.Create();
+            if (!_uriDbDirectory.Exists)
+                _uriDbDirectory.Create();
 
             _deleteUriDbOnDispose = deleteUriDbDirectoryOnDispose;
 
