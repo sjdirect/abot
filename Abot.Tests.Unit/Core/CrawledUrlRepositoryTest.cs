@@ -64,7 +64,7 @@ namespace Abot.Tests.Unit.Core
             // instantiate filter and populate it with the inputs
             using (ICrawledUrlRepository uut = GetInstance())
             {
-                //If all were added successfully then they should all return "true" for Contains()
+                //If all were unique then they should all return "true" for Contains()
                 foreach (Uri input in inputs)
                     Assert.IsTrue(uut.AddIfNew(input));
 

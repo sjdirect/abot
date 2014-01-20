@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,57 +11,43 @@ namespace Abot.Core
 {
     public class OnDiskCrawledUrlRepository : ICrawledUrlRepository
     {
-        ICrawledUrlRepository _memoryUrlRepositoryCache;
         IHashGenerator _hashGenerator;
-        ConcurrentQueue<Uri> _memoryURLRepositoryForWriting = new ConcurrentQueue<Uri>();
-        volatile bool _creatingDirectory = false;
-        object _directoryLocker = new object();
-        int _threadSleep = 5000;
-        bool _useInMemoryCache = true;
-        const string _rootDirectoryName = "UriDb";
+        BlockingCollection<Uri> _urisToWriteToDisk = new BlockingCollection<Uri>();
         CancellationTokenSource _cancellationToken;
+        DirectoryInfo _uriDbDirectory;
+        object _directoryLocker = new object();
+        object _hashLocker = new object();
         bool _deleteUriDbOnDispose;
 
-        public OnDiskCrawledUrlRepository(IHashGenerator hashGenerator, int watcherDelayInMS = 5000, bool useInMemoryCache = true, bool deleteUriDbOnDispose = false)
+        /// <summary>
+        /// Uses file system as a db of crawled uris. Creates directories to represent a url crawled. This prevents OutOfMemoryException
+        /// by storing crawled uris to disk instead of holding them all in memory. This class should only be used when you expect a crawler
+        /// to encounter hundreds of thousands of links during a single crawl. Otherwise use the InMemoryCrawledUrlRepository
+        /// </summary>
+        /// <param name="hashGenerator">Generates hashes from uris to be used as directory names</param>
+        /// <param name="uriDbDirectory">Directory to use as the parent. Will create directories to represent crawled uris in this directory.</param>
+        /// <param name="deleteUriDbDirectoryOnDispose">Whether the uriDbDirectory should be deleted after the crawl completes</param>
+        public OnDiskCrawledUrlRepository(IHashGenerator hashGenerator, DirectoryInfo uriDbDirectory = null, bool deleteUriDbDirectoryOnDispose = false)
         {
-            if (!Directory.Exists(_rootDirectoryName))
-                Directory.CreateDirectory(_rootDirectoryName);
-            
-            if (useInMemoryCache)
-            {
-                _useInMemoryCache = true;
-                _memoryUrlRepositoryCache = new InMemoryCrawledUrlRepository();
-            }
+            _hashGenerator = hashGenerator ?? new Murmur3HashGenerator();
+
+            if (uriDbDirectory == null)
+                _uriDbDirectory = new DirectoryInfo("UriDb");
+            else
+                _uriDbDirectory = uriDbDirectory;
+
+            if (!uriDbDirectory.Exists)
+                uriDbDirectory.Create();
+
+            _deleteUriDbOnDispose = deleteUriDbDirectoryOnDispose;
 
             _cancellationToken = new CancellationTokenSource();
-            Task.Factory.StartNew(() => MonitorDisk(), _cancellationToken.Token);
-
-            _hashGenerator = hashGenerator;
-            _deleteUriDbOnDispose = deleteUriDbOnDispose;
+            Task.Factory.StartNew(() => WriteUrisToDisk(), _cancellationToken.Token);
         }
 
         public bool Contains(Uri uri)
         {
-            if (_useInMemoryCache)
-            {
-                if (_memoryUrlRepositoryCache.Contains(uri))
-                {
-                    if (_memoryURLRepositoryForWriting.Contains(uri))
-                    {
-                        return true;
-                    }
-                    return Contains(GetFilePath(uri));
-                }
-            }
-            else
-            {
-                if (_memoryURLRepositoryForWriting.Contains(uri))
-                {
-                    return true;
-                }
-                return Contains(GetFilePath(uri));
-            }
-            return false;
+            return _urisToWriteToDisk.Contains(uri) || DirectoryExists(GetFilePath(uri));
         }
 
         public bool AddIfNew(Uri uri)
@@ -70,96 +55,79 @@ namespace Abot.Core
             if (Contains(uri))
                 return false;
 
-            _memoryUrlRepositoryCache.AddIfNew(uri);
-            _memoryURLRepositoryForWriting.Enqueue(uri);
+            _urisToWriteToDisk.TryAdd(uri);
             return true;
         }
 
         public virtual void Dispose()
         {
             _cancellationToken.Cancel();
-            _memoryURLRepositoryForWriting = new ConcurrentQueue<Uri>();
+            _urisToWriteToDisk = new BlockingCollection<Uri>();
 
-            if (_deleteUriDbOnDispose && Directory.Exists(_rootDirectoryName))
-                DeleteDirectory(_rootDirectoryName);
+            if (_deleteUriDbOnDispose && Directory.Exists(_uriDbDirectory.FullName))
+                DeleteDirectory();
         }
 
-        protected bool Contains(string path)
+        protected bool DirectoryExists(string path)
         {
-            while (_creatingDirectory == true)
-                Thread.Sleep(100);
-
-            return Directory.Exists(path);
+            lock (_directoryLocker)
+            {
+                return Directory.Exists(path);
+            }
         }
         
-        protected void MonitorDisk()
+        protected void WriteUrisToDisk()
         {
-            while (true)
+            foreach(Uri uri in _urisToWriteToDisk.GetConsumingEnumerable())
             {
                 if (_cancellationToken.IsCancellationRequested)
                     break;
 
-                try
-                {
-                    Uri cUri = null;
-                    while (_memoryURLRepositoryForWriting.TryDequeue(out cUri))
-                        AddIfNewDisk(cUri);
-                }
-                catch
-                {
-                }
-
-                Thread.Sleep(_threadSleep);
+                CreateDirectoryIfNew(uri);
+                System.Threading.Thread.Sleep(100);
             }
         }
 
-        protected bool AddIfNewDisk(Uri uri)
+        protected bool CreateDirectoryIfNew(Uri uri)
         {
             var directoryName = GetFilePath(uri);
-            if (Contains(directoryName))
-            {
+            if (DirectoryExists(directoryName))
                 return false;
-            }
-            else
+
+            lock (_directoryLocker)
             {
                 try
                 {
-                    _creatingDirectory = true;
                     Directory.CreateDirectory(directoryName);
                 }
                 catch
                 {
                 }
-                finally
-                {
-                    _creatingDirectory = false;
-                }
-                return true;
             }
-
+            return true;
         }
 
         protected string GetFilePath(Uri uri)
         {
-            var directoryName = BitConverter.ToString(_hashGenerator.GenerateHash(ASCIIEncoding.ASCII.GetBytes(uri.AbsoluteUri)));
-            return Path.Combine(_rootDirectoryName, uri.Authority, directoryName.Substring(0, 4), directoryName);
+            string hashedDirectoryName = "";
+            lock (_hashLocker)
+            {
+                hashedDirectoryName = BitConverter.ToString(_hashGenerator.GenerateHash(ASCIIEncoding.ASCII.GetBytes(uri.AbsoluteUri)));
+            }
+            return Path.Combine(_uriDbDirectory.FullName, uri.Authority, hashedDirectoryName.Substring(0, 4), hashedDirectoryName);
         }
 
-
-        protected void DeleteDirectory(string path)
+        protected void DeleteDirectory()
         {
             //Had to take this approach due to issues with Directory.Delete(path, true) throwing exceptions, see link below
             //http://stackoverflow.com/questions/329355/cannot-delete-directory-with-directory-deletepath-true
             //The Process approach is the only one that will cleanup
-            
-            string absPath = Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), path);
-            
             Process process = new Process();
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.StartInfo.FileName = "cmd.exe";
-            process.StartInfo.Arguments = "/c " + @"rmdir /s/q " + absPath;
+            process.StartInfo.Arguments = "/c " + @"rmdir /s/q " + _uriDbDirectory.FullName;
             process.Start();
             process.WaitForExit();
         }

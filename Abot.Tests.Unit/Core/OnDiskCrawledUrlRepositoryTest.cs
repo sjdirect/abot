@@ -1,5 +1,6 @@
 ﻿using Abot.Core;
 using NUnit.Framework;
+using System;
 using System.IO;
 
 namespace Abot.Tests.Unit.Core
@@ -9,20 +10,19 @@ namespace Abot.Tests.Unit.Core
     {
         public override ICrawledUrlRepository GetInstance()
         {
-            return new OnDiskCrawledUrlRepository(new Md5HashGenerator());
+            return new OnDiskCrawledUrlRepository(new Md5HashGenerator(), new DirectoryInfo("TestUrls\\" + Guid.NewGuid()), true);
         }
 
         [Test]
         public void Dispose_DeletesCrawledUrlsDirectory()
         {
-            string directoryName = "UriDb";
-            
-            using (OnDiskCrawledUrlRepository unitUnderTest = new OnDiskCrawledUrlRepository(new Md5HashGenerator(), 50, false, true))
+            DirectoryInfo directory = new DirectoryInfo("TestUrls");//("TESTTEST");
+            using (OnDiskCrawledUrlRepository unitUnderTest = new OnDiskCrawledUrlRepository(new Md5HashGenerator(), directory, true))
             {
-                Assert.IsTrue(Directory.Exists(directoryName));
+                Assert.IsTrue(Directory.Exists(directory.FullName));
             }
 
-            Assert.IsFalse(Directory.Exists(directoryName));
+            Assert.IsFalse(Directory.Exists(directory.FullName));
         }
     }
 }
