@@ -16,7 +16,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void Dispose_DeletesCrawledUrlsDirectory()
         {
-            DirectoryInfo directory = new DirectoryInfo("TestUrls");//("TESTTEST");
+            DirectoryInfo directory = new DirectoryInfo("TestUrls");
             using (OnDiskCrawledUrlRepository unitUnderTest = new OnDiskCrawledUrlRepository(new Md5HashGenerator(), directory, true))
             {
                 Assert.IsTrue(Directory.Exists(directory.FullName));

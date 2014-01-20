@@ -112,10 +112,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\commoner\Commoner.Core\Commoner.Core.csproj">
-      <Project>{f1f31e93-9e66-413e-a0c8-e68504ff8aa4}</Project>
-      <Name>Commoner.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\nrobots\Robots\Robots.csproj">
       <Project>{2583d0b0-9f70-4b5c-a190-673c86af3318}</Project>
       <Name>Robots</Name>
