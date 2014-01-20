@@ -106,7 +106,7 @@ namespace Abot.Core
                     break;
 
                 CreateDirectoryIfNew(uri);
-                System.Threading.Thread.Sleep(100);
+                //System.Threading.Thread.Sleep(100);//To avoid high cpu that could result for a ton of directory creates
             }
         }
 
