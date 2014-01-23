@@ -8,6 +8,12 @@ namespace Abot.Poco
             Reason = "";
         }
 
+        public CrawlDecision(bool allow, string reason = "")
+        {
+            Allow = allow;
+            Reason = reason;
+        }
+
         /// <summary>
         /// Whether to allow the crawl decision
         /// </summary>
