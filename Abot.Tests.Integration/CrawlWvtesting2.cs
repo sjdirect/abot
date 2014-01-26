@@ -23,8 +23,6 @@ namespace Abot.Tests.Integration
 		{
 			List<PageResult> expectedCrawlResult = new List<PageResult> ();
 
-			#region WindowsResult
-
 			expectedCrawlResult = new List<PageResult>
 	        {
 	            new PageResult { Url = "http://wvtesting2.com/", HttpStatusCode = 200},
@@ -36,7 +34,7 @@ namespace Abot.Tests.Integration
 	            new PageResult { Url = "http://wvtesting2.com/analyze-content/AnalyzeContent-Master.htm", HttpStatusCode = 200},
 	            new PageResult { Url = "http://wvtesting2.com/bugs/url_with_aporstorphe_test.html", HttpStatusCode = 200},
 	            new PageResult { Url = "http://wvtesting2.com/bugs/URIFormationResolvetoCommonURL_Test.html", HttpStatusCode = 200},
-	            new PageResult { Url = "http://wvtesting2.com/bugs/qryStrLinkToSMFolder.aspx?partUrl=design/brand-identity.aspx&amp;se=+&amp;app_hdr=0&amp;ci=13817", HttpStatusCode = 200},
+	            new PageResult { Url = "http://wvtesting2.com/bugs/qryStrLinkToSMFolder.aspx?partUrl=design/brand-identity.aspx&se=+&app_hdr=0&ci=13817", HttpStatusCode = 200},
 	            new PageResult { Url = "http://www.w3schools.com/TAGS/tryit.asp?filename=tryhtml_iframe", HttpStatusCode = 200},
 	            new PageResult { Url = "http://wvtesting2.com/bugs/spider-crash/spider-crash_testCases.html", HttpStatusCode = 200},
 	            new PageResult { Url = "http://wvtesting2.com/bugs/escape-chars/escape-chars_testCases.html", HttpStatusCode = 200},
@@ -209,7 +207,6 @@ namespace Abot.Tests.Integration
 	            new PageResult { Url = "http://wvtesting2.com/bugs/misc-bugs/quote-truncate-s-98964.html", HttpStatusCode = 200},
 	            new PageResult { Url = "http://email@wvtesting2.com/jv-9.1%20Display%20Top%20SEO%20Checklist/Missing%20Title.htm", HttpStatusCode = 200},
 	            new PageResult { Url = "http://wvtesting2.com/bugs/misc-bugs/sitemap_leila-%E2%80%93-soul-ascension.html", HttpStatusCode = 200},
-	            new PageResult { Url = "http://wvtesting2.com/bugs/misc-bugs/sitemap_leila-&ndash;-soul-ascension.html", HttpStatusCode = 404},
 	            new PageResult { Url = "http://wvtesting2.com/misc-tests/tests/TestVariousLinkCounts.html", HttpStatusCode = 200},
 	            new PageResult { Url = "http://wvtesting2.com/misc-tests/tests/anchorTag-Hash_tests.html", HttpStatusCode = 200},
 	            new PageResult { Url = "http://wvtesting2.com/misc-tests/tests/TestVariousLinkTypes.html", HttpStatusCode = 200},
@@ -219,8 +216,8 @@ namespace Abot.Tests.Integration
 	            new PageResult { Url = "http://wvtesting2.com/errtest/", HttpStatusCode = 403},
 	            new PageResult { Url = "http://wvtesting2.com/jv-9.1%20Display%20Top%20SEO%20Checklist/www.msn.com", HttpStatusCode = 404},
 	            new PageResult { Url = "http://wvtesting2.com/jv-9.1%20Display%20Top%20SEO%20Checklist/www.msn.com", HttpStatusCode = 404},
-	            new PageResult { Url = "http://www.gainsaver.com/?SID=cj&amp;MEDIUM=CJAFFIL&amp;CID=150", HttpStatusCode = 0},
-	            new PageResult { Url = "http://wvtesting2.com/level2/InvalidAnchorTags-L2.html?splChars=$-_.+!*'(%20),&amp;", HttpStatusCode = 200},
+	            new PageResult { Url = "http://www.gainsaver.com/?SID=cj&MEDIUM=CJAFFIL&CID=150", HttpStatusCode = 0},
+	            new PageResult { Url = "http://wvtesting2.com/level2/InvalidAnchorTags-L2.html?splChars=$-_.+!*'(%20),&", HttpStatusCode = 200},
 	            new PageResult { Url = "http://www.only-bigmelons.com/hosted/pictures/obmp070610/hosted.php?id=2156259", HttpStatusCode = 200},
 	            new PageResult { Url = "http://www.busty-britain.com/hosted/pictures/bbp070510/hosted.php?id=2156259", HttpStatusCode = 200},
 	            new PageResult { Url = "http://www.busty-britain.com/hosted/pictures/bbp030710/hosted.php?id=2156259", HttpStatusCode = 200},
@@ -726,7 +723,6 @@ namespace Abot.Tests.Integration
 	            new PageResult { Url = "http://wvtesting2.com/bugs/tidy/ABOUT_US.html", HttpStatusCode = 404},
 	            new PageResult { Url = "http://wvtesting2.com/bugs/tidy/CONTACT_US.html", HttpStatusCode = 404},
 	            new PageResult { Url = "http://wvtesting2.com/bugs/tidy/BOAT_STORAGE.html", HttpStatusCode = 404},
-	            new PageResult { Url = "http://wvtesting2.com/misc-tests/tests/with&amp;link.html", HttpStatusCode = 404},
 	            new PageResult { Url = "http://wvtesting2.com/misc-tests/tests/with&link.html", HttpStatusCode = 200},
 	            new PageResult { Url = "http://www.godaddy.com/hosting/virtual-dedicated-servers.aspx", HttpStatusCode = 200},
 	            new PageResult { Url = "http://wvtesting2.com/level2/leafnode-L2-broken.html", HttpStatusCode = 404},
@@ -766,8 +762,6 @@ namespace Abot.Tests.Integration
 	            new PageResult { Url = "http://wvtesting2.com/product/1690-Air_Service_Uniform_3_pc.", HttpStatusCode = 404},
                 new PageResult { Url = "http://wvtesting2.com/bugs/me%20inc%20without_dot/urlReachableWith_FwdSlash.html", HttpStatusCode = 200}
 	        };
-
-			#endregion
 
 			return expectedCrawlResult;
 		}
