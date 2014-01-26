@@ -744,6 +744,7 @@ namespace Abot.Crawler
             CrawledPage crawledPage = _httpRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
             AutoMapper.Mapper.CreateMap<PageToCrawl, CrawledPage>();
             AutoMapper.Mapper.Map(pageToCrawl, crawledPage);
+            crawledPage.PageBag = pageToCrawl.PageBag;
 
             if (crawledPage.HttpWebResponse == null)
                 _logger.InfoFormat("Page crawl complete, Status:[NA] Url:[{0}] Parent:[{1}]", crawledPage.Uri.AbsoluteUri, crawledPage.ParentUri);
