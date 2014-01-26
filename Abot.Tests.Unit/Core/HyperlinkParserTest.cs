@@ -279,6 +279,18 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual("http://zzz.com/bbb/b.html", result.ElementAt(1).AbsoluteUri);
         }
 
+        [Test]
+        public void GetLinks_HtmlEncodedHref_UrlDecodes()
+        {
+            _crawledPage.Content.Text = "<a href=\"http://a.com/search?rls=en&amp;q=stack+overflow\" ></a>";
+
+            //This sets the Address properties backing field 
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("http://a.com/search?rls=en&q=stack+overflow", result.ElementAt(0).AbsoluteUri);
+        }
+
 
         [Test]
         public void GetLinks_MetaNoIndexNoFollowNotSet_ReturnsLinks()

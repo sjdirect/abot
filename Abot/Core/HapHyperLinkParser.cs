@@ -73,7 +73,10 @@ namespace Abot.Core
 
                 hrefValue = _cleanURLFunc != null ? _cleanURLFunc(node.Attributes["href"].Value) : node.Attributes["href"].Value;
                 if (!string.IsNullOrWhiteSpace(hrefValue))
+                {
+                    hrefValue = HtmlEntity.DeEntitize(hrefValue);
                     hrefs.Add(hrefValue);
+                }	
             }
 
             return hrefs;
