@@ -24,7 +24,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\release\Robots.dll" target="lib\net40\" /> 
     <file src="bin\release\HtmlAgilityPack.dll" target="lib\net40\" /> 
     <file src="web.config.transform" target="content\" /> 
     <file src="app.config.transform" target="content\" /> 
