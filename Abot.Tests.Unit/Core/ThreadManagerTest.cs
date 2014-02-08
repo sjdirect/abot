@@ -141,5 +141,17 @@ namespace Abot.Tests.Unit.Core
         {
             Assert.IsTrue(_unitUnderTest is IDisposable);
         }
+
+        [Test]
+        public void Abort_SetsHasRunningThreadsToZero()
+        {
+            for (int i = 0; i < 2 * MAXTHREADS; i++)
+            {
+                _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(5));
+            }
+
+            _unitUnderTest.AbortAll();
+            Assert.IsFalse(_unitUnderTest.HasRunningThreads());
+        }
     }
 }

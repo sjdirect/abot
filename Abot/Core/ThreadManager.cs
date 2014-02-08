@@ -89,6 +89,7 @@ namespace Abot.Core
         public virtual void AbortAll()
         {
             _abortAllCalled = true;
+            _numberOfRunningThreads = 0;
         }
 
         public virtual void Dispose()
