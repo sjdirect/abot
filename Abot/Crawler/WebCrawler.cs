@@ -8,6 +8,9 @@ using System.Threading;
 
 namespace Abot.Crawler
 {
+    using System.Collections.Generic;
+    using System.Dynamic;
+
     public interface IWebCrawler
     {
         /// <summary>
@@ -742,9 +745,10 @@ namespace Abot.Crawler
             FirePageCrawlStartingEvent(pageToCrawl);
 
             CrawledPage crawledPage = _httpRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
+            dynamic combinedPageBag = this.CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             AutoMapper.Mapper.CreateMap<PageToCrawl, CrawledPage>();
             AutoMapper.Mapper.Map(pageToCrawl, crawledPage);
-            crawledPage.PageBag = pageToCrawl.PageBag;
+            crawledPage.PageBag = combinedPageBag;
 
             if (crawledPage.HttpWebResponse == null)
                 _logger.InfoFormat("Page crawl complete, Status:[NA] Url:[{0}] Parent:[{1}]", crawledPage.Uri.AbsoluteUri, crawledPage.ParentUri);
@@ -752,7 +756,18 @@ namespace Abot.Crawler
                 _logger.InfoFormat("Page crawl complete, Status:[{0}] Url:[{1}] Parent:[{2}]", Convert.ToInt32(crawledPage.HttpWebResponse.StatusCode), crawledPage.Uri.AbsoluteUri, crawledPage.ParentUri);
 
             return crawledPage;
+        }
 
+        protected virtual dynamic CombinePageBags(dynamic pageToCrawlBag, dynamic crawledPageBag )
+        {
+            IDictionary<string, object> combinedBag = new ExpandoObject();
+            var pageToCrawlBagDict = pageToCrawlBag as IDictionary<string, object>;
+            var crawledPageBagDict = crawledPageBag as IDictionary<string, object>;
+            
+            foreach (KeyValuePair<string, object> entry in pageToCrawlBagDict) combinedBag[entry.Key] = entry.Value;
+            foreach (KeyValuePair<string, object> entry in crawledPageBagDict) combinedBag[entry.Key] = entry.Value;
+
+            return combinedBag;
         }
 
         protected virtual void AddPageToContext(PageToCrawl pageToCrawl)
