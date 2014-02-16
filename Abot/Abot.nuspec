@@ -15,13 +15,6 @@
     <releaseNotes>$version$ release notes may be found on https://code.google.com/p/abot/</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>crawler robot spider</tags>
-    <dependencies>
-      <group targetFramework="net40">
-        <dependency id="AutoMapper" version="2.2.1" />
-        <dependency id="CsQuery" version="1.3.4" />
-        <dependency id="log4net" version="2.0.0" />        
-      </group>
-    </dependencies>
   </metadata>
   <files>
     <file src="bin\release\HtmlAgilityPack.dll" target="lib\net40\" /> 
