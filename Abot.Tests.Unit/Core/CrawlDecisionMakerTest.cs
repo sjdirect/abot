@@ -108,16 +108,34 @@ namespace Abot.Tests.Unit.Core
                 {
                     CrawlConfiguration = new CrawlConfiguration
                     {
-                        MaxPagesToCrawl = 0
-                    }
+                        MaxPagesToCrawl = 100
+                    },
+                    CrawledCount = 100
                 };
 
-            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("http://a.com/")), crawlContext);
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("http://a.com/b")) { IsInternal = true }, crawlContext);
 
             Assert.IsFalse(result.Allow);
-            Assert.AreEqual("MaxPagesToCrawl limit of [0] has been reached", result.Reason);
+            Assert.AreEqual("MaxPagesToCrawl limit of [100] has been reached", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+        [Test]
+        public void ShouldCrawlPage_ZeroMaxPageToCrawlLimit_ReturnsTrue()
+        {
+            CrawlContext crawlContext = new CrawlContext
+            {
+                CrawlConfiguration = new CrawlConfiguration
+                {
+                    MaxPagesToCrawl = 0
+                },
+                CrawledCount = 100
+            };
+
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("http://a.com/")) { IsInternal = true }, crawlContext);
+
+            Assert.IsTrue(result.Allow);
         }
 
         [Test]
