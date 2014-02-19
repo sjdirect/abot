@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Abot.Core
 {
+
     /// <summary>
     /// Parser that uses Html Agility Pack http://htmlagilitypack.codeplex.com/ to parse page links
     /// </summary>
@@ -74,12 +75,28 @@ namespace Abot.Core
                 hrefValue = _cleanURLFunc != null ? _cleanURLFunc(node.Attributes["href"].Value) : node.Attributes["href"].Value;
                 if (!string.IsNullOrWhiteSpace(hrefValue))
                 {
-                    hrefValue = HtmlEntity.DeEntitize(hrefValue);
+                    hrefValue = DeEntitize(hrefValue);
                     hrefs.Add(hrefValue);
                 }	
             }
 
             return hrefs;
+        }
+
+        private string DeEntitize(string hrefValue)
+        {
+            string dentitizedHref = hrefValue;
+            
+            try
+            {
+                dentitizedHref = HtmlEntity.DeEntitize(hrefValue);
+            }
+            catch (Exception e)
+            {
+                _logger.InfoFormat("Error dentitizing uri: {0} This usually means that it contains unexpected characters", hrefValue);
+            }
+
+            return dentitizedHref;
         }
 
         private bool HasRobotsNoFollow(CrawledPage crawledPage)

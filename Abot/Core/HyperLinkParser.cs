@@ -20,7 +20,7 @@ namespace Abot.Core
 
     public abstract class HyperLinkParser : IHyperLinkParser
     {
-        ILog _logger = LogManager.GetLogger(typeof(HyperLinkParser));
+        protected ILog _logger = LogManager.GetLogger(typeof(HyperLinkParser));
 
         /// <summary>
         /// Parses html to extract hyperlinks, converts each into an absolute url

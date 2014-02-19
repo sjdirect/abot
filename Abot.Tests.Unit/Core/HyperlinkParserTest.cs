@@ -389,6 +389,16 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(2, result.Count());
             Assert.AreEqual("http://a.com/xxx/x.html", result.ElementAt(0).AbsoluteUri);
             Assert.AreEqual("http://a.com/yyy/y.html", result.ElementAt(1).AbsoluteUri);
-        }        
+        }
+
+        [Test] //https://github.com/sjdirect/abot/issues/15
+        public void GetLinks_ColonInUrl_DoesNotThrowException()
+        {
+            _crawledPage.Content.Text = "<a href=\"http://www.gamespot.com/pc/rpg/numen/index.html?om_act=convert&om_clk=tabs&tag=tabs;summary\" ></a>";
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("http://www.gamespot.com/pc/rpg/numen/index.html?om_act=convert&om_clk=tabs&tag=tabs;summary", result.ElementAt(0).AbsoluteUri);
+        }
     }
 }
