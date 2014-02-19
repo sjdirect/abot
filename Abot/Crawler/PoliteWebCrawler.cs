@@ -5,6 +5,8 @@ using System;
 
 namespace Abot.Crawler
 {
+    using System.Threading;
+
     /// <summary>
     /// Extends the WebCrawler class and added politeness features like crawl delays and respecting robots.txt files. 
     /// </summary>
@@ -36,7 +38,7 @@ namespace Abot.Crawler
             _robotsDotTextFinder = robotsDotTextFinder ?? new RobotsDotTextFinder(new PageRequester(_crawlContext.CrawlConfiguration));
         }
 
-        public override CrawlResult Crawl(Uri uri)
+        public override CrawlResult Crawl(Uri uri, CancellationTokenSource cancellationTokenSource)
         {
             int robotsDotTextCrawlDelayInSecs = 0;
             int robotsDotTextCrawlDelayInMillisecs = 0;
@@ -71,12 +73,12 @@ namespace Abot.Crawler
                 _domainRateLimiter.AddDomain(uri, robotsDotTextCrawlDelayInMillisecs);
             }
 
-            if(robotsDotTextCrawlDelayInSecs > 0 || _crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds > 0)
+            if (robotsDotTextCrawlDelayInSecs > 0 || _crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds > 0)
                 PageCrawlStarting += (s, e) => _domainRateLimiter.RateLimit(e.PageToCrawl.Uri);
 
-            return base.Crawl(uri);
+            return base.Crawl(uri, cancellationTokenSource);
         }
-        
+
         protected override bool ShouldCrawlPage(PageToCrawl pageToCrawl)
         {
             bool allowedByRobots = true;
