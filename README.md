@@ -7,5 +7,5 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
 
 Abot targets .NET version 4.0.
 
-Latest documentation: http://code.google.com/p/abot/ 
+Latest documentation: http://code.google.com/p/abot/  
 Community Forum: http://groups.google.com/group/abot-web-crawler
