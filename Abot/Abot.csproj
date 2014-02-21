@@ -97,7 +97,6 @@
     <Compile Include="Poco\CrawlDecision.cs" />
     <Compile Include="Poco\CrawledPage.cs" />
     <Compile Include="Poco\CrawlResult.cs" />
-    <Compile Include="Core\FifoScheduler.cs" />
     <Compile Include="Core\HyperLinkParser.cs" />
     <Compile Include="Core\PageRequester.cs" />
     <Compile Include="Crawler\WebCrawler.cs" />
