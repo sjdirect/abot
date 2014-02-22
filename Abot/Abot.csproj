@@ -68,6 +68,7 @@
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
     <Compile Include="Core\Md5HashGenerator.cs" />
+    <Compile Include="Core\MemoryBloomUrlRepository.cs" />
     <Compile Include="Core\Murmur3HashGenerator.cs" />
     <Compile Include="Core\OnDiskCrawledUrlRepository.cs" />
     <Compile Include="Core\Scheduler.cs" />
@@ -110,6 +111,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BloomFilterLib\BloomFilterLib.csproj">
+      <Project>{078a6bbb-5f13-4120-a200-33f9cd5d9f30}</Project>
+      <Name>BloomFilterLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MurMur3\MurMur3.csproj">
+      <Project>{0c22331e-8121-40ca-bb50-4fd97a608bf1}</Project>
+      <Name>MurMur3</Name>
+    </ProjectReference>
     <ProjectReference Include="..\nrobots\Robots\Robots.csproj">
       <Project>{2583d0b0-9f70-4b5c-a190-673c86af3318}</Project>
       <Name>Robots</Name>

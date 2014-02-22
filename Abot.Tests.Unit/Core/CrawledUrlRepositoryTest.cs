@@ -9,8 +9,8 @@ namespace Abot.Tests.Unit.Core
     public abstract class CrawledUrlRepositoryTest
     {
         protected ICrawledUrlRepository _unitUnderTest;
-        Uri _uri1;
-        Uri _uri2;
+        protected Uri _uri1;
+        protected Uri _uri2;
 
         public abstract ICrawledUrlRepository GetInstance();
 

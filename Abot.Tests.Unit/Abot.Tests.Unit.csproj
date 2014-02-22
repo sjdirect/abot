@@ -63,6 +63,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\CachedMemoryMonitorTest.cs" />
+    <Compile Include="Core\MemoryBloomUrlRepositoryTest.cs" />
     <Compile Include="Core\Murmur3HashGeneratorTest.cs" />
     <Compile Include="Core\HashGeneratorTest.cs" />
     <Compile Include="Core\Md5HashGeneratorTest.cs" />
@@ -125,6 +126,10 @@
     <ProjectReference Include="..\Abot\Abot.csproj">
       <Project>{0CDCD537-4B0E-4514-966F-F425CDC92BA4}</Project>
       <Name>Abot</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BloomFilterLib\BloomFilterLib.csproj">
+      <Project>{078a6bbb-5f13-4120-a200-33f9cd5d9f30}</Project>
+      <Name>BloomFilterLib</Name>
     </ProjectReference>
     <ProjectReference Include="..\commoner\Commoner.Core\Commoner.Core.csproj">
       <Project>{f1f31e93-9e66-413e-a0c8-e68504ff8aa4}</Project>
