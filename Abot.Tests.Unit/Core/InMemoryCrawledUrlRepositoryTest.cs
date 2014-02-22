@@ -6,6 +6,7 @@ using System;
 namespace Abot.Tests.Unit.Core
 {
     [TestFixture]
+    [Obsolete("This will be deleted in the next release with the implementation it tests.")]
     public class InMemoryCrawledUrlRepositoryTest : CrawledUrlRepositoryTest
     {
         public override ICrawledUrlRepository GetInstance()

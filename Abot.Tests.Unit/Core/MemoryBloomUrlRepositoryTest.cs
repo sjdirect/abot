@@ -13,14 +13,14 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        public void AddIfNew_AddingUniqueUri_ReturnsTrue()
+        public void AddIfNew_StringUri_AddingUniqueUri_ReturnsTrue()
         {
             MemoryBloomUrlRepository uut = this.GetInstance() as MemoryBloomUrlRepository;
             Assert.IsTrue(uut.AddIfNew(_uri1.AbsoluteUri));
         }
 
         [Test]
-        public void AddIfNew_AddingDuplicateUri_ReturnsFalse()
+        public void AddIfNew_StringUri_AddingDuplicateUri_ReturnsFalse()
         {
             MemoryBloomUrlRepository uut = this.GetInstance() as MemoryBloomUrlRepository;
             uut.AddIfNew(_uri1);//Add first time
