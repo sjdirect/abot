@@ -67,6 +67,8 @@
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
+    <Compile Include="Core\CrawledPageProcessorEngine.cs" />
+    <Compile Include="Core\HttpRequestEngine.cs" />
     <Compile Include="Core\Md5HashGenerator.cs" />
     <Compile Include="Core\MemoryBloomUrlRepository.cs" />
     <Compile Include="Core\Murmur3HashGenerator.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Core\TaskThreadManager.cs" />
     <Compile Include="Core\ThreadManager.cs" />
     <Compile Include="Crawler\CrawlArgs.cs" />
+    <Compile Include="Crawler\CrawlerEngine.cs" />
     <Compile Include="Crawler\PageLinksCrawlDisallowedArgs.cs" />
     <Compile Include="Crawler\PageCrawlDisallowedArgs.cs" />
     <Compile Include="Crawler\PageCrawlCompletedArgs.cs" />
@@ -101,6 +104,7 @@
     <Compile Include="Core\HyperLinkParser.cs" />
     <Compile Include="Core\PageRequester.cs" />
     <Compile Include="Crawler\WebCrawler.cs" />
+    <Compile Include="Core\FunctionalExtensions.cs" />
     <Compile Include="Poco\PageContent.cs" />
     <Compile Include="Poco\PageToCrawl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

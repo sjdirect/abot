@@ -13,6 +13,8 @@ namespace Abot.Poco
             CrawlCountByDomain = new ConcurrentDictionary<string, int>();
             CrawlBag = new ExpandoObject();
             CancellationTokenSource = new CancellationTokenSource();
+            PagesToCrawl = new BlockingCollection<PageToCrawl>();
+            CrawledPagesToProcess = new BlockingCollection<CrawledPage>();
         }
 
         /// <summary>
@@ -73,5 +75,15 @@ namespace Abot.Poco
         /// Cancellation token used to hard stop the crawl. Will clear all scheduled pages and abort any threads that are currently crawling.
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; set; }
+
+        /// <summary>
+        /// Thread safe collection of pages that need to be crawled
+        /// </summary>
+        public BlockingCollection<PageToCrawl> PagesToCrawl { get; set; }
+
+        /// <summary>
+        /// Thread safe collection of pages that need to be processed
+        /// </summary>
+        public BlockingCollection<CrawledPage> CrawledPagesToProcess { get; set; } 
     }
 }

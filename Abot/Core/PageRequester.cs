@@ -6,6 +6,9 @@ using System.Reflection;
 
 namespace Abot.Core
 {
+    /// <summary>
+    /// Handles making http requests
+    /// </summary>
     public interface IPageRequester
     {
         /// <summary>

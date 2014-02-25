@@ -11,6 +11,7 @@ namespace Abot.Crawler
     using System.Collections.Generic;
     using System.Dynamic;
 
+    [Obsolete("Will be removed in next release. Use CrawlerEngine instead")]
     public interface IWebCrawler
     {
         /// <summary>
@@ -97,6 +98,7 @@ namespace Abot.Crawler
         dynamic CrawlBag { get; set; }
     }
 
+    [Obsolete("Will be removed in next release. Use CrawlerEngine.cs instead")]
     public abstract class WebCrawler : IWebCrawler
     {
         static ILog _logger = LogManager.GetLogger(typeof(WebCrawler).FullName);
