@@ -67,7 +67,7 @@
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
-    <Compile Include="Core\CrawledPageProcessorEngine.cs" />
+    <Compile Include="Core\PageProcessorEngine.cs" />
     <Compile Include="Core\HttpRequestEngine.cs" />
     <Compile Include="Core\Md5HashGenerator.cs" />
     <Compile Include="Core\MemoryBloomUrlRepository.cs" />

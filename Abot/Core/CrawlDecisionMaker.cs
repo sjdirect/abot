@@ -19,7 +19,7 @@ namespace Abot.Core
         CrawlDecision ShouldCrawlPageLinks(CrawledPage crawledPage, CrawlContext crawlContext);
 
         /// <summary>
-        /// Decides whether the page's content should be dowloaded
+        /// Decides whether the page's content should be downloaded
         /// </summary>
         CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage, CrawlContext crawlContext);
     }

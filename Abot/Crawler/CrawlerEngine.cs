@@ -10,8 +10,13 @@ namespace Abot.Crawler
     using System.Diagnostics;
     using System.Reflection;
 
-    public interface ICrawlerEngine
+    public interface ICrawlerEngine : IHttpRequestEngine, IPageProcessorEngine
     {
+        /// <summary>
+        /// Registers a delegate to be called to determine whether a page should be crawled or not
+        /// </summary>
+        Func<PageToCrawl, CrawlContext, CrawlDecision> ShouldCrawlPageShortcut { get; set; }
+
         /// <summary>
         /// Begins a crawl using the uri param
         /// </summary>
@@ -41,7 +46,7 @@ namespace Abot.Crawler
         /// <summary>
         /// Responsible for processing the crawled page and publishing events
         /// </summary>
-        ICrawledPageProcessorEngine CrawledPageProcessorEngine { get; set; }
+        IPageProcessorEngine CrawledPageProcessorEngine { get; set; }
     }
 
     public abstract class CrawlerEngine //: ICrawlerEngine
@@ -56,8 +61,9 @@ namespace Abot.Crawler
         protected CrawlResult _crawlResult = null;
         protected CrawlContext _crawlContext;
         public IMemoryManager MemoryManager { get; set; }
+        public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
         public IHttpRequestEngine HttpRequestEngine { get; set; }
-        public ICrawledPageProcessorEngine CrawledPageProcessorEngine { get; set; }
+        public IPageProcessorEngine CrawledPageProcessorEngine { get; set; }
         protected CancellationTokenSource HttpRequestEngineCancellationTokenSource { get; set; }
         protected CancellationTokenSource CrawledPageProcessorEngineCancellationTokenSource { get; set; }
 
@@ -97,15 +103,16 @@ namespace Abot.Crawler
         }
 
         public CrawlerEngine(CrawlConfiguration crawlConfiguration)
-            : this(crawlConfiguration, null, null, null)
+            : this(crawlConfiguration, null, null, null, null)
         {
             
         }
 
         public CrawlerEngine(
             CrawlConfiguration crawlConfiguration, 
+            ICrawlDecisionMaker crawlDecisionMaker,
             IHttpRequestEngine httpRequestEngine, 
-            ICrawledPageProcessorEngine processorEngine,
+            IPageProcessorEngine processorEngine,
             IMemoryManager memoryManager)
         {
             _crawlContext = new CrawlContext();
@@ -113,9 +120,9 @@ namespace Abot.Crawler
             CrawlBag = _crawlContext.CrawlBag;
 
             HttpRequestEngine = httpRequestEngine ?? new HttpRequestEngine();
-            CrawledPageProcessorEngine = processorEngine ?? new CrawledPageProcessorEngine();
+            CrawledPageProcessorEngine = processorEngine ?? new PageProcessorEngine();
 
-            HttpRequestEngine.PageCrawlCompleted += HttpRequestEngine_PageCrawlCompleted;
+            HttpRequestEngine.PageRequestCompleted += HttpRequestEngine_PageCrawlCompleted;
             //ProcessorEngine.PageProcessCompleted += FireEventHere;
 
             HttpRequestEngineCancellationTokenSource = new CancellationTokenSource();
@@ -236,7 +243,7 @@ namespace Abot.Crawler
             //TODO retire MaxConcurrentThreads
             
             _logger.DebugFormat("Starting producer & consumer");
-            HttpRequestEngine.Start(_crawlContext, HttpRequestEngineCancellationTokenSource);
+            HttpRequestEngine.Start(_crawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
             CrawledPageProcessorEngine.Start(_crawlContext, CrawledPageProcessorEngineCancellationTokenSource);
         }
 
@@ -352,11 +359,15 @@ namespace Abot.Crawler
             _crawlContext.IsCrawlHardStopRequested = true;
         }
 
-        protected virtual void ThrowIfCancellationRequested()
-        {
-            if (_crawlContext.CancellationTokenSource != null && _crawlContext.CancellationTokenSource.IsCancellationRequested)
-                _crawlContext.CancellationTokenSource.Token.ThrowIfCancellationRequested();
-        }
+        //protected virtual CrawlDecision ShouldDownloadPageContentWrapper(CrawledPage crawledPage)
+        //{
+        //    CrawlDecision decision = CrawlDecisionMaker.ShouldDownloadPageContent(crawledPage, _crawlContext);
+        //    if (decision.Allow)
+        //        decision = (_shouldDownloadPageContentDecisionMaker != null) ? _shouldDownloadPageContentDecisionMaker.Invoke(crawledPage, _crawlContext) : new CrawlDecision { Allow = true };
+
+        //    SignalCrawlStopIfNeeded(decision);
+        //    return decision;
+        //}
 
         protected virtual void PrintConfigValues(CrawlConfiguration config)
         {

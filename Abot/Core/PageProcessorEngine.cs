@@ -5,7 +5,7 @@ namespace Abot.Core
     using System;
     using System.Threading;
     
-    public interface ICrawledPageProcessorEngine: IDisposable
+    public interface IPageProcessorEngine: IDisposable
     {
         ///// <summary>
         ///// Synchronous event that is fired before a page is crawled.
@@ -53,9 +53,9 @@ namespace Abot.Core
         bool IsDone { get; }
     }
 
-    public class CrawledPageProcessorEngine : ICrawledPageProcessorEngine
+    public class PageProcessorEngine : IPageProcessorEngine
     {
-        public CrawledPageProcessorEngine()
+        public PageProcessorEngine()
         {
             //IsInternalUriShortcut = (uriInQuestion, rootUri) => uriInQuestion.Authority == rootUri.Authority;
         }
