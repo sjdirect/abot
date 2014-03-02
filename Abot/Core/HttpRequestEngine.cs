@@ -8,6 +8,7 @@ namespace Abot.Core
     using System.Collections.Generic;
     using System.Dynamic;
     using System.Threading;
+    using System.Threading.Tasks;
 
     public interface IHttpRequestEngine: IDisposable
     {
@@ -70,7 +71,8 @@ namespace Abot.Core
         {
             get
             {
-                return (!ThreadManager.HasRunningThreads() && CrawlContext.PagesToCrawl.Count == 0);
+                return (CancellationTokenSource.Token.IsCancellationRequested || 
+                    (!ThreadManager.HasRunningThreads() && CrawlContext.PagesToCrawl.Count == 0));
             }
         }
 
@@ -103,11 +105,10 @@ namespace Abot.Core
             IThreadManager threadManager,
             IPageRequester httpRequester)
         {
-            if (crawlConfiguration == null)
-                throw new ArgumentNullException("crawlConfiguration");
-            
-            ThreadManager = threadManager ?? new TaskThreadManager(crawlConfiguration.MaxConcurrentThreads > 0 ? crawlConfiguration.MaxConcurrentThreads : System.Environment.ProcessorCount);
-            PageRequester = httpRequester ?? new PageRequester(crawlConfiguration);
+            CrawlConfiguration config = crawlConfiguration ?? new CrawlConfiguration();
+
+            ThreadManager = threadManager ?? new TaskThreadManager(config.MaxConcurrentThreads);
+            PageRequester = httpRequester ?? new PageRequester(config);
             CancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -120,12 +121,15 @@ namespace Abot.Core
                 throw new ArgumentNullException("crawlContext");
 
             CrawlContext = crawlContext;
-            
-            foreach(PageToCrawl pageToCrawl in CrawlContext.PagesToCrawl.GetConsumingEnumerable())
+
+            Task.Factory.StartNew(() =>
             {
-                CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                ThreadManager.DoWork(() => MakeRequest(pageToCrawl));
-            }       
+                foreach (PageToCrawl pageToCrawl in CrawlContext.PagesToCrawl.GetConsumingEnumerable())
+                {
+                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    ThreadManager.DoWork(() => MakeRequest(pageToCrawl));
+                }
+            });
         }
 
         public void Stop()
@@ -246,7 +250,7 @@ namespace Abot.Core
 
         #endregion
 
-        protected virtual void MakeRequest(PageToCrawl pageToCrawl)
+        protected internal virtual void MakeRequest(PageToCrawl pageToCrawl)
         {
             try
             {
@@ -293,7 +297,7 @@ namespace Abot.Core
 
             //CrawledPage crawledPage = PageRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldRetrieveResponseBody);//TODO need to implement this!!!
             CrawledPage crawledPage = PageRequester.MakeRequest(pageToCrawl.Uri);
-            dynamic combinedPageBag = this.CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
+            dynamic combinedPageBag = CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             AutoMapper.Mapper.CreateMap<PageToCrawl, CrawledPage>();
             AutoMapper.Mapper.Map(pageToCrawl, crawledPage);
             crawledPage.PageBag = combinedPageBag;

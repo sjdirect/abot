@@ -63,6 +63,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\CachedMemoryMonitorTest.cs" />
+    <Compile Include="Core\HttpRequestEngineTest.cs" />
     <Compile Include="Core\MemoryBloomUrlRepositoryTest.cs" />
     <Compile Include="Core\Murmur3HashGeneratorTest.cs" />
     <Compile Include="Core\HashGeneratorTest.cs" />
@@ -113,7 +114,9 @@
     <Compile Include="SiteSimulator\Controllers\ThrottlingControllerTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
