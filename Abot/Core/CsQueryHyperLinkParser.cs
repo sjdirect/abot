@@ -20,6 +20,7 @@ namespace Abot.Core
         }
 
         public CSQueryHyperlinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanURLFunc = null)
+            : base(isRespectMetaRobotsNoFollowEnabled)
         {
             _isRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
             _isRespectAnchorRelNoFollowEnabled = isRespectAnchorRelNoFollowEnabled;
@@ -51,15 +52,9 @@ namespace Abot.Core
             return baseTagValue.Trim();
         }
 
-        private bool HasRobotsNoFollow(CrawledPage crawledPage)
+        protected override string GetMetaRobotsValue(CrawledPage crawledPage)
         {
-            string robotsMeta = null;
-            if (_isRespectMetaRobotsNoFollowEnabled)
-                robotsMeta = crawledPage.CsQueryDocument["meta[name]"].Filter(d => d.Name.ToLowerInvariant() == "robots").Attr("content");
-
-            return robotsMeta != null && 
-                (robotsMeta.ToLower().Contains("nofollow") || 
-                robotsMeta.ToLower().Contains("none"));
+            return crawledPage.CsQueryDocument["meta[name]"].Filter(d => d.Name.ToLowerInvariant() == "robots").Attr("content");
         }
 
         private bool HasRelNoFollow(IDomElement e)
