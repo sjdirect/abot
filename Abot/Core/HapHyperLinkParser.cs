@@ -109,7 +109,9 @@ namespace Abot.Core
                     robotsMeta = robotsNode.GetAttributeValue("content", "");
             }
 
-            return robotsMeta != null && robotsMeta.ToLower().Contains("nofollow");
+            return robotsMeta != null && 
+                (robotsMeta.ToLower().Contains("nofollow") || 
+                robotsMeta.ToLower().Contains("none"));
         }
 
         private bool HasRelNoFollow(HtmlNode node)

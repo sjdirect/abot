@@ -329,6 +329,30 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
+        public void GetLinks_MetaNoIndexNoFollowUsingNone_ReturnsLinks()
+        {
+            _unitUnderTest = GetInstance(true, false);
+            _crawledPage.Content.Text = "<meta name=\"robots\" content=\"none\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [Test]
+        public void GetLinks_MetaNoIndexNoFollowUsingNoneUpperCase_ReturnsEmptyList()
+        {
+            _unitUnderTest = GetInstance(true, false);
+            _crawledPage.Content.Text = "<META NAME=\"ROBOTS\" CONTENT=\"NONE\" /><a href=\"/aaa/a.html\" ></a><a href=\"/bbb/b.html\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [Test]
         public void GetLinks_NoFollow_NotReturned()
         {
             _unitUnderTest = GetInstance(true, false);

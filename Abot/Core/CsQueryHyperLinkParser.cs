@@ -55,10 +55,11 @@ namespace Abot.Core
         {
             string robotsMeta = null;
             if (_isRespectMetaRobotsNoFollowEnabled)
-
                 robotsMeta = crawledPage.CsQueryDocument["meta[name]"].Filter(d => d.Name.ToLowerInvariant() == "robots").Attr("content");
 
-            return robotsMeta != null && robotsMeta.ToLower().Contains("nofollow");
+            return robotsMeta != null && 
+                (robotsMeta.ToLower().Contains("nofollow") || 
+                robotsMeta.ToLower().Contains("none"));
         }
 
         private bool HasRelNoFollow(IDomElement e)
