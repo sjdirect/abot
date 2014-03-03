@@ -102,6 +102,13 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(2, pageRequestCompletedAsyncCount);
         }
 
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Start_NullCrawlContext()
+        {
+            _uut.Start(null, null);
+        }
+
 
         [Test]
         public void Stop_NoPagesAreRequested()
@@ -143,7 +150,7 @@ namespace Abot.Tests.Unit.Core
         {
             _uut.Start(_context, null);
             _context.PagesToCrawl.CompleteAdding();
-            System.Threading.Thread.Sleep(500);
+            System.Threading.Thread.Sleep(1000);
 
             Assert.IsTrue(_uut.IsDone);
         }
@@ -159,7 +166,7 @@ namespace Abot.Tests.Unit.Core
 
 
         [Test]
-        public void Start_PageSizeAboveMax_CompleteEventDoesNotFireForThatPage()
+        public void PageSizeAboveMax_CompleteEventDoesNotFireForThatPage()
         {
             //Arrange
             _context.PagesToCrawl = new BlockingCollection<PageToCrawl>();
@@ -186,8 +193,9 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        public void Start_PersistsPageBagValues()
+        public void PersistsPageBagValues()
         {
+            //Arrange
             _context.PagesToCrawl = new BlockingCollection<PageToCrawl>();
             _context.PagesToCrawl.Add(_page1);
 
@@ -200,25 +208,94 @@ namespace Abot.Tests.Unit.Core
                 result = b.CrawledPage;
             };
 
+            //Act
             _uut.Start(_context, null);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(1000);
 
+            //Assert
             Assert.IsNotNull(result);
             Assert.AreEqual("aaa", result.PageBag.Value1);
             Assert.AreEqual("bbb", result.PageBag.Value2);
         }
 
         [Test]
-        public void MakeRequestThrowsException()
+        public void PageRequesterThrowsException_DoesNotFireCompleteEvent()
         {
-            Assert.Fail();
+            _fakePageRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>())).Throws(new Exception("Oh no"));
+
+            int pageRequestCompletedCount = 0;
+            _uut.PageRequestCompleted += (a, b) => Interlocked.Increment(ref pageRequestCompletedCount);
+
+            _uut.Start(_context, null);
+            _context.PagesToCrawl.CompleteAdding();
+            System.Threading.Thread.Sleep(1000);
+
+            Assert.AreEqual(0, pageRequestCompletedCount);
         }
 
         [Test]
-        public void EventsThrowExceptions()
+        public void PageRequestStarting_SubscriberThrowsException_StillFiresCompletedEvent()
         {
-            Assert.Fail();
+            _uut.PageRequestStarting += (a, b) => { throw new Exception("Oh no"); };
+
+            int pageRequestCompletedCount = 0;
+            _uut.PageRequestCompleted += (a, b) => Interlocked.Increment(ref pageRequestCompletedCount);
+
+            _uut.Start(_context, null);
+            _context.PagesToCrawl.CompleteAdding();
+            System.Threading.Thread.Sleep(1000);
+
+            Assert.AreEqual(2, pageRequestCompletedCount);
+        }
+
+        [Test]
+        public void PageRequestCompleted_SubscriberThrowsException_DoesNotCrash()
+        {
+            int pageRequestCompletedCount = 0;
+            _uut.PageRequestCompleted += (a, b) => 
+            {
+                Interlocked.Increment(ref pageRequestCompletedCount);
+                throw new Exception("Oh no"); 
+            };
+
+            _uut.Start(_context, null);
+            _context.PagesToCrawl.CompleteAdding();
+            System.Threading.Thread.Sleep(1000);
+
+            Assert.AreEqual(2, pageRequestCompletedCount);
+        }
+
+        [Test]
+        public void PageRequestStartingAsyc_SubscriberThrowsException_DoesNotCrash()
+        {
+            _uut.PageRequestStartingAsync += (a, b) => { throw new Exception("Oh no"); };
+
+            int pageRequestCompletedCount = 0;
+            _uut.PageRequestCompleted += (a, b) => Interlocked.Increment(ref pageRequestCompletedCount);
+
+            _uut.Start(_context, null);
+            _context.PagesToCrawl.CompleteAdding();
+            System.Threading.Thread.Sleep(1000);
+
+            Assert.AreEqual(2, pageRequestCompletedCount);
+        }
+
+        [Test]
+        public void PageRequestCompletedAsync_SubscriberThrowsException_DoesNotCrash()
+        {
+            int pageRequestCompletedCount = 0;
+            _uut.PageRequestCompletedAsync += (a, b) =>
+            {
+                Interlocked.Increment(ref pageRequestCompletedCount);
+                throw new Exception("Oh no");
+            };
+
+            _uut.Start(_context, null);
+            _context.PagesToCrawl.CompleteAdding();
+            System.Threading.Thread.Sleep(1000);
+
+            Assert.AreEqual(2, pageRequestCompletedCount);
         }
     }
 }

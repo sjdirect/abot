@@ -274,6 +274,11 @@ namespace Abot.Core
                 _logger.DebugFormat("Thread cancelled while requesting page [{0}]", pageToCrawl.Uri);
                 throw;
             }
+            catch (Exception e)
+            {
+                _logger.ErrorFormat("Error occured making http request to page [{0}]", pageToCrawl.Uri);
+                _logger.Error(e);
+            }
         }
 
         protected virtual bool PageSizeIsAboveMax(CrawledPage crawledPage)
