@@ -132,6 +132,9 @@ namespace Abot.Core
             });
         }
 
+        /// <summary>
+        /// Stops the HttpRequestEngine
+        /// </summary>
         public void Stop()
         {
             CancellationTokenSource.Cancel();
