@@ -150,7 +150,7 @@ namespace Abot.Tests.Unit.Core
         {
             _uut.Start(_context, null);
             _context.PagesToCrawl.CompleteAdding();
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(2500);
 
             Assert.IsTrue(_uut.IsDone);
         }
