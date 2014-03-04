@@ -122,13 +122,17 @@ namespace Abot.Core
 
             CrawlContext = crawlContext;
 
+            _logger.InfoFormat("HttpRequestEngine starting, [{0}] pages left to request", CrawlContext.PagesToCrawl.Count);
+
             Task.Factory.StartNew(() =>
             {
                 foreach (PageToCrawl pageToCrawl in CrawlContext.PagesToCrawl.GetConsumingEnumerable())
                 {
+                    _logger.DebugFormat("About to request [{0}], [{1}] pages left to request", pageToCrawl.Uri, CrawlContext.PagesToCrawl.Count);
                     CancellationTokenSource.Token.ThrowIfCancellationRequested();
                     ThreadManager.DoWork(() => MakeRequest(pageToCrawl));
                 }
+                _logger.DebugFormat("Complete requesting pages");
             });
         }
 
@@ -137,6 +141,7 @@ namespace Abot.Core
         /// </summary>
         public void Stop()
         {
+            _logger.InfoFormat("HttpRequestEngine stopping, [{0}] pages left to request", CrawlContext.PagesToCrawl.Count);
             CancellationTokenSource.Cancel();
             Dispose();
         }

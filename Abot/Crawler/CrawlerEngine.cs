@@ -135,7 +135,7 @@ namespace Abot.Crawler
 
         private void HttpRequestEngine_PageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
         {
-            _crawlContext.CrawledPagesToProcess.Add(e.CrawledPage);
+            _crawlContext.PagesToProcess.Add(e.CrawledPage);
         }
 
         #endregion Constructors
@@ -218,33 +218,33 @@ namespace Abot.Crawler
         protected virtual void CrawlSite(Uri uri)
         {
             _crawlContext.PagesToCrawl.Add(new PageToCrawl(uri) { ParentUri = uri, IsInternal = true, IsRoot = true });
+            
+            //TODO add configuration for MaxConcurrentHttpRequests
+            //TODO add configuration for MaxConcurrentCrawledPageProcessors
+            //TODO retire MaxConcurrentThreads
+
+            _logger.DebugFormat("Starting producer & consumer");
+            HttpRequestEngine.Start(_crawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
+            CrawledPageProcessorEngine.Start(_crawlContext, CrawledPageProcessorEngineCancellationTokenSource);
 
             while (!_crawlComplete)
             {
                 RunPreWorkChecks();
-                if (_crawlContext.PagesToCrawl.Count > 0 ||
-                    _crawlContext.CrawledPagesToProcess.Count > 0 ||
-                    !HttpRequestEngine.IsDone ||
-                    !CrawledPageProcessorEngine.IsDone)
+                if (HttpRequestEngine.IsDone && CrawledPageProcessorEngine.IsDone)
+                {
+                    _crawlContext.PagesToCrawl.CompleteAdding();
+                    _crawlContext.PagesToProcess.CompleteAdding();
+                    HttpRequestEngine.Stop();
+                    CrawledPageProcessorEngine.Stop();
+                    _crawlComplete = true;
+                }
+                else
                 {
                     _logger.DebugFormat("Health check, still working...");
                     System.Threading.Thread.Sleep(2500);                    
                 }
-                else
-                {
-                    _crawlContext.PagesToCrawl.CompleteAdding();
-                    _crawlContext.CrawledPagesToProcess.CompleteAdding();
-                    _crawlComplete = true;
-                }
             }
 
-            //TODO add configuration for MaxConcurrentHttpRequests
-            //TODO add configuration for MaxConcurrentCrawledPageProcessors
-            //TODO retire MaxConcurrentThreads
-            
-            _logger.DebugFormat("Starting producer & consumer");
-            HttpRequestEngine.Start(_crawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
-            CrawledPageProcessorEngine.Start(_crawlContext, CrawledPageProcessorEngineCancellationTokenSource);
         }
 
         protected virtual void VerifyRequiredAvailableMemory()

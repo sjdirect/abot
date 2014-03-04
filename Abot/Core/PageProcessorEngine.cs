@@ -2,6 +2,7 @@
 namespace Abot.Core
 {
     using Abot.Poco;
+    using log4net;
     using System;
     using System.Threading;
     
@@ -50,11 +51,20 @@ namespace Abot.Core
 
         void Start(CrawlContext crawlContext, CancellationTokenSource cancellationTokenSource);
 
+        void Stop();
+
         bool IsDone { get; }
     }
 
     public class PageProcessorEngine : IPageProcessorEngine
     {
+        static ILog _logger = LogManager.GetLogger(typeof(PageProcessorEngine).FullName);
+
+        /// <summary>
+        /// CrawlContext that is used to decide what to crawl and how
+        /// </summary>
+        public CrawlContext CrawlContext { get; set; }
+
         public PageProcessorEngine()
         {
             //IsInternalUriShortcut = (uriInQuestion, rootUri) => uriInQuestion.Authority == rootUri.Authority;
@@ -74,7 +84,19 @@ namespace Abot.Core
 
         public void Start(CrawlContext crawlContext, CancellationTokenSource cancellationTokenSource)
         {
-            throw new NotImplementedException();
+            if (crawlContext == null)
+                throw new ArgumentNullException("crawlContext");
+
+            CrawlContext = crawlContext;
+
+            _logger.InfoFormat("PageProcessorEngine starting, [{0}] pages left to request", CrawlContext.PagesToCrawl.Count);
+           // _logger.DebugFormat("About to process [{0}], [{1}] pages left to process", crawledPage.Uri, CrawlContext.PagesToProcess.Count);
+            _logger.DebugFormat("Complete processing pages");
+        }
+
+        public void Stop()
+        {
+            _logger.InfoFormat("PageProcessorEngine stopping, [{0}] pages left to process", CrawlContext.PagesToProcess.Count);
         }
     }
 }

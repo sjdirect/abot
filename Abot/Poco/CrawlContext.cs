@@ -14,7 +14,7 @@ namespace Abot.Poco
             CrawlBag = new ExpandoObject();
             CancellationTokenSource = new CancellationTokenSource();
             PagesToCrawl = new BlockingCollection<PageToCrawl>();
-            CrawledPagesToProcess = new BlockingCollection<CrawledPage>();
+            PagesToProcess = new BlockingCollection<CrawledPage>();
         }
 
         /// <summary>
@@ -84,6 +84,6 @@ namespace Abot.Poco
         /// <summary>
         /// Thread safe collection of pages that need to be processed
         /// </summary>
-        public BlockingCollection<CrawledPage> CrawledPagesToProcess { get; set; } 
+        public BlockingCollection<CrawledPage> PagesToProcess { get; set; } 
     }
 }
