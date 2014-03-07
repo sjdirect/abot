@@ -10,7 +10,7 @@ namespace Abot.Core
     using System.Threading;
     using System.Threading.Tasks;
 
-    public interface IHttpRequestEngine: IDisposable
+    public interface IPageRequesterEngine: IDisposable
     {
         /// <summary>
         /// Synchronous event that is fired before an http request is sent for a page.
@@ -50,9 +50,9 @@ namespace Abot.Core
         void Stop();
     }
 
-    public class HttpRequestEngine : IHttpRequestEngine
+    public class PageRequesterEngine : IPageRequesterEngine
     {
-        static ILog _logger = LogManager.GetLogger(typeof(HttpRequestEngine).FullName);
+        static ILog _logger = LogManager.GetLogger(typeof(PageRequesterEngine).FullName);
         
         /// <summary>
         /// IThreadManager implementation that is used to manage multithreading
@@ -91,7 +91,7 @@ namespace Abot.Core
         /// </summary>
         protected CancellationTokenSource CancellationTokenSource { get; set; }
 
-        public HttpRequestEngine()
+        public PageRequesterEngine()
             : this(null, null, null)
         {
             
@@ -100,7 +100,7 @@ namespace Abot.Core
         /// <summary>
         /// Creates instance of HttpRequestEngine. Passing null for any value will use the default implementation.
         /// </summary>
-        public HttpRequestEngine(
+        public PageRequesterEngine(
             CrawlConfiguration crawlConfiguration,
             IThreadManager threadManager,
             IPageRequester httpRequester)

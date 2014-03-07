@@ -10,7 +10,7 @@ namespace Abot.Crawler
     using System.Diagnostics;
     using System.Reflection;
 
-    public interface ICrawlerEngine : IHttpRequestEngine, IPageProcessorEngine
+    public interface ICrawlerEngine : IPageRequesterEngine, IPageProcessorEngine
     {
         /// <summary>
         /// Registers a delegate to be called to determine whether a page should be crawled or not
@@ -41,7 +41,7 @@ namespace Abot.Crawler
         /// <summary>
         /// Responsible for making http requests and publishing events
         /// </summary>
-        IHttpRequestEngine HttpRequestEngine { get; set; }
+        IPageRequesterEngine HttpRequestEngine { get; set; }
 
         /// <summary>
         /// Responsible for processing the crawled page and publishing events
@@ -62,8 +62,8 @@ namespace Abot.Crawler
         protected CrawlContext _crawlContext;
         public IMemoryManager MemoryManager { get; set; }
         public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
-        public IHttpRequestEngine HttpRequestEngine { get; set; }
-        public IPageProcessorEngine CrawledPageProcessorEngine { get; set; }
+        public IPageRequesterEngine PageRequesterEngine { get; set; }
+        public IPageProcessorEngine PageProcessorEngine { get; set; }
         protected CancellationTokenSource HttpRequestEngineCancellationTokenSource { get; set; }
         protected CancellationTokenSource CrawledPageProcessorEngineCancellationTokenSource { get; set; }
 
@@ -111,7 +111,7 @@ namespace Abot.Crawler
         public CrawlerEngine(
             CrawlConfiguration crawlConfiguration, 
             ICrawlDecisionMaker crawlDecisionMaker,
-            IHttpRequestEngine httpRequestEngine, 
+            IPageRequesterEngine httpRequestEngine, 
             IPageProcessorEngine processorEngine,
             IMemoryManager memoryManager)
         {
@@ -119,10 +119,10 @@ namespace Abot.Crawler
             _crawlContext.CrawlConfiguration = crawlConfiguration ?? GetCrawlConfigurationFromConfigFile();
             CrawlBag = _crawlContext.CrawlBag;
 
-            HttpRequestEngine = httpRequestEngine ?? new HttpRequestEngine();
-            CrawledPageProcessorEngine = processorEngine ?? new PageProcessorEngine();
+            PageRequesterEngine = httpRequestEngine ?? new PageRequesterEngine();
+            PageProcessorEngine = processorEngine ?? new PageProcessorEngine();
 
-            HttpRequestEngine.PageRequestCompleted += HttpRequestEngine_PageCrawlCompleted;
+            PageRequesterEngine.PageRequestCompleted += HttpRequestEngine_PageCrawlCompleted;
             //ProcessorEngine.PageProcessCompleted += FireEventHere;
 
             HttpRequestEngineCancellationTokenSource = new CancellationTokenSource();
@@ -224,18 +224,18 @@ namespace Abot.Crawler
             //TODO retire MaxConcurrentThreads
 
             _logger.DebugFormat("Starting producer & consumer");
-            HttpRequestEngine.Start(_crawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
-            CrawledPageProcessorEngine.Start(_crawlContext, CrawledPageProcessorEngineCancellationTokenSource);
+            PageRequesterEngine.Start(_crawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
+            PageProcessorEngine.Start(_crawlContext, CrawledPageProcessorEngineCancellationTokenSource);
 
             while (!_crawlComplete)
             {
                 RunPreWorkChecks();
-                if (HttpRequestEngine.IsDone && CrawledPageProcessorEngine.IsDone)
+                if (PageRequesterEngine.IsDone && PageProcessorEngine.IsDone)
                 {
                     _crawlContext.PagesToCrawl.CompleteAdding();
                     _crawlContext.PagesToProcess.CompleteAdding();
-                    HttpRequestEngine.Stop();
-                    CrawledPageProcessorEngine.Stop();
+                    PageRequesterEngine.Stop();
+                    PageProcessorEngine.Stop();
                     _crawlComplete = true;
                 }
                 else

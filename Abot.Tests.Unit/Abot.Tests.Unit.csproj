@@ -63,7 +63,7 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\CachedMemoryMonitorTest.cs" />
-    <Compile Include="Core\HttpRequestEngineTest.cs" />
+    <Compile Include="Core\PageRequesterEngineTest.cs" />
     <Compile Include="Core\MemoryBloomUrlRepositoryTest.cs" />
     <Compile Include="Core\Murmur3HashGeneratorTest.cs" />
     <Compile Include="Core\HashGeneratorTest.cs" />

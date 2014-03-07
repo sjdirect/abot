@@ -10,9 +10,9 @@ using System.Threading;
 namespace Abot.Tests.Unit.Core
 {
     [TestFixture]
-    public class HttpRequestEngineTest
+    public class PageRequesterEngineTest
     {
-        HttpRequestEngine _uut;
+        PageRequesterEngine _uut;
         Mock<IPageRequester> _fakePageRequester;
         PageToCrawl _page1;
         PageToCrawl _page2;
@@ -37,7 +37,7 @@ namespace Abot.Tests.Unit.Core
             _context.PagesToCrawl.Add(_page1);
             _context.PagesToCrawl.Add(_page2);
             
-            _uut = new HttpRequestEngine(_context.CrawlConfiguration, new TaskThreadManager(1), _fakePageRequester.Object);
+            _uut = new PageRequesterEngine(_context.CrawlConfiguration, new TaskThreadManager(1), _fakePageRequester.Object);
         }
 
         [TearDown]
@@ -51,7 +51,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void Constructor_InstantiatesDefaultImpls()
         {
-            HttpRequestEngine uut = new HttpRequestEngine();
+            PageRequesterEngine uut = new PageRequesterEngine();
 
             Assert.IsTrue(uut.ThreadManager is TaskThreadManager);
             Assert.IsTrue(uut.PageRequester is PageRequester);

@@ -3,7 +3,7 @@ using System;
 
 namespace Abot.Core
 {
-    //TODO Is this useful!!!!
+    //TODO Is this usefull?!!!!
     public class FunctionalExtensions
     {
         public Func<PageToCrawl, CrawlContext, CrawlDecision> _shouldCrawlPageDecisionMaker;
