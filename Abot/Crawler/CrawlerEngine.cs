@@ -64,8 +64,6 @@ namespace Abot.Crawler
         public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
         public IPageRequesterEngine PageRequesterEngine { get; set; }
         public IPageProcessorEngine PageProcessorEngine { get; set; }
-        protected CancellationTokenSource HttpRequestEngineCancellationTokenSource { get; set; }
-        protected CancellationTokenSource CrawledPageProcessorEngineCancellationTokenSource { get; set; }
 
         /// <summary>
         /// Dynamic object that can hold any value that needs to be available in the crawl context
@@ -124,9 +122,6 @@ namespace Abot.Crawler
 
             PageRequesterEngine.PageRequestCompleted += HttpRequestEngine_PageCrawlCompleted;
             //ProcessorEngine.PageProcessCompleted += FireEventHere;
-
-            HttpRequestEngineCancellationTokenSource = new CancellationTokenSource();
-            CrawledPageProcessorEngineCancellationTokenSource = new CancellationTokenSource();
             
             if (_crawlContext.CrawlConfiguration.MaxMemoryUsageInMb > 0
                 || _crawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb > 0)
@@ -225,7 +220,7 @@ namespace Abot.Crawler
 
             _logger.DebugFormat("Starting producer & consumer");
             PageRequesterEngine.Start(_crawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
-            PageProcessorEngine.Start(_crawlContext, CrawledPageProcessorEngineCancellationTokenSource);
+            PageProcessorEngine.Start(_crawlContext);
 
             while (!_crawlComplete)
             {
@@ -327,8 +322,8 @@ namespace Abot.Crawler
                 //PageCrawlDisallowedAsync = null;
                 //PageLinksCrawlDisallowedAsync = null;
 
-                HttpRequestEngineCancellationTokenSource.Cancel();
-                CrawledPageProcessorEngineCancellationTokenSource.Cancel();
+                PageRequesterEngine.Stop();
+                PageProcessorEngine.Stop();
             }
         }
 
@@ -342,10 +337,8 @@ namespace Abot.Crawler
                     _crawlStopReported = true;
                 }
 
-                HttpRequestEngineCancellationTokenSource.Cancel();
-                CrawledPageProcessorEngineCancellationTokenSource.Cancel();
-                //TODO Not sure what to do here!!!!, how do we soft stop?????????
-                //_scheduler.Clear();
+                PageRequesterEngine.Stop();
+                PageProcessorEngine.Stop();
             }
         }
 
