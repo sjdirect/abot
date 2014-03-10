@@ -104,7 +104,6 @@
     <Compile Include="Core\HyperLinkParser.cs" />
     <Compile Include="Core\PageRequester.cs" />
     <Compile Include="Crawler\WebCrawler.cs" />
-    <Compile Include="Core\FunctionalExtensions.cs" />
     <Compile Include="Poco\PageContent.cs" />
     <Compile Include="Poco\PageToCrawl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

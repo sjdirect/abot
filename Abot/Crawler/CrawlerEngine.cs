@@ -10,13 +10,8 @@ namespace Abot.Crawler
     using System.Diagnostics;
     using System.Reflection;
 
-    public interface ICrawlerEngine : IPageRequesterEngine, IPageProcessorEngine
+    public interface ICrawlerEngine
     {
-        /// <summary>
-        /// Registers a delegate to be called to determine whether a page should be crawled or not
-        /// </summary>
-        Func<PageToCrawl, CrawlContext, CrawlDecision> ShouldCrawlPageShortcut { get; set; }
-
         /// <summary>
         /// Begins a crawl using the uri param
         /// </summary>
@@ -27,11 +22,11 @@ namespace Abot.Crawler
         /// </summary>
         CrawlResult Crawl(Uri uri, CancellationTokenSource tokenSource);
 
-        /// <summary>
-        /// Adds the uri to the current crawl
-        /// </summary>
-        /// <param name="uri"></param>
-        void AddToCrawl(Uri uri);
+        //TODO Implement this
+        ///// <summary>
+        ///// Adds the uri to the current crawl.
+        ///// </summary>
+        //void AddToCrawl(Uri uri);
 
         /// <summary>
         /// Dynamic object that can hold any value that needs to be available in the crawl context
@@ -39,17 +34,17 @@ namespace Abot.Crawler
         dynamic CrawlBag { get; set; }
 
         /// <summary>
-        /// Responsible for making http requests and publishing events
+        /// Responsible for making http requests and publishing related events
         /// </summary>
-        IPageRequesterEngine HttpRequestEngine { get; set; }
+        IPageRequesterEngine PageRequesterEngine { get; set; }
 
         /// <summary>
-        /// Responsible for processing the crawled page and publishing events
+        /// Responsible for processing the crawled page and publishing related events
         /// </summary>
-        IPageProcessorEngine CrawledPageProcessorEngine { get; set; }
+        IPageProcessorEngine PageProcessorEngine { get; set; }
     }
 
-    public abstract class CrawlerEngine //: ICrawlerEngine
+    public abstract class CrawlerEngine : ICrawlerEngine
     {
         //!!!!!!!!!!!!!TODO make this a named logger before releasing 2.0!!!!!!!!!!!!!!
         static ILog _logger = LogManager.GetLogger(typeof(CrawlerEngine).FullName);
@@ -64,10 +59,6 @@ namespace Abot.Crawler
         public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
         public IPageRequesterEngine PageRequesterEngine { get; set; }
         public IPageProcessorEngine PageProcessorEngine { get; set; }
-
-        /// <summary>
-        /// Dynamic object that can hold any value that needs to be available in the crawl context
-        /// </summary>
         public dynamic CrawlBag { get; set; }
 
         #region Constructors
@@ -101,14 +92,13 @@ namespace Abot.Crawler
         }
 
         public CrawlerEngine(CrawlConfiguration crawlConfiguration)
-            : this(crawlConfiguration, null, null, null, null)
+            : this(crawlConfiguration, null, null, null)
         {
             
         }
 
         public CrawlerEngine(
             CrawlConfiguration crawlConfiguration, 
-            ICrawlDecisionMaker crawlDecisionMaker,
             IPageRequesterEngine httpRequestEngine, 
             IPageProcessorEngine processorEngine,
             IMemoryManager memoryManager)
@@ -121,7 +111,6 @@ namespace Abot.Crawler
             PageProcessorEngine = processorEngine ?? new PageProcessorEngine();
 
             PageRequesterEngine.PageRequestCompleted += HttpRequestEngine_PageCrawlCompleted;
-            //ProcessorEngine.PageProcessCompleted += FireEventHere;
             
             if (_crawlContext.CrawlConfiguration.MaxMemoryUsageInMb > 0
                 || _crawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb > 0)
@@ -134,6 +123,7 @@ namespace Abot.Crawler
         }
 
         #endregion Constructors
+
 
         /// <summary>
         /// Begins a synchronous crawl using the uri param, subscribe to events to process data as it becomes available
@@ -351,16 +341,6 @@ namespace Abot.Crawler
             _logger.InfoFormat("Crawl timeout of [{0}] seconds has been reached for [{1}]", _crawlContext.CrawlConfiguration.CrawlTimeoutSeconds, _crawlContext.RootUri);
             _crawlContext.IsCrawlHardStopRequested = true;
         }
-
-        //protected virtual CrawlDecision ShouldDownloadPageContentWrapper(CrawledPage crawledPage)
-        //{
-        //    CrawlDecision decision = CrawlDecisionMaker.ShouldDownloadPageContent(crawledPage, _crawlContext);
-        //    if (decision.Allow)
-        //        decision = (_shouldDownloadPageContentDecisionMaker != null) ? _shouldDownloadPageContentDecisionMaker.Invoke(crawledPage, _crawlContext) : new CrawlDecision { Allow = true };
-
-        //    SignalCrawlStopIfNeeded(decision);
-        //    return decision;
-        //}
 
         protected virtual void PrintConfigValues(CrawlConfiguration config)
         {

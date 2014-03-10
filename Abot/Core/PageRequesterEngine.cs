@@ -117,11 +117,11 @@ namespace Abot.Core
             PageRequester = httpRequester ?? new PageRequester(config);
             CancellationTokenSource = new CancellationTokenSource();
         }
-
+        //TODO This should not get a delegate, it should just take ICrawlDecisionMaker in the constructor
         /// <summary>
         /// Starts the HttpRequestEngine
         /// </summary>
-        public void Start(CrawlContext crawlContext, Func<CrawledPage, CrawlContext, CrawlDecision> shouldRetrieveReponseBody)
+        public virtual void Start(CrawlContext crawlContext, Func<CrawledPage, CrawlContext, CrawlDecision> shouldRetrieveReponseBody)
         {
             if(crawlContext == null)
                 throw new ArgumentNullException("crawlContext");
@@ -146,14 +146,14 @@ namespace Abot.Core
         /// <summary>
         /// Stops the HttpRequestEngine
         /// </summary>
-        public void Stop()
+        public virtual void Stop()
         {
             _logger.InfoFormat("HttpRequestEngine stopping, [{0}] pages left to request", CrawlContext.PagesToCrawl.Count);
             CancellationTokenSource.Cancel();
             Dispose();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             ThreadManager.AbortAll();
 

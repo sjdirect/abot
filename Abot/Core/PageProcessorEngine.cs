@@ -1,6 +1,7 @@
 ﻿
 namespace Abot.Core
 {
+    using Abot.Crawler;
     using Abot.Poco;
     using log4net;
     using System;
@@ -19,36 +20,25 @@ namespace Abot.Core
         ///// </summary>
         //event EventHandler<PageProcessingCompletedArgs> PageProcessingCompleted;
 
-        ///// <summary>
-        ///// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlLinks impl returned false. This means the page's links were not crawled.
-        ///// </summary>
-        //event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowed;
+        /// <summary>
+        /// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPage impl returned false. This means the page or its links were not crawled.
+        /// </summary>
+        event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowed;
 
-        ///// <summary>
-        ///// Asynchronous event that is fired before a page is crawled.
-        ///// </summary>
-        //event EventHandler<PageProcessingStartingArgs> PageProcessingStartingAsync;
+        /// <summary>
+        /// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPageLinks impl returned false. This means the page's links were not crawled.
+        /// </summary>
+        event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowed;
 
-        ///// <summary>
-        ///// Asynchronous event that is fired when an individual page has been crawled.
-        ///// </summary>
-        //event EventHandler<PageProcessingCompletedArgs> PageProcessingCompletedAsync;
+        /// <summary>
+        /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPage impl returned false. This means the page or its links were not crawled.
+        /// </summary>
+        event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowedAsync;
 
-        ///// <summary>
-        ///// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawl impl returned false. This means the page or its links were not crawled.
-        ///// </summary>
-        //event EventHandler<PageProcessingDisallowedArgs> PageProcessingDisallowedAsync;
-
-        ///// <summary>
-        ///// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlLinks impl returned false. This means the page's links were not crawled.
-        ///// </summary>
-        //event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowedAsync;
-
-        ///// <summary>
-        ///// Synchronous method that registers a delegate to be called to determine whether the 1st uri param is considered an internal uri to the second uri param
-        ///// </summary>
-        ///// <param name="decisionMaker delegate"></param>
-        //Func<Uri, Uri, bool> IsInternalUriShortcut { get; set; }
+        /// <summary>
+        /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPageLinks impl returned false. This means the page's links were not crawled.
+        /// </summary>
+        event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowedAsync;
 
         /// <summary>
         /// Whether the engine has completed processing all the CrawledPages objects.
@@ -94,6 +84,15 @@ namespace Abot.Core
         /// </summary>
         public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
 
+        public bool IsDone
+        {
+            get
+            {
+                return (CancellationTokenSource.Token.IsCancellationRequested ||
+                    (!ThreadManager.HasRunningThreads() && CrawlContext.PagesToProcess.Count == 0));
+            }
+        }
+
         /// <summary>
         /// Cancellation token used to shut down the engine
         /// </summary>
@@ -125,17 +124,7 @@ namespace Abot.Core
             CancellationTokenSource = new CancellationTokenSource();
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsDone
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void Start(CrawlContext crawlContext)
+        public virtual void Start(CrawlContext crawlContext)
         {
             if (crawlContext == null)
                 throw new ArgumentNullException("crawlContext");
@@ -158,7 +147,110 @@ namespace Abot.Core
             });
         }
 
-        private void ProcessPage(CrawledPage crawledPage)
+        public virtual void Stop()
+        {
+            _logger.InfoFormat("PageProcessorEngine stopping, [{0}] pages left to process", CrawlContext.PagesToProcess.Count);
+            CancellationTokenSource.Cancel();
+            Dispose();
+        }
+
+        public virtual void Dispose()
+        {
+            ThreadManager.AbortAll();
+
+            //Set all events to null so no more events are fired
+            PageCrawlDisallowed = null;
+            PageLinksCrawlDisallowed = null;
+            PageCrawlDisallowedAsync = null;
+            PageLinksCrawlDisallowedAsync = null;
+
+        }
+
+        #region Synchronous Events
+
+        /// <summary>
+        /// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPage impl returned false. This means the page or its links were not crawled.
+        /// </summary>
+        public event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowed;
+
+        /// <summary>
+        /// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPageLinks impl returned false. This means the page's links were not crawled.
+        /// </summary>
+        public event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowed;
+
+        protected virtual void FirePageCrawlDisallowedEvent(PageToCrawl pageToCrawl, string reason)
+        {
+            try
+            {
+                EventHandler<PageCrawlDisallowedArgs> threadSafeEvent = PageCrawlDisallowed;
+                if (threadSafeEvent != null)
+                    threadSafeEvent(this, new PageCrawlDisallowedArgs(CrawlContext, pageToCrawl, reason));
+            }
+            catch (Exception e)
+            {
+                _logger.Error("An unhandled exception was thrown by a subscriber of the PageCrawlDisallowed event for url:" + pageToCrawl.Uri.AbsoluteUri);
+                _logger.Error(e);
+            }
+        }
+
+        protected virtual void FirePageLinksCrawlDisallowedEvent(CrawledPage crawledPage, string reason)
+        {
+            try
+            {
+                EventHandler<PageLinksCrawlDisallowedArgs> threadSafeEvent = PageLinksCrawlDisallowed;
+                if (threadSafeEvent != null)
+                    threadSafeEvent(this, new PageLinksCrawlDisallowedArgs(CrawlContext, crawledPage, reason));
+            }
+            catch (Exception e)
+            {
+                _logger.Error("An unhandled exception was thrown by a subscriber of the PageLinksCrawlDisallowed event for url:" + crawledPage.Uri.AbsoluteUri);
+                _logger.Error(e);
+            }
+        }
+
+        #endregion
+
+        #region Asynchronous Events
+
+        /// <summary>
+        /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPage impl returned false. This means the page or its links were not crawled.
+        /// </summary>
+        public event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowedAsync;
+
+        /// <summary>
+        /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPageLinks impl returned false. This means the page's links were not crawled.
+        /// </summary>
+        public event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowedAsync;
+
+        protected virtual void FirePageCrawlDisallowedEventAsync(PageToCrawl pageToCrawl, string reason)
+        {
+            EventHandler<PageCrawlDisallowedArgs> threadSafeEvent = PageCrawlDisallowedAsync;
+            if (threadSafeEvent != null)
+            {
+                //Fire each subscribers delegate async
+                foreach (EventHandler<PageCrawlDisallowedArgs> del in threadSafeEvent.GetInvocationList())
+                {
+                    del.BeginInvoke(this, new PageCrawlDisallowedArgs(CrawlContext, pageToCrawl, reason), null, null);
+                }
+            }
+        }
+
+        protected virtual void FirePageLinksCrawlDisallowedEventAsync(CrawledPage crawledPage, string reason)
+        {
+            EventHandler<PageLinksCrawlDisallowedArgs> threadSafeEvent = PageLinksCrawlDisallowedAsync;
+            if (threadSafeEvent != null)
+            {
+                //Fire each subscribers delegate async
+                foreach (EventHandler<PageLinksCrawlDisallowedArgs> del in threadSafeEvent.GetInvocationList())
+                {
+                    del.BeginInvoke(this, new PageLinksCrawlDisallowedArgs(CrawlContext, crawledPage, reason), null, null);
+                }
+            }
+        }
+
+        #endregion
+
+        protected virtual void ProcessPage(CrawledPage crawledPage)
         {
             //bool shouldCrawlPageLinks = ShouldCrawlPageLinks(crawledPage);
             //if (shouldCrawlPageLinks || CrawlContext.CrawlConfiguration.IsForcedLinkParsingEnabled)
@@ -175,16 +267,9 @@ namespace Abot.Core
             //FirePageCrawlCompletedEvent(crawledPage);
         }
 
-        public void Stop()
-        {
-            _logger.InfoFormat("PageProcessorEngine stopping, [{0}] pages left to process", CrawlContext.PagesToProcess.Count);
-        }
-
         protected virtual bool ShouldCrawlPageLinks(CrawledPage crawledPage)
         {
             CrawlDecision shouldCrawlPageLinksDecision = CrawlDecisionMaker.ShouldCrawlPageLinks(crawledPage, CrawlContext);
-            if (shouldCrawlPageLinksDecision.Allow)
-                shouldCrawlPageLinksDecision = (_shouldCrawlPageLinksDecisionMaker != null) ? _shouldCrawlPageLinksDecisionMaker.Invoke(crawledPage, CrawlContext) : new CrawlDecision { Allow = true };
 
             if (!shouldCrawlPageLinksDecision.Allow)
             {
@@ -199,9 +284,7 @@ namespace Abot.Core
 
         protected virtual bool ShouldCrawlPage(PageToCrawl pageToCrawl)
         {
-            CrawlDecision shouldCrawlPageDecision = _crawlDecisionMaker.ShouldCrawlPage(pageToCrawl, CrawlContext);
-            if (shouldCrawlPageDecision.Allow)
-                shouldCrawlPageDecision = (_shouldCrawlPageDecisionMaker != null) ? _shouldCrawlPageDecisionMaker.Invoke(pageToCrawl, CrawlContext) : new CrawlDecision { Allow = true };
+            CrawlDecision shouldCrawlPageDecision = CrawlDecisionMaker.ShouldCrawlPage(pageToCrawl, CrawlContext);
 
             if (shouldCrawlPageDecision.Allow)
             {
@@ -240,21 +323,18 @@ namespace Abot.Core
         {
             foreach (Uri uri in crawledPage.ParsedLinks)
             {
-                if (_shouldScheduleLinkDecisionMaker == null || _shouldScheduleLinkDecisionMaker.Invoke(uri, crawledPage, CrawlContext))
+                try //Added due to a bug in the Uri class related to this (http://stackoverflow.com/questions/2814951/system-uriformatexception-invalid-uri-the-hostname-could-not-be-parsed)
                 {
-                    try //Added due to a bug in the Uri class related to this (http://stackoverflow.com/questions/2814951/system-uriformatexception-invalid-uri-the-hostname-could-not-be-parsed)
-                    {
-                        PageToCrawl page = new PageToCrawl(uri);
-                        page.ParentUri = crawledPage.Uri;
-                        page.CrawlDepth = crawledPage.CrawlDepth + 1;
-                        page.IsInternal = _isInternalDecisionMaker(uri, CrawlContext.RootUri);
-                        page.IsRoot = false;
+                    PageToCrawl page = new PageToCrawl(uri);
+                    page.ParentUri = crawledPage.Uri;
+                    page.CrawlDepth = crawledPage.CrawlDepth + 1;
+                    page.IsInternal = CrawlDecisionMaker.IsInternal(uri, CrawlContext);
+                    page.IsRoot = false;
 
-                        if (ShouldSchedulePageLink(page))
-                            CrawlContext.PagesToCrawl.Add(page);
-                    }
-                    catch { }
+                    if (ShouldSchedulePageLink(page))
+                        CrawlContext.PagesToCrawl.Add(page);
                 }
+                catch { }
             }
         }
 
