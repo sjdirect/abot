@@ -12,6 +12,8 @@ namespace Abot.Crawler
 
     public interface ICrawlerEngine
     {
+        public CrawlContext CrawlContext { get; set; }
+
         /// <summary>
         /// Begins a crawl using the uri param
         /// </summary>
@@ -27,6 +29,10 @@ namespace Abot.Crawler
         ///// Adds the uri to the current crawl.
         ///// </summary>
         //void AddToCrawl(Uri uri);
+
+        //TODO Implement these since this is an "Engine"
+        void Start();
+        void Stop();
 
         /// <summary>
         /// Dynamic object that can hold any value that needs to be available in the crawl context
@@ -54,7 +60,8 @@ namespace Abot.Crawler
         protected bool _crawlCancellationReported = false;
         protected System.Timers.Timer _timeoutTimer;
         protected CrawlResult _crawlResult = null;
-        protected CrawlContext _crawlContext;
+
+        public CrawlContext CrawlContext { get; set; }
         public IMemoryManager MemoryManager { get; set; }
         public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
         public IPageRequesterEngine PageRequesterEngine { get; set; }
@@ -103,23 +110,25 @@ namespace Abot.Crawler
             IPageProcessorEngine processorEngine,
             IMemoryManager memoryManager)
         {
-            _crawlContext = new CrawlContext();
-            _crawlContext.CrawlConfiguration = crawlConfiguration ?? GetCrawlConfigurationFromConfigFile();
-            CrawlBag = _crawlContext.CrawlBag;
+            CrawlContext = new CrawlContext();
+            CrawlContext.CrawlConfiguration = crawlConfiguration ?? GetCrawlConfigurationFromConfigFile();
+            CrawlBag = CrawlContext.CrawlBag;
 
             PageRequesterEngine = httpRequestEngine ?? new PageRequesterEngine();
             PageProcessorEngine = processorEngine ?? new PageProcessorEngine();
 
             PageRequesterEngine.PageRequestCompleted += HttpRequestEngine_PageCrawlCompleted;
             
-            if (_crawlContext.CrawlConfiguration.MaxMemoryUsageInMb > 0
-                || _crawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb > 0)
-                MemoryManager = memoryManager ?? new MemoryManager(new CachedMemoryMonitor(new GcMemoryMonitor(), _crawlContext.CrawlConfiguration.MaxMemoryUsageCacheTimeInSeconds));
+            if (CrawlContext.CrawlConfiguration.MaxMemoryUsageInMb > 0
+                || CrawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb > 0)
+                MemoryManager = memoryManager ?? new MemoryManager(new CachedMemoryMonitor(new GcMemoryMonitor(), CrawlContext.CrawlConfiguration.MaxMemoryUsageCacheTimeInSeconds));
         }
+
+        //TODO support old WebCrawler constructor to allow the same di the past users are use to!!!!!!!!!!!!
 
         private void HttpRequestEngine_PageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
         {
-            _crawlContext.PagesToProcess.Add(e.CrawledPage);
+            CrawlContext.PagesToProcess.Add(e.CrawledPage);
         }
 
         #endregion Constructors
@@ -141,31 +150,31 @@ namespace Abot.Crawler
             if (uri == null)
                 throw new ArgumentNullException("uri");
 
-            _crawlContext.RootUri = uri;
+            CrawlContext.RootUri = uri;
 
-            _crawlContext.CancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();
+            CrawlContext.CancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();
 
             _crawlResult = new CrawlResult();
-            _crawlResult.RootUri = _crawlContext.RootUri;
-            _crawlResult.CrawlContext = _crawlContext;
+            _crawlResult.RootUri = CrawlContext.RootUri;
+            _crawlResult.CrawlContext = CrawlContext;
             _crawlComplete = false;
 
             _logger.InfoFormat("About to crawl site [{0}]", uri.AbsoluteUri);
 
             if (MemoryManager != null)
             {
-                _crawlContext.MemoryUsageBeforeCrawlInMb = MemoryManager.GetCurrentUsageInMb();
-                _logger.InfoFormat("Starting memory usage for site [{0}] is [{1}mb]", uri.AbsoluteUri, _crawlContext.MemoryUsageBeforeCrawlInMb);
+                CrawlContext.MemoryUsageBeforeCrawlInMb = MemoryManager.GetCurrentUsageInMb();
+                _logger.InfoFormat("Starting memory usage for site [{0}] is [{1}mb]", uri.AbsoluteUri, CrawlContext.MemoryUsageBeforeCrawlInMb);
             }
 
-            PrintConfigValues(_crawlContext.CrawlConfiguration);
+            PrintConfigValues(CrawlContext.CrawlConfiguration);
 
-            _crawlContext.CrawlStartDate = DateTime.Now;
+            CrawlContext.CrawlStartDate = DateTime.Now;
             Stopwatch timer = Stopwatch.StartNew();
 
-            if (_crawlContext.CrawlConfiguration.CrawlTimeoutSeconds > 0)
+            if (CrawlContext.CrawlConfiguration.CrawlTimeoutSeconds > 0)
             {
-                _timeoutTimer = new System.Timers.Timer(_crawlContext.CrawlConfiguration.CrawlTimeoutSeconds * 1000);
+                _timeoutTimer = new System.Timers.Timer(CrawlContext.CrawlConfiguration.CrawlTimeoutSeconds * 1000);
                 _timeoutTimer.Elapsed += HandleCrawlTimeout;
                 _timeoutTimer.Start();
             }
@@ -189,8 +198,8 @@ namespace Abot.Crawler
 
             if (MemoryManager != null)
             {
-                _crawlContext.MemoryUsageAfterCrawlInMb = MemoryManager.GetCurrentUsageInMb();
-                _logger.InfoFormat("Ending memory usage for site [{0}] is [{1}mb]", uri.AbsoluteUri, _crawlContext.MemoryUsageAfterCrawlInMb);
+                CrawlContext.MemoryUsageAfterCrawlInMb = MemoryManager.GetCurrentUsageInMb();
+                _logger.InfoFormat("Ending memory usage for site [{0}] is [{1}mb]", uri.AbsoluteUri, CrawlContext.MemoryUsageAfterCrawlInMb);
             }
 
             _crawlResult.Elapsed = timer.Elapsed;
@@ -202,23 +211,23 @@ namespace Abot.Crawler
 
         protected virtual void CrawlSite(Uri uri)
         {
-            _crawlContext.PagesToCrawl.Add(new PageToCrawl(uri) { ParentUri = uri, IsInternal = true, IsRoot = true });
+            CrawlContext.PagesToCrawl.Add(new PageToCrawl(uri) { ParentUri = uri, IsInternal = true, IsRoot = true });
             
             //TODO add configuration for MaxConcurrentHttpRequests
             //TODO add configuration for MaxConcurrentCrawledPageProcessors
             //TODO retire MaxConcurrentThreads
 
             _logger.DebugFormat("Starting producer & consumer");
-            PageRequesterEngine.Start(_crawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
-            PageProcessorEngine.Start(_crawlContext);
+            PageRequesterEngine.Start(CrawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
+            PageProcessorEngine.Start(CrawlContext);
 
             while (!_crawlComplete)
             {
                 RunPreWorkChecks();
                 if (PageRequesterEngine.IsDone && PageProcessorEngine.IsDone)
                 {
-                    _crawlContext.PagesToCrawl.CompleteAdding();
-                    _crawlContext.PagesToProcess.CompleteAdding();
+                    CrawlContext.PagesToCrawl.CompleteAdding();
+                    CrawlContext.PagesToProcess.CompleteAdding();
                     PageRequesterEngine.Stop();
                     PageProcessorEngine.Stop();
                     _crawlComplete = true;
@@ -234,11 +243,11 @@ namespace Abot.Crawler
 
         protected virtual void VerifyRequiredAvailableMemory()
         {
-            if (_crawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb < 1)
+            if (CrawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb < 1)
                 return;
 
-            if (!MemoryManager.IsSpaceAvailable(_crawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb))
-                throw new InsufficientMemoryException(string.Format("Process does not have the configured [{0}mb] of available memory to crawl site [{1}]. This is configurable through the minAvailableMemoryRequiredInMb in app.conf or CrawlConfiguration.MinAvailableMemoryRequiredInMb.", _crawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb, _crawlContext.RootUri));
+            if (!MemoryManager.IsSpaceAvailable(CrawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb))
+                throw new InsufficientMemoryException(string.Format("Process does not have the configured [{0}mb] of available memory to crawl site [{1}]. This is configurable through the minAvailableMemoryRequiredInMb in app.conf or CrawlConfiguration.MinAvailableMemoryRequiredInMb.", CrawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb, CrawlContext.RootUri));
         }
 
         protected virtual void RunPreWorkChecks()
@@ -252,37 +261,37 @@ namespace Abot.Crawler
         protected virtual void CheckMemoryUsage()
         {
             if (MemoryManager == null
-                || _crawlContext.IsCrawlHardStopRequested
-                || _crawlContext.CrawlConfiguration.MaxMemoryUsageInMb < 1)
+                || CrawlContext.IsCrawlHardStopRequested
+                || CrawlContext.CrawlConfiguration.MaxMemoryUsageInMb < 1)
                 return;
 
             int currentMemoryUsage = MemoryManager.GetCurrentUsageInMb();
             if (_logger.IsDebugEnabled)
-                _logger.DebugFormat("Current memory usage for site [{0}] is [{1}mb]", _crawlContext.RootUri, currentMemoryUsage);
+                _logger.DebugFormat("Current memory usage for site [{0}] is [{1}mb]", CrawlContext.RootUri, currentMemoryUsage);
 
-            if (currentMemoryUsage > _crawlContext.CrawlConfiguration.MaxMemoryUsageInMb)
+            if (currentMemoryUsage > CrawlContext.CrawlConfiguration.MaxMemoryUsageInMb)
             {
                 MemoryManager.Dispose();
                 MemoryManager = null;
 
-                string message = string.Format("Process is using [{0}mb] of memory which is above the max configured of [{1}mb] for site [{2}]. This is configurable through the maxMemoryUsageInMb in app.conf or CrawlConfiguration.MaxMemoryUsageInMb.", currentMemoryUsage, _crawlContext.CrawlConfiguration.MaxMemoryUsageInMb, _crawlContext.RootUri);
+                string message = string.Format("Process is using [{0}mb] of memory which is above the max configured of [{1}mb] for site [{2}]. This is configurable through the maxMemoryUsageInMb in app.conf or CrawlConfiguration.MaxMemoryUsageInMb.", currentMemoryUsage, CrawlContext.CrawlConfiguration.MaxMemoryUsageInMb, CrawlContext.RootUri);
                 _crawlResult.ErrorException = new InsufficientMemoryException(message);
 
                 _logger.Fatal(_crawlResult.ErrorException);
-                _crawlContext.IsCrawlHardStopRequested = true;
+                CrawlContext.IsCrawlHardStopRequested = true;
             }
         }
 
         protected virtual void CheckForCancellationRequest()
         {
-            if (_crawlContext.CancellationTokenSource.IsCancellationRequested)
+            if (CrawlContext.CancellationTokenSource.IsCancellationRequested)
             {
                 if (!_crawlCancellationReported)
                 {
-                    string message = string.Format("Crawl cancellation requested for site [{0}]!", _crawlContext.RootUri);
+                    string message = string.Format("Crawl cancellation requested for site [{0}]!", CrawlContext.RootUri);
                     _logger.Fatal(message);
-                    _crawlResult.ErrorException = new OperationCanceledException(message, _crawlContext.CancellationTokenSource.Token);
-                    _crawlContext.IsCrawlHardStopRequested = true;
+                    _crawlResult.ErrorException = new OperationCanceledException(message, CrawlContext.CancellationTokenSource.Token);
+                    CrawlContext.IsCrawlHardStopRequested = true;
                     _crawlCancellationReported = true;
                 }
             }
@@ -290,11 +299,11 @@ namespace Abot.Crawler
 
         protected virtual void CheckForHardStopRequest()
         {
-            if (_crawlContext.IsCrawlHardStopRequested)
+            if (CrawlContext.IsCrawlHardStopRequested)
             {
                 if (!_crawlStopReported)
                 {
-                    _logger.InfoFormat("Hard crawl stop requested for site [{0}]!", _crawlContext.RootUri);
+                    _logger.InfoFormat("Hard crawl stop requested for site [{0}]!", CrawlContext.RootUri);
                     _crawlStopReported = true;
                 }
 
@@ -319,11 +328,11 @@ namespace Abot.Crawler
 
         protected virtual void CheckForStopRequest()
         {
-            if (_crawlContext.IsCrawlStopRequested)
+            if (CrawlContext.IsCrawlStopRequested)
             {
                 if (!_crawlStopReported)
                 {
-                    _logger.InfoFormat("Crawl stop requested for site [{0}]!", _crawlContext.RootUri);
+                    _logger.InfoFormat("Crawl stop requested for site [{0}]!", CrawlContext.RootUri);
                     _crawlStopReported = true;
                 }
 
@@ -338,8 +347,8 @@ namespace Abot.Crawler
             if (elapsedTimer != null)
                 elapsedTimer.Stop();
 
-            _logger.InfoFormat("Crawl timeout of [{0}] seconds has been reached for [{1}]", _crawlContext.CrawlConfiguration.CrawlTimeoutSeconds, _crawlContext.RootUri);
-            _crawlContext.IsCrawlHardStopRequested = true;
+            _logger.InfoFormat("Crawl timeout of [{0}] seconds has been reached for [{1}]", CrawlContext.CrawlConfiguration.CrawlTimeoutSeconds, CrawlContext.RootUri);
+            CrawlContext.IsCrawlHardStopRequested = true;
         }
 
         protected virtual void PrintConfigValues(CrawlConfiguration config)

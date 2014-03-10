@@ -10,15 +10,15 @@ namespace Abot.Core
     
     public interface IPageProcessorEngine: IDisposable
     {
-        ///// <summary>
-        ///// Synchronous event that is fired before a page is crawled.
-        ///// </summary>
-        //event EventHandler<PageProcessingStartingArgs> PageProcessingStarting;
+        /// <summary>
+        /// Synchronous event that is fired before a page is crawled.
+        /// </summary>
+        event EventHandler<PageProcessingStartingArgs> PageProcessingStarting;
 
-        ///// <summary>
-        ///// Synchronous event that is fired when an individual page has been crawled.
-        ///// </summary>
-        //event EventHandler<PageProcessingCompletedArgs> PageProcessingCompleted;
+        /// <summary>
+        /// Synchronous event that is fired when an individual page has been crawled.
+        /// </summary>
+        event EventHandler<PageProcessingCompletedArgs> PageProcessingCompleted;
 
         /// <summary>
         /// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPage impl returned false. This means the page or its links were not crawled.
@@ -29,6 +29,16 @@ namespace Abot.Core
         /// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPageLinks impl returned false. This means the page's links were not crawled.
         /// </summary>
         event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowed;
+
+        /// <summary>
+        /// Asynchronous event that is fired before a page is crawled.
+        /// </summary>
+        event EventHandler<PageProcessingStartingArgs> PageProcessingStartingAsync;
+
+        /// <summary>
+        /// Asynchronous event that is fired when an individual page has been crawled.
+        /// </summary>
+        event EventHandler<PageProcessingCompletedArgs> PageProcessingCompletedAsyc;
 
         /// <summary>
         /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPage impl returned false. This means the page or its links were not crawled.
@@ -252,19 +262,19 @@ namespace Abot.Core
 
         protected virtual void ProcessPage(CrawledPage crawledPage)
         {
-            //bool shouldCrawlPageLinks = ShouldCrawlPageLinks(crawledPage);
-            //if (shouldCrawlPageLinks || CrawlContext.CrawlConfiguration.IsForcedLinkParsingEnabled)
-            //    ParsePageLinks(crawledPage);
+            bool shouldCrawlPageLinks = ShouldCrawlPageLinks(crawledPage);
+            if (shouldCrawlPageLinks || CrawlContext.CrawlConfiguration.IsForcedLinkParsingEnabled)
+                ParsePageLinks(crawledPage);
 
-            //ThrowIfCancellationRequested();
+            CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-            //if (shouldCrawlPageLinks)
-            //    SchedulePageLinks(crawledPage);
+            if (shouldCrawlPageLinks)
+                SchedulePageLinks(crawledPage);
 
-            //ThrowIfCancellationRequested();
+            CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-            //FirePageCrawlCompletedEventAsync(crawledPage);
-            //FirePageCrawlCompletedEvent(crawledPage);
+            FirePageCrawlCompletedEventAsync(crawledPage);
+            FirePageCrawlCompletedEvent(crawledPage);
         }
 
         protected virtual bool ShouldCrawlPageLinks(CrawledPage crawledPage)
