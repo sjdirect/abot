@@ -40,18 +40,20 @@ namespace Abot.Core
             if (!pageToCrawl.Uri.Scheme.StartsWith("http"))
                 return new CrawlDecision { Allow = false, Reason = "Scheme does not begin with http" };
 
-            if (crawlContext.CrawlConfiguration.MaxPagesToCrawl > 0 && 
+            if (!pageToCrawl.IsRetry &&
+                crawlContext.CrawlConfiguration.MaxPagesToCrawl > 0 &&
                 crawlContext.CrawledCount + 1 > crawlContext.CrawlConfiguration.MaxPagesToCrawl)
             {
                 return new CrawlDecision { Allow = false, Reason = string.Format("MaxPagesToCrawl limit of [{0}] has been reached", crawlContext.CrawlConfiguration.MaxPagesToCrawl) };
             }
 
             int pagesCrawledInThisDomain = 0;
-            if (crawlContext.CrawlConfiguration.MaxPagesToCrawlPerDomain > 0 && 
-                crawlContext.CrawlCountByDomain.TryGetValue(pageToCrawl.Uri.Authority, out pagesCrawledInThisDomain) && 
+            if (!pageToCrawl.IsRetry &&
+                crawlContext.CrawlConfiguration.MaxPagesToCrawlPerDomain > 0 &&
+                crawlContext.CrawlCountByDomain.TryGetValue(pageToCrawl.Uri.Authority, out pagesCrawledInThisDomain) &&
                 pagesCrawledInThisDomain > 0)
             {
-                if(pagesCrawledInThisDomain >= crawlContext.CrawlConfiguration.MaxPagesToCrawlPerDomain)
+                if (pagesCrawledInThisDomain >= crawlContext.CrawlConfiguration.MaxPagesToCrawlPerDomain)
                     return new CrawlDecision { Allow = false, Reason = string.Format("MaxPagesToCrawlPerDomain limit of [{0}] has been reached for domain [{1}]", crawlContext.CrawlConfiguration.MaxPagesToCrawlPerDomain, pageToCrawl.Uri.Authority) };
             }
 
