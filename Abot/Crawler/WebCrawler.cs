@@ -774,6 +774,9 @@ namespace Abot.Crawler
 
         protected virtual void AddPageToContext(PageToCrawl pageToCrawl)
         {
+            if (pageToCrawl.IsRetry)
+                return;
+
             int domainCount = 0;
             Interlocked.Increment(ref _crawlContext.CrawledCount);
             lock (_crawlContext.CrawlCountByDomain)

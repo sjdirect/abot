@@ -13,12 +13,14 @@ namespace Abot.Tests.Unit.Core
         Scheduler _unitUnderTest;
         Mock<ICrawledUrlRepository> _fakeCrawledUrlRepo;
         Mock<IPagesToCrawlRepository> _fakePagesToCrawlRepo;
-        PageToCrawl _page = new PageToCrawl { Uri = new Uri("http://a.com/") };
-        List<PageToCrawl> _pages = new List<PageToCrawl> { new PageToCrawl { Uri = new Uri("http://a.com/") }, new PageToCrawl { Uri = new Uri("http://b.com/") } };
+        PageToCrawl _page;
+        List<PageToCrawl> _pages;
 
         [SetUp]
         public void SetUp()
         {
+            _page = new PageToCrawl { Uri = new Uri("http://a.com/") };
+            _pages = new List<PageToCrawl> { new PageToCrawl { Uri = new Uri("http://a.com/") }, new PageToCrawl { Uri = new Uri("http://b.com/") } };
             _fakeCrawledUrlRepo = new Mock<ICrawledUrlRepository>();
             _fakePagesToCrawlRepo = new Mock<IPagesToCrawlRepository>();
 
@@ -71,6 +73,18 @@ namespace Abot.Tests.Unit.Core
 
             _fakeCrawledUrlRepo.VerifyAll();
             _fakePagesToCrawlRepo.Verify(f => f.Add(_page), Times.Never());
+        }
+
+        [Test]
+        public void Add_UriRecrawlingDisabled_UrlHasBeenCrawled_IsRetry_AddsToBothRepos()
+        {
+            _page.IsRetry = true;
+            _unitUnderTest = new Scheduler(false, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
+
+            _unitUnderTest.Add(_page);
+
+            _fakeCrawledUrlRepo.Verify(f => f.AddIfNew(_page.Uri), Times.Never());
+            _fakePagesToCrawlRepo.Verify(f => f.Add(_page));
         }
 
         [Test]

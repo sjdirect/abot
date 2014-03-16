@@ -268,6 +268,36 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
+        public void ShouldCrawlPage_OverMaxPagesToCrawlPerDomain_IsRetry_ReturnsTrue()
+        {
+            Uri uri = new Uri("http://a.com/");
+            CrawlConfiguration config = new CrawlConfiguration
+            {
+                MaxPagesToCrawlPerDomain = 100
+            };
+            ConcurrentDictionary<string, int> countByDomain = new ConcurrentDictionary<string, int>();
+            countByDomain.TryAdd(uri.Authority, 100);
+            CrawlContext crawlContext = new CrawlContext
+            {
+                CrawlConfiguration = config,
+                CrawlStartDate = DateTime.Now,
+                CrawlCountByDomain = countByDomain
+            };
+
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
+                new PageToCrawl(new Uri(uri.AbsoluteUri + "anotherpage"))
+                {
+                    IsRetry = true,
+                    IsInternal = true
+                },
+                crawlContext);
+
+            Assert.IsTrue(result.Allow);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+        [Test]
         public void ShouldCrawlPage_OverMaxCrawlDepth_ReturnsFalse()
         {
             CrawlContext crawlContext = new CrawlContext

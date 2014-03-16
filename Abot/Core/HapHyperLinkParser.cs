@@ -26,6 +26,7 @@ namespace Abot.Core
         }
 
         public HapHyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanURLFunc = null)
+            :base(isRespectMetaRobotsNoFollowEnabled)
         {
             _isRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
             _isRespectAnchorRelNoFollowEnabled = isRespectAnchorRelNoFollowEnabled;
@@ -99,17 +100,14 @@ namespace Abot.Core
             return dentitizedHref;
         }
 
-        private bool HasRobotsNoFollow(CrawledPage crawledPage)
+        protected override string GetMetaRobotsValue(CrawledPage crawledPage)
         {
             string robotsMeta = null;
-            if (_isRespectMetaRobotsNoFollowEnabled)
-            {
-                HtmlNode robotsNode = crawledPage.HtmlDocument.DocumentNode.SelectSingleNode("//meta[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='robots']");
-                if (robotsNode != null)
-                    robotsMeta = robotsNode.GetAttributeValue("content", "");
-            }
+            HtmlNode robotsNode = crawledPage.HtmlDocument.DocumentNode.SelectSingleNode("//meta[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='robots']");
+            if (robotsNode != null)
+                robotsMeta = robotsNode.GetAttributeValue("content", "");
 
-            return robotsMeta != null && robotsMeta.ToLower().Contains("nofollow");
+            return robotsMeta;
         }
 
         private bool HasRelNoFollow(HtmlNode node)

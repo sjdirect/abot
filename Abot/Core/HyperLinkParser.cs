@@ -21,6 +21,18 @@ namespace Abot.Core
     public abstract class HyperLinkParser : IHyperLinkParser
     {
         protected ILog _logger = LogManager.GetLogger(typeof(HyperLinkParser));
+        protected bool IsRespectMetaRobotsNoFollowEnabled { get; set; }
+
+        public HyperLinkParser()
+            :this(false)
+        {
+
+        }
+
+        public HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled)
+        {
+            IsRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
+        }
 
         /// <summary>
         /// Parses html to extract hyperlinks, converts each into an absolute url
@@ -46,6 +58,8 @@ namespace Abot.Core
         protected abstract IEnumerable<string> GetHrefValues(CrawledPage crawledPage);
 
         protected abstract string GetBaseHrefValue(CrawledPage crawledPage);
+
+        protected abstract string GetMetaRobotsValue(CrawledPage crawledPage);
 
         #endregion
 
@@ -95,6 +109,22 @@ namespace Abot.Core
             }
 
             return uris;
+        }
+
+        protected virtual bool HasRobotsNoFollow(CrawledPage crawledPage)
+        {
+            if (!IsRespectMetaRobotsNoFollowEnabled)
+                return false;
+
+            string robotsMeta = robotsMeta = GetMetaRobotsValue(crawledPage);
+            bool isRobotsNoFollow = robotsMeta != null &&
+                (robotsMeta.ToLower().Contains("nofollow") ||
+                robotsMeta.ToLower().Contains("none"));
+
+            if (isRobotsNoFollow)
+                _logger.InfoFormat("Robots NoFollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+
+            return isRobotsNoFollow;
         }
     }
 }

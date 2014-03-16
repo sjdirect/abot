@@ -63,7 +63,7 @@ namespace Abot.Core
             if (page == null)
                 throw new ArgumentNullException("page");
 
-            if (_allowUriRecrawling)
+            if (_allowUriRecrawling || page.IsRetry)
             {
                 _pagesToCrawlRepo.Add(page);
             }
