@@ -91,7 +91,7 @@
     <Compile Include="Core\TaskThreadManager.cs" />
     <Compile Include="Core\ThreadManager.cs" />
     <Compile Include="Crawler\CrawlArgs.cs" />
-    <Compile Include="Crawler\CrawlerEngine.cs" />
+    <Compile Include="Crawler\WebCrawler2.cs" />
     <Compile Include="Crawler\ICrawlerEngine.cs" />
     <Compile Include="Crawler\PageActionDisallowedArgs.cs" />
     <Compile Include="Crawler\PageActionCompletedArgs.cs" />

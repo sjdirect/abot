@@ -56,7 +56,7 @@ namespace Abot.Crawler
         //DO NOT have a constructor for the IPageRequesterEngine and IPageProcessorEngine since thi
 
         //!!!!!!!!!!!!!TODO make this a named logger before releasing 2.0!!!!!!!!!!!!!!
-        static ILog _logger = LogManager.GetLogger(typeof(CrawlerEngine).FullName);
+        static ILog _logger = LogManager.GetLogger(typeof(WebCrawler2).FullName);
         //!!!!!!!!!!!!!TODO make these protected properties before releasing 2.0!!!!!!!!!!!!!!
         protected bool _crawlComplete = false;
         protected bool _crawlStopReported = false;
@@ -74,7 +74,7 @@ namespace Abot.Crawler
 
         #region Constructors
 
-        static CrawlerEngine()
+        static WebCrawler2()
         {
             //This is a workaround for dealing with periods in urls (http://stackoverflow.com/questions/856885/httpwebrequest-to-url-with-dot-at-the-end)
             //Will not be needed when this project is upgraded to 4.5
@@ -96,19 +96,19 @@ namespace Abot.Crawler
             }
         }
 
-        public CrawlerEngine()
+        public WebCrawler2()
             : this(null)
         {
             
         }
 
-        public CrawlerEngine(CrawlConfiguration crawlConfiguration)
+        public WebCrawler2(CrawlConfiguration crawlConfiguration)
             : this(crawlConfiguration, null, null, null, null)
         {
             
         }
 
-        public CrawlerEngine(
+        public WebCrawler2(
             CrawlConfiguration crawlConfiguration, 
             IPageRequesterEngine requesterEngine, 
             IPageProcessorEngine processorEngine,
