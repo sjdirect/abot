@@ -105,7 +105,7 @@ namespace Abot.Crawler
 
         public CrawlerEngine(
             CrawlConfiguration crawlConfiguration, 
-            IPageRequesterEngine httpRequestEngine, 
+            IPageRequesterEngine requesterEngine, 
             IPageProcessorEngine processorEngine,
             IScheduler scheduler,
             IMemoryManager memoryManager)
@@ -114,7 +114,7 @@ namespace Abot.Crawler
             CrawlContext.CrawlConfiguration = crawlConfiguration ?? GetCrawlConfigurationFromConfigFile();
             CrawlBag = CrawlContext.CrawlBag;
 
-            PageRequesterEngine = httpRequestEngine ?? new PageRequesterEngine();
+            PageRequesterEngine = requesterEngine ?? new PageRequesterEngine();
             PageProcessorEngine = processorEngine ?? new PageProcessorEngine();
             Scheduler = scheduler ?? new Scheduler(CrawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, null, null);
             
@@ -214,7 +214,7 @@ namespace Abot.Crawler
             //TODO retire MaxConcurrentThreads
 
             _logger.DebugFormat("Starting producer & consumer");
-            PageRequesterEngine.Start(CrawlContext, null);//TODO pass real ShouldDownload or ShouldDownloadPageContentWrapper
+            PageRequesterEngine.Start(CrawlContext);
             PageProcessorEngine.Start(CrawlContext);
 
             while (!_crawlComplete)

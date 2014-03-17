@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Abot.Core
 {   
-    public interface IPageProcessorEngine: IDisposable
+    public interface IPageProcessorEngine: IEngine, IDisposable
     {
         /// <summary>
         /// Synchronous event that is fired before a page is processed.
@@ -48,22 +48,6 @@ namespace Abot.Core
         /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlPageLinks impl returned false. This means the page's links were not crawled.
         /// </summary>
         event EventHandler<PageActionDisallowedArgs> PageLinksCrawlDisallowedAsync;
-
-        /// <summary>
-        /// Whether the engine has completed processing all the CrawledPages objects.
-        /// </summary>
-        bool IsDone { get; }
-
-        /// <summary>
-        /// Starts processing the content of crawled pages and firing events
-        /// </summary>
-        /// <param name="crawlContext">The context of the crawl</param>
-        void Start(CrawlContext crawlContext);
-
-        /// <summary>
-        /// Stops processing crawled pages and firing events
-        /// </summary>
-        void Stop();
     }
 
     /// <summary>
@@ -168,11 +152,14 @@ namespace Abot.Core
             ThreadManager.AbortAll();
 
             //Set all events to null so no more events are fired
+            PageProcessingStarting = null;
+            PageProcessingStartingAsync = null;
+            PageProcessingCompleted = null;
+            PageProcessingCompletedAsync = null;
             PageCrawlDisallowed = null;
-            PageLinksCrawlDisallowed = null;
             PageCrawlDisallowedAsync = null;
+            PageLinksCrawlDisallowed = null;
             PageLinksCrawlDisallowedAsync = null;
-
         }
 
         #region Events

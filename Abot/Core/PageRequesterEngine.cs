@@ -9,7 +9,26 @@ using System.Threading.Tasks;
 
 namespace Abot.Core
 {
-    public interface IPageRequesterEngine: IDisposable
+    public interface IEngine
+    {
+        /// <summary>
+        /// Whether the engine has completed all actions.
+        /// </summary>
+        bool IsDone { get; }
+
+        /// <summary>
+        /// Starts taking actions on pages and firing events
+        /// </summary>
+        /// <param name="crawlContext">The context of the crawl</param>
+        void Start(CrawlContext crawlContext);
+
+        /// <summary>
+        /// Stops making http requests and firing events
+        /// </summary>
+        void Stop();
+    }
+
+    public interface IPageRequesterEngine : IEngine, IDisposable
     {
         /// <summary>
         /// Synchronous event that is fired before an http request is sent for a page.
@@ -30,23 +49,6 @@ namespace Abot.Core
         /// Asynchronous event that is fired  afteran http request is complete for a page.
         /// </summary>
         event EventHandler<PageActionCompletedArgs> PageRequestCompletedAsync;
-
-        /// <summary>
-        /// Whether the engine has completed making all http requests for all the PageToCrawl objects.
-        /// </summary>
-        bool IsDone { get; }
-
-        /// <summary>
-        /// Starts making http requests and firing events
-        /// </summary>
-        /// <param name="crawlContext">The context of the crawl</param>
-        /// <param name="shouldRetrieveResponseBody">Delegate to call to determine if the response body should be retrieved</param>
-        void Start(CrawlContext crawlContext, Func<CrawledPage, CrawlContext, CrawlDecision> shouldRetrieveResponseBody);
-
-        /// <summary>
-        /// Stops making http requests and firing events
-        /// </summary>
-        void Stop();
     }
 
     /// <summary>
@@ -67,6 +69,11 @@ namespace Abot.Core
         public IPageRequester PageRequester { get; set; }
 
         /// <summary>
+        /// ICrawlDecisionMaker impl used to make key decisions during the crawl
+        /// </summary>
+        public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
+
+        /// <summary>
         /// IPageRequester implementation that is used to make raw http requests
         /// </summary>
         public bool IsDone
@@ -77,11 +84,6 @@ namespace Abot.Core
                     (!ThreadManager.HasRunningThreads() && CrawlContext.PagesToCrawl.Count == 0));
             }
         }
-
-        /// <summary>
-        /// Registers a delegate to be called to determine if the response body should be retrieved the page
-        /// </summary>
-        public Func<CrawledPage, CrawlDecision> ShouldRetrieveResponseBody { get; set; }
 
         /// <summary>
         /// CrawlContext that is used to decide what to crawl and how
@@ -97,7 +99,7 @@ namespace Abot.Core
         /// Creates instance of PageRequesterEngine using default implemention of dependencies.
         /// </summary>
         public PageRequesterEngine()
-            : this(null, null, null)
+            : this(null, null, null, null)
         {
             
         }
@@ -108,19 +110,21 @@ namespace Abot.Core
         public PageRequesterEngine(
             CrawlConfiguration crawlConfiguration,
             IThreadManager threadManager,
-            IPageRequester httpRequester)
+            IPageRequester httpRequester,
+            ICrawlDecisionMaker crawlDecisionMaker)
         {
             CrawlConfiguration config = crawlConfiguration ?? new CrawlConfiguration();
 
             ThreadManager = threadManager ?? new TaskThreadManager(config.MaxConcurrentThreads);
             PageRequester = httpRequester ?? new PageRequester(config);
+            CrawlDecisionMaker = crawlDecisionMaker ?? new CrawlDecisionMaker();
             CancellationTokenSource = new CancellationTokenSource();
         }
-        //TODO This should not get a delegate, it should just take ICrawlDecisionMaker in the constructor
+
         /// <summary>
         /// Starts the HttpRequestEngine
         /// </summary>
-        public virtual void Start(CrawlContext crawlContext, Func<CrawledPage, CrawlContext, CrawlDecision> shouldRetrieveReponseBody)
+        public virtual void Start(CrawlContext crawlContext)
         {
             if(crawlContext == null)
                 throw new ArgumentNullException("crawlContext");
@@ -235,8 +239,7 @@ namespace Abot.Core
         {
             _logger.DebugFormat("About to crawl page [{0}]", pageToCrawl.Uri.AbsoluteUri);
 
-            //CrawledPage crawledPage = PageRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldRetrieveResponseBody);//TODO need to implement this!!!
-            CrawledPage crawledPage = PageRequester.MakeRequest(pageToCrawl.Uri);
+            CrawledPage crawledPage = PageRequester.MakeRequest(pageToCrawl.Uri, (x) => CrawlDecisionMaker.ShouldDownloadPageContent(x, CrawlContext));
             dynamic combinedPageBag = CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             AutoMapper.Mapper.CreateMap<PageToCrawl, CrawledPage>();
             AutoMapper.Mapper.Map(pageToCrawl, crawledPage);

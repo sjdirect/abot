@@ -14,6 +14,7 @@ namespace Abot.Tests.Unit.Core
     {
         PageRequesterEngine _uut;
         Mock<IPageRequester> _fakePageRequester;
+        Mock<ICrawlDecisionMaker> _fakeCrawlDecisionMaker;
         PageToCrawl _page1;
         PageToCrawl _page2;
         CrawledPage _cpage1;
@@ -29,6 +30,7 @@ namespace Abot.Tests.Unit.Core
             _cpage2 = new CrawledPage(_page2.Uri);
 
             _fakePageRequester = new Mock<IPageRequester>();
+            _fakeCrawlDecisionMaker = new Mock<ICrawlDecisionMaker>();
 
             _fakePageRequester.Setup(f => f.MakeRequest(_page1.Uri)).Returns(_cpage1);
             _fakePageRequester.Setup(f => f.MakeRequest(_page2.Uri)).Returns(_cpage2);
@@ -37,7 +39,7 @@ namespace Abot.Tests.Unit.Core
             _context.PagesToCrawl.Add(_page1);
             _context.PagesToCrawl.Add(_page2);
             
-            _uut = new PageRequesterEngine(_context.CrawlConfiguration, new TaskThreadManager(1), _fakePageRequester.Object);
+            _uut = new PageRequesterEngine(_context.CrawlConfiguration, new TaskThreadManager(1), _fakePageRequester.Object, _fakeCrawlDecisionMaker.Object);
         }
 
         [TearDown]
@@ -61,7 +63,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void Start_PagesAreRequested()
         {
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(500);
 
@@ -77,7 +79,7 @@ namespace Abot.Tests.Unit.Core
             int pageRequestCompletedCount = 0;
             _uut.PageRequestCompleted += (a, b) => Interlocked.Increment(ref pageRequestCompletedCount);
 
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(100);
 
@@ -94,7 +96,7 @@ namespace Abot.Tests.Unit.Core
             int pageRequestCompletedAsyncCount = 0;
             _uut.PageRequestCompletedAsync += (a, b) => Interlocked.Increment(ref pageRequestCompletedAsyncCount);
 
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(500);
 
@@ -106,7 +108,7 @@ namespace Abot.Tests.Unit.Core
         [ExpectedException(typeof(ArgumentNullException))]
         public void Start_NullCrawlContext()
         {
-            _uut.Start(null, null);
+            _uut.Start(null);
         }
 
 
@@ -114,7 +116,7 @@ namespace Abot.Tests.Unit.Core
         public void Stop_NoPagesAreRequested()
         {
             _uut.PageRequestStarting += (a, b) => System.Threading.Thread.Sleep(3000);
-            _uut.Start(_context, null);
+            _uut.Start(_context);
 
             _uut.Stop();
 
@@ -136,7 +138,7 @@ namespace Abot.Tests.Unit.Core
                 System.Threading.Thread.Sleep(3000);
                 Interlocked.Increment(ref eventCount);
             };
-            _uut.Start(_context, null);
+            _uut.Start(_context);
 
             _uut.Stop();
 
@@ -148,7 +150,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void IsDone_IsDone_ReturnsTrue()
         {
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(2500);
 
@@ -158,7 +160,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void IsDone_IsNotDone_ReturnsFalse()
         {
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
 
             Assert.IsFalse(_uut.IsDone);
@@ -182,7 +184,7 @@ namespace Abot.Tests.Unit.Core
             _uut.PageRequestCompleted += (a, b) => Interlocked.Increment(ref pageRequestCompletedCount);
 
             //Act
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(500);
 
@@ -209,7 +211,7 @@ namespace Abot.Tests.Unit.Core
             };
 
             //Act
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(1000);
 
@@ -227,7 +229,7 @@ namespace Abot.Tests.Unit.Core
             int pageRequestCompletedCount = 0;
             _uut.PageRequestCompleted += (a, b) => Interlocked.Increment(ref pageRequestCompletedCount);
 
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(1000);
 
@@ -242,7 +244,7 @@ namespace Abot.Tests.Unit.Core
             int pageRequestCompletedCount = 0;
             _uut.PageRequestCompleted += (a, b) => Interlocked.Increment(ref pageRequestCompletedCount);
 
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(1000);
 
@@ -259,7 +261,7 @@ namespace Abot.Tests.Unit.Core
                 throw new Exception("Oh no"); 
             };
 
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(1000);
 
@@ -274,7 +276,7 @@ namespace Abot.Tests.Unit.Core
             int pageRequestCompletedCount = 0;
             _uut.PageRequestCompleted += (a, b) => Interlocked.Increment(ref pageRequestCompletedCount);
 
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(1000);
 
@@ -291,7 +293,7 @@ namespace Abot.Tests.Unit.Core
                 throw new Exception("Oh no");
             };
 
-            _uut.Start(_context, null);
+            _uut.Start(_context);
             _context.PagesToCrawl.CompleteAdding();
             System.Threading.Thread.Sleep(1000);
 
