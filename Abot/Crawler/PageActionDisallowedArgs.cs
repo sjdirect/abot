@@ -3,11 +3,11 @@ using System;
 
 namespace Abot.Crawler
 {
-    public class PageCrawlDisallowedArgs: PageCrawlStartingArgs
+    public class PageActionDisallowedArgs: PageActionStartingArgs
     {
         public string DisallowedReason { get; private set; }
 
-        public PageCrawlDisallowedArgs(CrawlContext crawlContext, PageToCrawl pageToCrawl, string disallowedReason)
+        public PageActionDisallowedArgs(CrawlContext crawlContext, PageToCrawl pageToCrawl, string disallowedReason)
             : base(crawlContext, pageToCrawl)
         {
             if (string.IsNullOrWhiteSpace(disallowedReason))

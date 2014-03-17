@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace Abot.Core
 {
+    //!!!!!!!!!No engine is using the scheduler!!!!! then how will we handle duplicates and anything else this class does??????????????
+    //!!!!!!!!!This needs to somehow be a blocking collection to work better with the processor and requester engines!!!!!!!
     /// <summary>
     /// Handles managing the priority of what pages need to be crawled
     /// </summary>

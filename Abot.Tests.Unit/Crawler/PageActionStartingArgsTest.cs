@@ -5,23 +5,22 @@ using System;
 
 namespace Abot.Tests.Unit.Crawler
 {
-    [TestFixture]
-    public class PageCrawlCompletedArgsTest
+    public class PageActionStartingArgsTest
     {
         [Test]
         public void Constructor_ValidArg_SetsPublicProperty()
         {
-            CrawledPage page = new CrawledPage(new Uri("http://aaa.com/"));
-            PageCrawlCompletedArgs uut = new PageCrawlCompletedArgs(new CrawlContext(), page);
+            PageToCrawl page = new CrawledPage(new Uri("http://aaa.com/"));
+            PageActionStartingArgs args = new PageActionStartingArgs(new CrawlContext(), page);
 
-            Assert.AreSame(page, uut.CrawledPage);
+            Assert.AreSame(page, args.PageToCrawl);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullArg()
         {
-            new PageCrawlCompletedArgs(new CrawlContext(), null);
+            new PageActionStartingArgs(new CrawlContext(), null);
         }
     }
 }

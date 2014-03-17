@@ -12,7 +12,7 @@ namespace Abot.Crawler
 
     public interface ICrawlerEngine
     {
-        public CrawlContext CrawlContext { get; set; }
+        CrawlContext CrawlContext { get; set; }
 
         /// <summary>
         /// Begins a crawl using the uri param
@@ -31,8 +31,8 @@ namespace Abot.Crawler
         //void AddToCrawl(Uri uri);
 
         //TODO Implement these since this is an "Engine"
-        void Start();
-        void Stop();
+        //void Start();
+        //void Stop();
 
         /// <summary>
         /// Dynamic object that can hold any value that needs to be available in the crawl context
@@ -66,6 +66,7 @@ namespace Abot.Crawler
         public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
         public IPageRequesterEngine PageRequesterEngine { get; set; }
         public IPageProcessorEngine PageProcessorEngine { get; set; }
+        public IScheduler Scheduler { get; set; }
         public dynamic CrawlBag { get; set; }
 
         #region Constructors
@@ -99,7 +100,7 @@ namespace Abot.Crawler
         }
 
         public CrawlerEngine(CrawlConfiguration crawlConfiguration)
-            : this(crawlConfiguration, null, null, null)
+            : this(crawlConfiguration, null, null, null, null)
         {
             
         }
@@ -108,6 +109,7 @@ namespace Abot.Crawler
             CrawlConfiguration crawlConfiguration, 
             IPageRequesterEngine httpRequestEngine, 
             IPageProcessorEngine processorEngine,
+            IScheduler scheduler,
             IMemoryManager memoryManager)
         {
             CrawlContext = new CrawlContext();
@@ -116,20 +118,16 @@ namespace Abot.Crawler
 
             PageRequesterEngine = httpRequestEngine ?? new PageRequesterEngine();
             PageProcessorEngine = processorEngine ?? new PageProcessorEngine();
-
-            PageRequesterEngine.PageRequestCompleted += HttpRequestEngine_PageCrawlCompleted;
+            Scheduler = scheduler ?? new Scheduler(CrawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, null, null);
             
             if (CrawlContext.CrawlConfiguration.MaxMemoryUsageInMb > 0
                 || CrawlContext.CrawlConfiguration.MinAvailableMemoryRequiredInMb > 0)
                 MemoryManager = memoryManager ?? new MemoryManager(new CachedMemoryMonitor(new GcMemoryMonitor(), CrawlContext.CrawlConfiguration.MaxMemoryUsageCacheTimeInSeconds));
+
+            PageRequesterEngine.PageRequestCompleted += HttpRequestEngine_PageCrawlCompleted;
         }
 
         //TODO support old WebCrawler constructor to allow the same di the past users are use to!!!!!!!!!!!!
-
-        private void HttpRequestEngine_PageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
-        {
-            CrawlContext.PagesToProcess.Add(e.CrawledPage);
-        }
 
         #endregion Constructors
 
@@ -368,7 +366,7 @@ namespace Abot.Crawler
             }
         }
 
-        private CrawlConfiguration GetCrawlConfigurationFromConfigFile()
+        protected virtual CrawlConfiguration GetCrawlConfigurationFromConfigFile()
         {
             AbotConfigurationSectionHandler configFromFile = AbotConfigurationSectionHandler.LoadFromXml();
 
@@ -377,6 +375,11 @@ namespace Abot.Crawler
 
             _logger.DebugFormat("abot config section was found");
             return configFromFile.Convert();
+        }
+
+        protected virtual void HttpRequestEngine_PageCrawlCompleted(object sender, PageActionCompletedArgs e)
+        {
+            CrawlContext.PagesToProcess.Add(e.CrawledPage);
         }
     }
 }

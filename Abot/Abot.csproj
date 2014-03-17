@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
+    <Compile Include="Core\EngineBase.cs" />
     <Compile Include="Core\PageProcessorEngine.cs" />
     <Compile Include="Core\PageRequesterEngine.cs" />
     <Compile Include="Core\Md5HashGenerator.cs" />
@@ -91,11 +92,11 @@
     <Compile Include="Core\ThreadManager.cs" />
     <Compile Include="Crawler\CrawlArgs.cs" />
     <Compile Include="Crawler\CrawlerEngine.cs" />
-    <Compile Include="Crawler\PageLinksCrawlDisallowedArgs.cs" />
-    <Compile Include="Crawler\PageCrawlDisallowedArgs.cs" />
-    <Compile Include="Crawler\PageCrawlCompletedArgs.cs" />
-    <Compile Include="Crawler\PageCrawlStartingArgs.cs" />
+    <Compile Include="Crawler\PageActionDisallowedArgs.cs" />
+    <Compile Include="Crawler\PageActionCompletedArgs.cs" />
+    <Compile Include="Crawler\PageActionStartingArgs.cs" />
     <Compile Include="Crawler\PoliteWebCrawler.cs" />
+    <Compile Include="Crawler\WebCrawler2.cs" />
     <Compile Include="Poco\CrawlConfiguration.cs" />
     <Compile Include="Poco\CrawlContext.cs" />
     <Compile Include="Poco\CrawlDecision.cs" />

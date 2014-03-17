@@ -142,22 +142,22 @@ namespace Abot.Demo
             System.Console.ForegroundColor = originalColor;
         }
 
-        static void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
+        static void crawler_ProcessPageCrawlStarting(object sender, PageActionStartingArgs e)
         {
             //Process data
         }
 
-        static void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
+        static void crawler_ProcessPageCrawlCompleted(object sender, PageActionCompletedArgs e)
         {
             //Process data
         }
 
-        static void crawler_PageLinksCrawlDisallowed(object sender, PageLinksCrawlDisallowedArgs e)
+        static void crawler_PageLinksCrawlDisallowed(object sender, PageActionDisallowedArgs e)
         {
             //Process data
         }
 
-        static void crawler_PageCrawlDisallowed(object sender, PageCrawlDisallowedArgs e)
+        static void crawler_PageCrawlDisallowed(object sender, PageActionDisallowedArgs e)
         {
             //Process data
         }

@@ -5,16 +5,16 @@ using System;
 
 namespace Abot.Tests.Unit.Crawler
 {
-    public class PageLinksCrawlDisallowedArgsTest
+    public class PageActionDisallowedArgsTest
     {
-        CrawledPage _page = new CrawledPage(new Uri("http://aaa.com/"));
+        PageToCrawl _page = new CrawledPage(new Uri("http://aaa.com/"));
         CrawlContext _context = new CrawlContext();
 
         [Test]
         public void Constructor_ValidReason_SetsPublicProperty()
         {
             string reason = "aaa";
-            PageLinksCrawlDisallowedArgs args = new PageLinksCrawlDisallowedArgs(_context, _page, reason);
+            PageActionDisallowedArgs args = new PageActionDisallowedArgs(_context, _page, reason);
 
             Assert.AreSame(reason, args.DisallowedReason);
         }
@@ -23,21 +23,21 @@ namespace Abot.Tests.Unit.Crawler
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullReason()
         {
-            new PageLinksCrawlDisallowedArgs(_context, _page, null);
+            new PageActionDisallowedArgs(_context, _page, null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_EmptyReason()
         {
-            new PageLinksCrawlDisallowedArgs(_context, _page, "");
+            new PageActionDisallowedArgs(_context, _page, "");
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_WhitespaceReason()
         {
-            new PageLinksCrawlDisallowedArgs(_context, _page, "   ");
+            new PageActionDisallowedArgs(_context, _page, "   ");
         }
     }
 }

@@ -3,11 +3,11 @@ using System;
 
 namespace Abot.Crawler
 {
-    public class PageCrawlStartingArgs : CrawlArgs
+    public class PageActionStartingArgs : CrawlArgs
     {
         public PageToCrawl PageToCrawl { get; private set; }
 
-        public PageCrawlStartingArgs(CrawlContext crawlContext, PageToCrawl pageToCrawl)
+        public PageActionStartingArgs(CrawlContext crawlContext, PageToCrawl pageToCrawl)
             : base(crawlContext)
         {
             if (pageToCrawl == null)

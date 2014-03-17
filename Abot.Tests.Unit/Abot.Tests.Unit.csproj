@@ -90,10 +90,9 @@
     <Compile Include="Core\RobotsDotTextFinderTest.cs" />
     <Compile Include="Core\RobotsDotTextTest.cs" />
     <Compile Include="Crawler\CrawlArgsTest.cs" />
-    <Compile Include="Crawler\PageLinksCrawlDisallowedArgsTest.cs" />
-    <Compile Include="Crawler\PageCrawlDisallowedArgsTest.cs" />
-    <Compile Include="Crawler\PageCrawlCompletedArgsTest.cs" />
-    <Compile Include="Crawler\PageCrawlStartingArgsTest.cs" />
+    <Compile Include="Crawler\PageActionDisallowedArgsTest.cs" />
+    <Compile Include="Crawler\PageActionCompletedArgsTest.cs" />
+    <Compile Include="Crawler\PageActionStartingArgsTest.cs" />
     <Compile Include="Crawler\PoliteWebCrawlerTest.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -68,7 +68,7 @@ namespace Abot.Tests.Integration
             }
         }
 
-        private void crawler_PageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
+        private void crawler_PageCrawlCompleted(object sender, PageActionCompletedArgs e)
         {
             PageResult pageResult = new PageResult();
             pageResult.Url = e.CrawledPage.Uri.AbsoluteUri;

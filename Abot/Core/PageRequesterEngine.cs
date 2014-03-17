@@ -15,22 +15,22 @@ namespace Abot.Core
         /// <summary>
         /// Synchronous event that is fired before an http request is sent for a page.
         /// </summary>
-        event EventHandler<PageCrawlStartingArgs> PageRequestStarting;
+        event EventHandler<PageActionStartingArgs> PageRequestStarting;
 
         /// <summary>
         /// Synchronous event that is fired after an http request is complete for a page.
         /// </summary>
-        event EventHandler<PageCrawlCompletedArgs> PageRequestCompleted;
+        event EventHandler<PageActionCompletedArgs> PageRequestCompleted;
 
         /// <summary>
         /// Asynchronous event that is fired before an http request is sent for a page.
         /// </summary>
-        event EventHandler<PageCrawlStartingArgs> PageRequestStartingAsync;
+        event EventHandler<PageActionStartingArgs> PageRequestStartingAsync;
 
         /// <summary>
         /// Asynchronous event that is fired  afteran http request is complete for a page.
         /// </summary>
-        event EventHandler<PageCrawlCompletedArgs> PageRequestCompletedAsync;
+        event EventHandler<PageActionCompletedArgs> PageRequestCompletedAsync;
 
         /// <summary>
         /// Whether the engine has completed making all http requests for all the PageToCrawl objects.
@@ -53,7 +53,7 @@ namespace Abot.Core
     /// <summary>
     /// Makes http requests for all items in the CrawlContext.PagesToCrawl collection and fires events.
     /// </summary>
-    public class PageRequesterEngine : IPageRequesterEngine
+    public class PageRequesterEngine : EngineBase, IPageRequesterEngine
     {
         static ILog _logger = LogManager.GetLogger(typeof(PageRequesterEngine).FullName);
         
@@ -164,106 +164,26 @@ namespace Abot.Core
             PageRequestCompletedAsync = null;
         }
 
-        #region Synchronous Events
 
         /// <summary>
         /// hronous event that is fired before a page is crawled.
         /// </summary>
-        public event EventHandler<PageCrawlStartingArgs> PageRequestStarting;
+        public event EventHandler<PageActionStartingArgs> PageRequestStarting;
 
         /// <summary>
         /// hronous event that is fired when an individual page has been crawled.
         /// </summary>
-        public event EventHandler<PageCrawlCompletedArgs> PageRequestCompleted;
-
-        protected virtual void FirePageRequestStartingEvent(PageToCrawl pageToCrawl)
-        {
-            try
-            {
-                EventHandler<PageCrawlStartingArgs> threadSafeEvent = PageRequestStarting;
-                if (threadSafeEvent != null)
-                    threadSafeEvent(this, new PageCrawlStartingArgs(CrawlContext, pageToCrawl));
-            }
-            catch (Exception e)
-            {
-                _logger.Error("An unhandled exception was thrown by a subscriber of the PageCrawlStarting event for url:" + pageToCrawl.Uri.AbsoluteUri);
-                _logger.Error(e);
-            }
-        }
-
-        protected virtual void FirePageRequestCompletedEvent(CrawledPage crawledPage)
-        {
-            try
-            {
-                EventHandler<PageCrawlCompletedArgs> threadSafeEvent = PageRequestCompleted;
-                if (threadSafeEvent != null)
-                    threadSafeEvent(this, new PageCrawlCompletedArgs(CrawlContext, crawledPage));
-            }
-            catch (Exception e)
-            {
-                _logger.Error("An unhandled exception was thrown by a subscriber of the PageCrawlCompleted event for url:" + crawledPage.Uri.AbsoluteUri);
-                _logger.Error(e);
-            }
-        }
-
-        #endregion
-
-        #region Asynchronous Events
+        public event EventHandler<PageActionCompletedArgs> PageRequestCompleted;
 
         /// <summary>
         /// Asynchronous event that is fired before a page is crawled.
         /// </summary>
-        public event EventHandler<PageCrawlStartingArgs> PageRequestStartingAsync;
+        public event EventHandler<PageActionStartingArgs> PageRequestStartingAsync;
 
         /// <summary>
         /// Asynchronous event that is fired when an individual page has been crawled.
         /// </summary>
-        public event EventHandler<PageCrawlCompletedArgs> PageRequestCompletedAsync;
-
-        protected virtual void FirePageRequestStartingEventAsync(PageToCrawl pageToCrawl)
-        {
-            EventHandler<PageCrawlStartingArgs> threadSafeEvent = PageRequestStartingAsync;
-            if (threadSafeEvent != null)
-            {
-                //Fire each subscribers delegate async
-                foreach (EventHandler<PageCrawlStartingArgs> del in threadSafeEvent.GetInvocationList())
-                {
-                    del.BeginInvoke(this, new PageCrawlStartingArgs(CrawlContext, pageToCrawl), null, null);
-                }
-            }
-        }
-
-        protected virtual void FirePageRequestCompletedEventAsync(CrawledPage crawledPage)
-        {
-            EventHandler<PageCrawlCompletedArgs> threadSafeEvent = PageRequestCompletedAsync;
-
-            if (threadSafeEvent == null)
-                return;
-
-            if (CrawlContext.PagesToCrawl.Count == 0)
-            {
-                //Must be fired synchronously to avoid main thread exiting before completion of event handler for first or last page crawled
-                try
-                {
-                    threadSafeEvent(this, new PageCrawlCompletedArgs(CrawlContext, crawledPage));
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("An unhandled exception was thrown by a subscriber of the PageCrawlCompleted event for url:" + crawledPage.Uri.AbsoluteUri);
-                    _logger.Error(e);
-                }
-            }
-            else
-            {
-                //Fire each subscribers delegate async
-                foreach (EventHandler<PageCrawlCompletedArgs> del in threadSafeEvent.GetInvocationList())
-                {
-                    del.BeginInvoke(this, new PageCrawlCompletedArgs(CrawlContext, crawledPage), null, null);
-                }
-            }
-        }
-
-        #endregion
+        public event EventHandler<PageActionCompletedArgs> PageRequestCompletedAsync;
 
         protected internal virtual void MakeRequest(PageToCrawl pageToCrawl)
         {
@@ -274,6 +194,9 @@ namespace Abot.Core
 
                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
+                base.FirePageActionStartingEventAsync(CrawlContext, PageRequestStartingAsync, pageToCrawl, "PageRequestStartingAsync");
+                base.FirePageActionStartingEvent(CrawlContext, PageRequestStarting, pageToCrawl, "PageRequestStarting");
+
                 CrawledPage crawledPage = CrawlThePage(pageToCrawl);
 
                 if (PageSizeIsAboveMax(crawledPage))
@@ -281,8 +204,8 @@ namespace Abot.Core
 
                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                FirePageRequestCompletedEventAsync(crawledPage);
-                FirePageRequestCompletedEvent(crawledPage);
+                base.FirePageActionCompletedEventAsync(CrawlContext, PageRequestCompletedAsync, crawledPage, "PageRequestCompletedAsync");
+                base.FirePageActionCompletedEvent(CrawlContext, PageRequestCompleted, crawledPage, "PageRequestCompleted");
             }
             catch (OperationCanceledException oce)
             {
@@ -312,8 +235,6 @@ namespace Abot.Core
         protected virtual CrawledPage CrawlThePage(PageToCrawl pageToCrawl)
         {
             _logger.DebugFormat("About to crawl page [{0}]", pageToCrawl.Uri.AbsoluteUri);
-            FirePageRequestStartingEventAsync(pageToCrawl);
-            FirePageRequestStartingEvent(pageToCrawl);
 
             //CrawledPage crawledPage = PageRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldRetrieveResponseBody);//TODO need to implement this!!!
             CrawledPage crawledPage = PageRequester.MakeRequest(pageToCrawl.Uri);

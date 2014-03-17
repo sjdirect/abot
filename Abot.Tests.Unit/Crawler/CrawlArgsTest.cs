@@ -22,14 +22,14 @@ namespace Abot.Tests.Unit.Crawler
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_CrawledPage_IsNull()
         {
-            new PageCrawlCompletedArgs(new CrawlContext(), null);
+            new PageActionCompletedArgs(new CrawlContext(), null);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_CrawlContext_IsNull()
         {
-            new PageCrawlCompletedArgs(null, new CrawledPage(new Uri("http://aaa.com/")));
+            new PageActionCompletedArgs(null, new CrawledPage(new Uri("http://aaa.com/")));
         }
     }
 }
