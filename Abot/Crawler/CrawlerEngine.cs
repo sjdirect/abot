@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Abot.Crawler
 {
-    public interface ICrawlerEngine
+    public interface IWebCrawler2
     {
         CrawlContext CrawlContext { get; set; }
 
@@ -48,8 +48,13 @@ namespace Abot.Crawler
         IPageProcessorEngine PageProcessorEngine { get; set; }
     }
 
-    public abstract class CrawlerEngine : ICrawlerEngine
+    public abstract class WebCrawler2 : IWebCrawler2
     {
+        //TODO Its this classes job to make using abot just as easy as the old one but also to
+        //add access to things like the scheduler
+
+        //DO NOT have a constructor for the IPageRequesterEngine and IPageProcessorEngine since thi
+
         //!!!!!!!!!!!!!TODO make this a named logger before releasing 2.0!!!!!!!!!!!!!!
         static ILog _logger = LogManager.GetLogger(typeof(CrawlerEngine).FullName);
         //!!!!!!!!!!!!!TODO make these protected properties before releasing 2.0!!!!!!!!!!!!!!

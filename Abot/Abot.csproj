@@ -92,11 +92,11 @@
     <Compile Include="Core\ThreadManager.cs" />
     <Compile Include="Crawler\CrawlArgs.cs" />
     <Compile Include="Crawler\CrawlerEngine.cs" />
+    <Compile Include="Crawler\ICrawlerEngine.cs" />
     <Compile Include="Crawler\PageActionDisallowedArgs.cs" />
     <Compile Include="Crawler\PageActionCompletedArgs.cs" />
     <Compile Include="Crawler\PageActionStartingArgs.cs" />
     <Compile Include="Crawler\PoliteWebCrawler.cs" />
-    <Compile Include="Crawler\WebCrawler2.cs" />
     <Compile Include="Poco\CrawlConfiguration.cs" />
     <Compile Include="Poco\CrawlContext.cs" />
     <Compile Include="Poco\CrawlDecision.cs" />
