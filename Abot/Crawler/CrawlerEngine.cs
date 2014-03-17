@@ -1,15 +1,13 @@
-﻿using Abot.Poco;
+﻿using Abot.Core;
+using Abot.Poco;
+using log4net;
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 
 namespace Abot.Crawler
 {
-
-    using Abot.Core;
-    using log4net;
-    using System.Diagnostics;
-    using System.Reflection;
-
     public interface ICrawlerEngine
     {
         CrawlContext CrawlContext { get; set; }

@@ -2,14 +2,13 @@
 using Abot.Poco;
 using log4net;
 using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Abot.Core
 {
-    using System.Collections.Generic;
-    using System.Dynamic;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public interface IPageRequesterEngine: IDisposable
     {
         /// <summary>

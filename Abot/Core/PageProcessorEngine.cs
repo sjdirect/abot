@@ -1,13 +1,12 @@
-﻿
+﻿using Abot.Crawler;
+using Abot.Poco;
+using log4net;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace Abot.Core
-{
-    using Abot.Crawler;
-    using Abot.Poco;
-    using log4net;
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    
+{   
     public interface IPageProcessorEngine: IDisposable
     {
         /// <summary>
