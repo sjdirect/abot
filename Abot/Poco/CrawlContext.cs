@@ -1,5 +1,4 @@
-﻿using Abot.Core;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Dynamic;
 using System.Threading;
@@ -13,7 +12,6 @@ namespace Abot.Poco
             CrawlCountByDomain = new ConcurrentDictionary<string, int>();
             CrawlBag = new ExpandoObject();
             CancellationTokenSource = new CancellationTokenSource();
-            PagesToCrawl = new BlockingCollection<PageToCrawl>();
             PagesToProcess = new BlockingCollection<CrawledPage>();
         }
 
@@ -26,6 +24,7 @@ namespace Abot.Poco
         /// total number of pages that have been crawled
         /// </summary>
         public int CrawledCount = 0;
+
         /// <summary>
         /// The datetime of the last unsuccessful http status (non 200) was requested
         /// </summary>
@@ -40,11 +39,6 @@ namespace Abot.Poco
         /// Configuration values used to determine crawl settings
         /// </summary>
         public CrawlConfiguration CrawlConfiguration { get; set; }
-
-        /// <summary>
-        /// The scheduler that is being used
-        /// </summary>
-        public IScheduler Scheduler { get; set; }
 
         /// <summary>
         /// Random dynamic values
@@ -77,13 +71,13 @@ namespace Abot.Poco
         public CancellationTokenSource CancellationTokenSource { get; set; }
 
         /// <summary>
-        /// Thread safe collection of pages that need to be crawled
-        /// </summary>
-        public BlockingCollection<PageToCrawl> PagesToCrawl { get; set; }
-
-        /// <summary>
         /// Thread safe collection of pages that need to be processed
         /// </summary>
-        public BlockingCollection<CrawledPage> PagesToProcess { get; set; } 
+        public BlockingCollection<CrawledPage> PagesToProcess { get; set; }
+
+        /// <summary>
+        /// Contains instances of core implementations used by the crawler and it's dependent components
+        /// </summary>
+        public ImplementationContainer ImplementationContainer { get; set; }
     }
 }

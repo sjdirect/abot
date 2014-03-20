@@ -2,12 +2,45 @@
 using Abot.Poco;
 using log4net;
 using System;
+using System.Threading;
 
 namespace Abot.Core
 {
     public abstract class EngineBase
     {
         static ILog _logger = LogManager.GetLogger(typeof(EngineBase).FullName);
+        
+        protected CrawlConfiguration CrawlConfiguration { get; set; }
+        
+        protected ImplementationContainer ImplementationContainer { get; set; }
+        
+        protected CrawlContext CrawlContext { get; set; }      
+
+        protected CancellationTokenSource CancellationTokenSource { get; set; }
+
+        public EngineBase(CrawlConfiguration crawlConfiguration, ImplementationContainer implementationContainer)
+        {
+            if(crawlConfiguration == null)
+                throw new ArgumentNullException("crawlCofiguration");
+
+            if (implementationContainer == null)
+                throw new ArgumentNullException("implementationContainer");
+
+            CrawlConfiguration = crawlConfiguration;
+            ImplementationContainer = implementationContainer;
+            CancellationTokenSource = new CancellationTokenSource();
+        }
+
+        /// <summary>
+        /// Starts the Engine
+        /// </summary>
+        public virtual void Start(CrawlContext crawlContext)
+        {
+            if (crawlContext == null)
+                throw new ArgumentNullException("crawlContext");
+
+            CrawlContext = crawlContext;
+        }
 
         protected virtual void FirePageActionStartingEvent(CrawlContext crawlContext, EventHandler<PageActionStartingArgs> eventHander, PageToCrawl pageToCrawl, string eventDisplayName)
         {
@@ -57,7 +90,7 @@ namespace Abot.Core
             if (threadSafeEvent == null)
                 return;
 
-            if (crawlContext.PagesToCrawl.Count == 0)
+            if (crawlContext.ImplementationContainer.PagesToCrawlScheduler.Count == 0)
             {
                 //Must be fired synchronously to avoid main thread exiting before completion of event handler for first or last page crawled
                 try
@@ -100,7 +133,7 @@ namespace Abot.Core
             if (threadSafeEvent == null)
                 return;
 
-            if (crawlContext.PagesToCrawl.Count == 0)
+            if (crawlContext.ImplementationContainer.PagesToCrawlScheduler.Count == 0)
             {
                 //Must be fired synchronously to avoid main thread exiting before completion of event handler for first or last page crawled
                 try

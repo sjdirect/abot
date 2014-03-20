@@ -4,7 +4,6 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Abot.Core
@@ -59,114 +58,16 @@ namespace Abot.Core
         static ILog _logger = LogManager.GetLogger(typeof(PageRequesterEngine).FullName);
         
         /// <summary>
-        /// IThreadManager implementation that is used to manage multithreading
-        /// </summary>
-        public IThreadManager ThreadManager { get; set; }
-
-        /// <summary>
-        /// IPageRequester implementation that is used to make raw http requests
-        /// </summary>
-        public IPageRequester PageRequester { get; set; }
-
-        /// <summary>
-        /// ICrawlDecisionMaker impl used to make key decisions during the crawl
-        /// </summary>
-        public ICrawlDecisionMaker CrawlDecisionMaker { get; set; }
-
-        /// <summary>
         /// IPageRequester implementation that is used to make raw http requests
         /// </summary>
         public bool IsDone
         {
             get
             {
-                return (CancellationTokenSource.Token.IsCancellationRequested || 
-                    (!ThreadManager.HasRunningThreads() && CrawlContext.PagesToCrawl.Count == 0));
+                return (CancellationTokenSource.Token.IsCancellationRequested ||
+                    (!ImplementationContainer.PageRequesterEngineThreadManager.HasRunningThreads() && CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Count == 0));
             }
         }
-
-        /// <summary>
-        /// CrawlContext that is used to decide what to crawl and how
-        /// </summary>
-        public CrawlContext CrawlContext { get; set; }
-
-        /// <summary>
-        /// Cancellation token used to shut down the engine
-        /// </summary>
-        protected CancellationTokenSource CancellationTokenSource { get; set; }
-
-        /// <summary>
-        /// Creates instance of PageRequesterEngine using default implemention of dependencies.
-        /// </summary>
-        public PageRequesterEngine()
-            : this(null, null, null, null)
-        {
-            
-        }
-
-        /// <summary>
-        /// Creates instance of HttpRequestEngine. Passing null for any value will use the default implementation.
-        /// </summary>
-        public PageRequesterEngine(
-            CrawlConfiguration crawlConfiguration,
-            IThreadManager threadManager,
-            IPageRequester httpRequester,
-            ICrawlDecisionMaker crawlDecisionMaker)
-        {
-            CrawlConfiguration config = crawlConfiguration ?? new CrawlConfiguration();
-
-            ThreadManager = threadManager ?? new TaskThreadManager(config.MaxConcurrentThreads);
-            PageRequester = httpRequester ?? new PageRequester(config);
-            CrawlDecisionMaker = crawlDecisionMaker ?? new CrawlDecisionMaker();
-            CancellationTokenSource = new CancellationTokenSource();
-        }
-
-        /// <summary>
-        /// Starts the HttpRequestEngine
-        /// </summary>
-        public virtual void Start(CrawlContext crawlContext)
-        {
-            if(crawlContext == null)
-                throw new ArgumentNullException("crawlContext");
-
-            CrawlContext = crawlContext;
-
-            _logger.InfoFormat("HttpRequestEngine starting, [{0}] pages left to request", CrawlContext.PagesToCrawl.Count);
-
-            //TODO should this task be "LongRunning"
-            Task.Factory.StartNew(() =>
-            {
-                foreach (PageToCrawl pageToCrawl in CrawlContext.PagesToCrawl.GetConsumingEnumerable())
-                {
-                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                    _logger.DebugFormat("About to request [{0}], [{1}] pages left to request", pageToCrawl.Uri, CrawlContext.PagesToCrawl.Count);
-                    ThreadManager.DoWork(() => MakeRequest(pageToCrawl));
-                }
-                _logger.DebugFormat("Complete requesting pages");
-            });
-        }
-
-        /// <summary>
-        /// Stops the HttpRequestEngine
-        /// </summary>
-        public virtual void Stop()
-        {
-            _logger.InfoFormat("HttpRequestEngine stopping, [{0}] pages left to request", CrawlContext.PagesToCrawl.Count);
-            CancellationTokenSource.Cancel();
-            Dispose();
-        }
-
-        public virtual void Dispose()
-        {
-            ThreadManager.AbortAll();
-
-            //Set all events to null so no more events are fired
-            PageRequestStarting = null;
-            PageRequestCompleted = null;
-            PageRequestStartingAsync = null;
-            PageRequestCompletedAsync = null;
-        }
-
 
         /// <summary>
         /// hronous event that is fired before a page is crawled.
@@ -187,6 +88,60 @@ namespace Abot.Core
         /// Asynchronous event that is fired when an individual page has been crawled.
         /// </summary>
         public event EventHandler<PageActionCompletedArgs> PageRequestCompletedAsync;
+
+
+        public PageRequesterEngine(CrawlConfiguration crawlConfiguration, ImplementationContainer implementationContainer)
+            : base(crawlConfiguration, implementationContainer)
+        {
+        }
+
+
+        /// <summary>
+        /// Starts the PageRequesterEngine
+        /// </summary>
+        public virtual void Start(CrawlContext crawlContext)
+        {
+            if(crawlContext == null)
+                throw new ArgumentNullException("crawlContext");
+
+            CrawlContext = crawlContext;
+
+            _logger.InfoFormat("PageRequesterEngine starting, [{0}] pages left to request", CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Count);
+
+            //TODO should this task be "LongRunning"
+            Task.Factory.StartNew(() =>
+            {
+                foreach (PageToCrawl pageToCrawl in CrawlContext.ImplementationContainer.PagesToCrawlScheduler.GetConsumingEnumerable())
+                {
+                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    _logger.DebugFormat("About to request [{0}], [{1}] pages left to request", pageToCrawl.Uri, CrawlContext.PagesToCrawl.Count);
+                    ImplementationContainer.PageRequesterEngineThreadManager.DoWork(() => MakeRequest(pageToCrawl));
+                }
+                _logger.DebugFormat("Complete requesting pages");
+            });
+        }
+
+        /// <summary>
+        /// Stops the PageRequesterEngine
+        /// </summary>
+        public virtual void Stop()
+        {
+            _logger.InfoFormat("PageRequesterEngine stopping, [{0}] pages left to request", CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Count);
+            CancellationTokenSource.Cancel();
+            Dispose();
+        }
+
+        public virtual void Dispose()
+        {
+            ImplementationContainer.PageRequesterEngineThreadManager.AbortAll();
+
+            //Set all events to null so no more events are fired
+            PageRequestStarting = null;
+            PageRequestCompleted = null;
+            PageRequestStartingAsync = null;
+            PageRequestCompletedAsync = null;
+        }
+
 
         protected internal virtual void MakeRequest(PageToCrawl pageToCrawl)
         {
@@ -239,7 +194,7 @@ namespace Abot.Core
         {
             _logger.DebugFormat("About to crawl page [{0}]", pageToCrawl.Uri.AbsoluteUri);
 
-            CrawledPage crawledPage = PageRequester.MakeRequest(pageToCrawl.Uri, (x) => CrawlDecisionMaker.ShouldDownloadPageContent(x, CrawlContext));
+            CrawledPage crawledPage = ImplementationContainer.PageRequester.MakeRequest(pageToCrawl.Uri, (x) => ImplementationContainer.CrawlDecisionMaker.ShouldDownloadPageContent(x, CrawlContext));
             dynamic combinedPageBag = CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             AutoMapper.Mapper.CreateMap<PageToCrawl, CrawledPage>();
             AutoMapper.Mapper.Map(pageToCrawl, crawledPage);
