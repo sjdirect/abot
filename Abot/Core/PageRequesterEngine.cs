@@ -111,13 +111,7 @@ namespace Abot.Core
             //TODO should this task be "LongRunning"
             Task.Factory.StartNew(() =>
             {
-                foreach (PageToCrawl pageToCrawl in CrawlContext.ImplementationContainer.PagesToCrawlScheduler.GetConsumingEnumerable())
-                {
-                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                    _logger.DebugFormat("About to request [{0}], [{1}] pages left to request", pageToCrawl.Uri, CrawlContext.PagesToCrawl.Count);
-                    ImplementationContainer.PageRequesterEngineThreadManager.DoWork(() => MakeRequest(pageToCrawl));
-                }
-                _logger.DebugFormat("Complete requesting pages");
+                MakeRequests();
             });
         }
 
@@ -142,6 +136,29 @@ namespace Abot.Core
             PageRequestCompletedAsync = null;
         }
 
+        protected virtual void MakeRequests()
+        {
+            while (!CancellationTokenSource.IsCancellationRequested)
+            {
+                CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                if (ImplementationContainer.PagesToCrawlScheduler.Count > 0)
+                {
+                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                    PageToCrawl pageToCrawl = ImplementationContainer.PagesToCrawlScheduler.GetNext();
+                    _logger.DebugFormat("About to request [{0}], [{1}] pages left to request", pageToCrawl.Uri, ImplementationContainer.PagesToCrawlScheduler.Count);
+                    ImplementationContainer.PageRequesterEngineThreadManager.DoWork(() => MakeRequest(ImplementationContainer.PagesToCrawlScheduler.GetNext()));
+                }
+                else
+                {
+                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                    _logger.DebugFormat("Waiting for pages to crawl...");
+                    System.Threading.Thread.Sleep(2500);
+                }
+            }
+        }
 
         protected internal virtual void MakeRequest(PageToCrawl pageToCrawl)
         {
@@ -161,6 +178,8 @@ namespace Abot.Core
                     return;
 
                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                ImplementationContainer.PagesToProcessScheduler.Add(crawledPage);
 
                 base.FirePageActionCompletedEventAsync(CrawlContext, PageRequestCompletedAsync, crawledPage, "PageRequestCompletedAsync");
                 base.FirePageActionCompletedEvent(CrawlContext, PageRequestCompleted, crawledPage, "PageRequestCompleted");

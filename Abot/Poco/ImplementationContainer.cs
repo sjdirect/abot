@@ -28,10 +28,9 @@ namespace Abot.Poco
 
         public IPageProcessorEngine PageProcessorEngine { get; set; }
 
-        //TODO There needs to be a scheduler like this as well!!!!!!!!!
-        //public IScheduler PagesToProcessScheduler { get; set; }
-
         public IScheduler PagesToCrawlScheduler { get; set; }
+
+        public IScheduler PagesToProcessScheduler { get; set; }
 
         //public IDomainRateLimiter DomainRateLimiter { get; set; }
 

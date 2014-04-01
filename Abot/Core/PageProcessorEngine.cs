@@ -62,7 +62,7 @@ namespace Abot.Core
             get
             {
                 return (CancellationTokenSource.Token.IsCancellationRequested ||
-                    (!ImplementationContainer.PageProcessorEngineThreadManager.HasRunningThreads() && CrawlContext.PagesToProcess.Count == 0));
+                    (!ImplementationContainer.PageProcessorEngineThreadManager.HasRunningThreads() && ImplementationContainer.PagesToProcessScheduler.Count == 0));
             }
         }
 
@@ -118,25 +118,20 @@ namespace Abot.Core
         {
             base.Start(crawlContext);
 
-            _logger.InfoFormat("PageProcessorEngine starting, [{0}] pages left to request", CrawlContext.PagesToProcess.Count);
+            _logger.InfoFormat("PageProcessorEngine starting, [{0}] pages left to request", ImplementationContainer.PagesToProcessScheduler.Count);
 
             //TODO should this task be "LongRunning"
             Task.Factory.StartNew(() =>
             {
-                foreach (CrawledPage crawledPage in CrawlContext.PagesToProcess.GetConsumingEnumerable())
-                {
-                    _logger.DebugFormat("About to process crawled page [{0}], [{1}] crawled pages left to process", crawledPage.Uri, CrawlContext.PagesToProcess.Count);
-                    
-                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                    ImplementationContainer.PageProcessorEngineThreadManager.DoWork(() => ProcessPage(crawledPage));
-                }
-                _logger.DebugFormat("Complete processing crawled pages");
+                ProcessPages();
             });
         }
 
         public virtual void Stop()
         {
-            _logger.InfoFormat("PageProcessorEngine stopping, [{0}] pages left to process", CrawlContext.PagesToProcess.Count);
+            _logger.InfoFormat("PageProcessorEngine stopping, [{0}] pages left to process", ImplementationContainer.PagesToProcessScheduler.Count);
+            CancellationTokenSource.Cancel();
+            Dispose();
         }
 
         public virtual void Dispose()
@@ -154,6 +149,39 @@ namespace Abot.Core
             PageLinksCrawlDisallowedAsync = null;
         }
 
+
+        protected virtual void ProcessPages()
+        {
+            while (!CancellationTokenSource.IsCancellationRequested)
+            {
+                CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                if (ImplementationContainer.PagesToProcessScheduler.Count > 0)
+                {
+                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                    //TODO !!!!!!!!!!!!!!!The scheduler is being bent to handle CrawledPage objects
+                    CrawledPage nextPageToProcess = ImplementationContainer.PagesToProcessScheduler.GetNext() as CrawledPage;
+
+                    if (nextPageToProcess == null)
+                    {
+                        _logger.WarnFormat("PagesToProcessScheduler returning null for GetNext(). Be sure to pass a CrawledPage object to the Add() method");
+                    }
+                    else
+                    {
+                        _logger.DebugFormat("About to process crawled page [{0}], [{1}] crawled pages left to process", nextPageToProcess.Uri, ImplementationContainer.PagesToProcessScheduler.Count);
+                        ImplementationContainer.PageProcessorEngineThreadManager.DoWork(() => ProcessPage(nextPageToProcess));
+                    }
+                }
+                else
+                {
+                    CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                    _logger.DebugFormat("Waiting for pages to process...");
+                    System.Threading.Thread.Sleep(2500);
+                }
+            }
+        }
 
         protected virtual void ProcessPage(CrawledPage crawledPage)
         {

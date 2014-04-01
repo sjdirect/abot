@@ -35,9 +35,7 @@ namespace Abot.Core
             }
 
             PagesToCrawlScheduler = implementationContainer.PagesToCrawlScheduler ?? new Scheduler(config.IsUriRecrawlingEnabled, null, null);
-            
-            //TOOD pagestoprocess could also benefit from a scheduler but its pagetocrawl centric
-            //PagesToProcessScheduler = implementationContainer.PagesToProcessScheduler ?? new Scheduler(config.IsUriRecrawlingEnabled, null, null);
+            PagesToProcessScheduler = implementationContainer.PagesToProcessScheduler ?? new Scheduler(false, null, null);
 
             PageRequester = implementationContainer.PageRequester ?? new PageRequester(config);
             CrawlDecisionMaker = implementationContainer.CrawlDecisionMaker ?? new CrawlDecisionMaker();

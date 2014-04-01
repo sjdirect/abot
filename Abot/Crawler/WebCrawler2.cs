@@ -43,8 +43,6 @@ namespace Abot.Crawler
         //TODO Its this classes job to make using abot just as easy as the old one but also to
         //add access to things like the scheduler
 
-        //DO NOT have a constructor for the IPageRequesterEngine and IPageProcessorEngine since thi
-
         //!!!!!!!!!!!!!TODO make this a named logger before releasing 2.0!!!!!!!!!!!!!!
         static ILog _logger = LogManager.GetLogger(typeof(WebCrawler2).FullName);
         //!!!!!!!!!!!!!TODO make these protected properties before releasing 2.0!!!!!!!!!!!!!!
@@ -110,8 +108,6 @@ namespace Abot.Crawler
 
             PageRequesterEngine = CrawlContext.ImplementationContainer.PageRequesterEngine;
             PageProcessorEngine = CrawlContext.ImplementationContainer.PageProcessorEngine;
-
-            PageRequesterEngine.PageRequestCompleted += PageRequesterEngine_PageCrawlCompleted;
         }
 
         #endregion Constructors
@@ -200,7 +196,7 @@ namespace Abot.Crawler
             //TODO add configuration for MaxConcurrentCrawledPageProcessors
             //TODO retire MaxConcurrentThreads
 
-            _logger.DebugFormat("Starting producer & consumer");
+            _logger.DebugFormat("Starting PageRequesterEngine & PageProcessingEngine");
             PageRequesterEngine.Start(CrawlContext);
             PageProcessorEngine.Start(CrawlContext);
 
@@ -209,8 +205,8 @@ namespace Abot.Crawler
                 RunPreWorkChecks();
                 if (PageRequesterEngine.IsDone && PageProcessorEngine.IsDone)
                 {
-                    CrawlContext.PagesToCrawl.CompleteAdding();
-                    CrawlContext.PagesToProcess.CompleteAdding();
+                    //CrawlContext.PagesToCrawl.CompleteAdding();
+                    //CrawlContext.PagesToProcess.CompleteAdding();
                     PageRequesterEngine.Stop();
                     PageProcessorEngine.Stop();
                     _crawlComplete = true;
@@ -218,10 +214,9 @@ namespace Abot.Crawler
                 else
                 {
                     _logger.DebugFormat("Health check, still working...");
-                    System.Threading.Thread.Sleep(2500);                    
+                    System.Threading.Thread.Sleep(2500);                
                 }
             }
-
         }
 
         protected virtual void VerifyRequiredAvailableMemory()
@@ -282,6 +277,7 @@ namespace Abot.Crawler
 
         protected virtual void CheckForHardStopRequest()
         {
+            //TODO Is Stop and Hard Stop needed anymore!!!!!!!!
             if (CrawlContext.IsCrawlHardStopRequested)
             {
                 if (!_crawlStopReported)
@@ -302,6 +298,7 @@ namespace Abot.Crawler
 
         protected virtual void CheckForStopRequest()
         {
+            //TODO Is Stop and Hard Stop needed anymore!!!!!!!!
             if (CrawlContext.IsCrawlStopRequested)
             {
                 if (!_crawlStopReported)
@@ -341,11 +338,6 @@ namespace Abot.Crawler
             {
                 _logger.InfoFormat("{0}{1}: {2}", indentString, key, config.ConfigurationExtensions[key]);
             }
-        }
-
-        protected virtual void PageRequesterEngine_PageCrawlCompleted(object sender, PageActionCompletedArgs e)
-        {
-            CrawlContext.PagesToProcess.Add(e.CrawledPage);
         }
 
         protected virtual CrawlConfiguration GetCrawlConfigurationFromConfigFile()

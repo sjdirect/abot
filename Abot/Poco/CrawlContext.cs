@@ -12,7 +12,7 @@ namespace Abot.Poco
             CrawlCountByDomain = new ConcurrentDictionary<string, int>();
             CrawlBag = new ExpandoObject();
             CancellationTokenSource = new CancellationTokenSource();
-            PagesToProcess = new BlockingCollection<CrawledPage>();
+            //PagesToProcess = new BlockingCollection<CrawledPage>();
         }
 
         /// <summary>
@@ -70,10 +70,10 @@ namespace Abot.Poco
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; set; }
 
-        /// <summary>
-        /// Thread safe collection of pages that need to be processed
-        /// </summary>
-        public BlockingCollection<CrawledPage> PagesToProcess { get; set; }
+        ///// <summary>
+        ///// Thread safe collection of pages that need to be processed
+        ///// </summary>
+        //public BlockingCollection<CrawledPage> PagesToProcess { get; set; }
 
         /// <summary>
         /// Contains instances of core implementations used by the crawler and it's dependent components
