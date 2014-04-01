@@ -51,7 +51,7 @@ namespace Abot.Core
     }
 
     /// <summary>
-    /// Makes http requests for all items in the CrawlContext.PagesToCrawl collection and fires events.
+    /// Processes pages from the PagesToProcess scheduler and fires events.
     /// </summary>
     public class PageProcessorEngine : EngineBase, IPageProcessorEngine
     {

@@ -34,8 +34,8 @@ namespace Abot.Core
                 MemoryManager = implementationContainer.MemoryManager ?? new MemoryManager(MemoryMonitor);
             }
 
-            PagesToCrawlScheduler = implementationContainer.PagesToCrawlScheduler ?? new Scheduler(config.IsUriRecrawlingEnabled, null, null);
-            PagesToProcessScheduler = implementationContainer.PagesToProcessScheduler ?? new Scheduler(false, null, null);
+            PagesToCrawlScheduler = implementationContainer.PagesToCrawlScheduler ?? new PagesToCrawlScheduler(config.IsUriRecrawlingEnabled, null, null);
+            PagesToProcessScheduler = implementationContainer.PagesToProcessScheduler ?? new PagesToCrawlScheduler(false, null, null);
 
             PageRequester = implementationContainer.PageRequester ?? new PageRequester(config);
             CrawlDecisionMaker = implementationContainer.CrawlDecisionMaker ?? new CrawlDecisionMaker();

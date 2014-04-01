@@ -67,6 +67,8 @@
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
+    <Compile Include="Core\PagesToProcessScheduler.cs" />
+    <Compile Include="Core\PagesToCrawlScheduler.cs" />
     <Compile Include="Core\ImplementationOverride.cs" />
     <Compile Include="Core\EngineBase.cs" />
     <Compile Include="Poco\ImplementationContainer.cs" />
@@ -76,7 +78,6 @@
     <Compile Include="Core\MemoryBloomUrlRepository.cs" />
     <Compile Include="Core\Murmur3HashGenerator.cs" />
     <Compile Include="Core\OnDiskCrawledUrlRepository.cs" />
-    <Compile Include="Core\Scheduler.cs" />
     <Compile Include="Core\WebContentExtractor.cs" />
     <Compile Include="Core\GcMemoryMonitor.cs" />
     <Compile Include="Core\InMemoryCrawledUrlRepository.cs" />

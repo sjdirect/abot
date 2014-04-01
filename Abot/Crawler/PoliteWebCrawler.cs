@@ -26,7 +26,7 @@ namespace Abot.Crawler
             CrawlConfiguration crawlConfiguration,
             ICrawlDecisionMaker crawlDecisionMaker,
             IThreadManager threadManager,
-            IScheduler scheduler,
+            IPageToCrawlScheduler scheduler,
             IPageRequester httpRequester,
             IHyperLinkParser hyperLinkParser,
             IMemoryManager memoryManager,

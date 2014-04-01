@@ -28,9 +28,9 @@ namespace Abot.Poco
 
         public IPageProcessorEngine PageProcessorEngine { get; set; }
 
-        public IScheduler PagesToCrawlScheduler { get; set; }
+        public IScheduler<PageToCrawl> PagesToCrawlScheduler { get; set; }
 
-        public IScheduler PagesToProcessScheduler { get; set; }
+        public IScheduler<PageToCrawl> PagesToProcessScheduler { get; set; }
 
         //public IDomainRateLimiter DomainRateLimiter { get; set; }
 

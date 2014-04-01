@@ -109,7 +109,7 @@ namespace Abot.Crawler
         protected CrawlResult _crawlResult = null;
         protected CrawlContext _crawlContext;
         protected IThreadManager _threadManager;
-        protected IScheduler _scheduler;
+        protected IPageToCrawlScheduler _scheduler;
         protected IPageRequester _httpRequester;
         protected IHyperLinkParser _hyperLinkParser;
         protected ICrawlDecisionMaker _crawlDecisionMaker;
@@ -170,7 +170,7 @@ namespace Abot.Crawler
             CrawlConfiguration crawlConfiguration,
             ICrawlDecisionMaker crawlDecisionMaker,
             IThreadManager threadManager,
-            IScheduler scheduler,
+            IPageToCrawlScheduler scheduler,
             IPageRequester httpRequester,
             IHyperLinkParser hyperLinkParser,
             IMemoryManager memoryManager)
@@ -180,7 +180,7 @@ namespace Abot.Crawler
             CrawlBag = _crawlContext.CrawlBag;
 
             _threadManager = threadManager ?? new TaskThreadManager(_crawlContext.CrawlConfiguration.MaxConcurrentThreads > 0 ? _crawlContext.CrawlConfiguration.MaxConcurrentThreads : System.Environment.ProcessorCount);
-            _scheduler = scheduler ?? new Scheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, null, null);
+            _scheduler = scheduler ?? new PagesToCrawlScheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, null, null);
             _httpRequester = httpRequester ?? new PageRequester(_crawlContext.CrawlConfiguration);
             _crawlDecisionMaker = crawlDecisionMaker ?? new CrawlDecisionMaker();
 

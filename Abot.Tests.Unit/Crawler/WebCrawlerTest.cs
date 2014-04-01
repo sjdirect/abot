@@ -22,7 +22,7 @@ namespace Abot.Tests.Unit.Crawler
         Mock<IDomainRateLimiter> _fakeDomainRateLimiter;
         Mock<IRobotsDotTextFinder> _fakeRobotsDotTextFinder;
         
-        Scheduler _dummyScheduler;
+        PagesToCrawlScheduler _dummyScheduler;
         TaskThreadManager _dummyThreadManager;
         CrawlConfiguration _dummyConfiguration;
         Uri _rootUri;
@@ -38,7 +38,7 @@ namespace Abot.Tests.Unit.Crawler
             _fakeRobotsDotTextFinder = new Mock<IRobotsDotTextFinder>();
 
 
-            _dummyScheduler = new Scheduler();
+            _dummyScheduler = new PagesToCrawlScheduler();
             _dummyThreadManager = new TaskThreadManager(10);
             _dummyConfiguration = new CrawlConfiguration();
             _dummyConfiguration.ConfigurationExtensions.Add("somekey", "someval");
@@ -111,7 +111,7 @@ namespace Abot.Tests.Unit.Crawler
         [Test]
         public void Crawl_ExceptionThrownByScheduler_SetsCrawlResultError()
         {
-            Mock<IScheduler> fakeScheduler = new Mock<IScheduler>();
+            Mock<IPageToCrawlScheduler> fakeScheduler = new Mock<IPageToCrawlScheduler>();
             Exception ex = new Exception("oh no");
             fakeScheduler.Setup(f => f.Count).Throws(ex);
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });

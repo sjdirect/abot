@@ -4,12 +4,10 @@ using System.Collections.Generic;
 
 namespace Abot.Core
 {
-    //!!!!!!!!!No engine is using the scheduler!!!!! then how will we handle duplicates and anything else this class does??????????????
-    //!!!!!!!!!This needs to somehow be a blocking collection to work better with the processor and requester engines!!!!!!!
     /// <summary>
-    /// Handles managing the priority of what pages need to be crawled
+    /// Handles managing the priority of items to work on
     /// </summary>
-    public interface IScheduler
+    public interface IScheduler<T>
     {
         /// <summary>
         /// Count of remaining items that are currently scheduled
@@ -17,38 +15,38 @@ namespace Abot.Core
         int Count { get; }
 
         /// <summary>
-        /// Schedules the param to be crawled
+        /// Schedules the item
         /// </summary>
-        void Add(PageToCrawl page);
+        void Add(T item);
 
         /// <summary>
-        /// Schedules the param to be crawled
+        /// Schedules the items
         /// </summary>
-        void Add(IEnumerable<PageToCrawl> pages);
+        void Add(IEnumerable<T> items);
 
         /// <summary>
-        /// Gets the next page to crawl
+        /// Gets the next item
         /// </summary>
-        PageToCrawl GetNext();
+        T GetNext();
 
         /// <summary>
-        /// Clear all currently scheduled pages
+        /// Clear all currently scheduled items
         /// </summary>
         void Clear();
     }
 
-    public class Scheduler : IScheduler
+    public class PagesToCrawlScheduler : IScheduler<PageToCrawl>
     {
         ICrawledUrlRepository _crawledUrlRepo;
         IPagesToCrawlRepository _pagesToCrawlRepo;
         bool _allowUriRecrawling;
 
-        public Scheduler()
+        public PagesToCrawlScheduler()
             :this(false, null, null)
         {
         }
 
-        public Scheduler(bool allowUriRecrawling, ICrawledUrlRepository crawledUrlRepo, IPagesToCrawlRepository pagesToCrawlRepo)
+        public PagesToCrawlScheduler(bool allowUriRecrawling, ICrawledUrlRepository crawledUrlRepo, IPagesToCrawlRepository pagesToCrawlRepo)
         {
             _allowUriRecrawling = allowUriRecrawling;
             _crawledUrlRepo = crawledUrlRepo ?? new MemoryBloomUrlRepository();
