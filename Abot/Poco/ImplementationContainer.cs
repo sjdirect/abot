@@ -36,6 +36,8 @@ namespace Abot.Poco
 
         public IRobotsDotTextFinder RobotsDotTextFinder { get; set; }
 
+        public IPolitenessManager PolitenessManager { get; set; }
+
         public dynamic ImplementationBag { get; set; }
     }
 }

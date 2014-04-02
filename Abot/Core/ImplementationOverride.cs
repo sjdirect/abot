@@ -50,6 +50,8 @@ namespace Abot.Core
 
             DomainRateLimiter = implementationContainer.DomainRateLimiter ?? new DomainRateLimiter(config.MinCrawlDelayPerDomainMilliSeconds);
             RobotsDotTextFinder = implementationContainer.RobotsDotTextFinder ?? new RobotsDotTextFinder(PageRequester);
+
+            PolitenessManager = implementationContainer.PolitenessManager ?? new PolitenessManager(RobotsDotTextFinder, DomainRateLimiter);
         }
     }
 }

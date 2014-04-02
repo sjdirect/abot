@@ -3,14 +3,24 @@ using log4net;
 
 namespace Abot.Core
 {
-    public class PolitenessManager
+    public interface IPolitenessManager
+    {
+
+    }
+
+    public class PolitenessManager : IPolitenessManager
     {
         private static ILog _logger = LogManager.GetLogger(typeof(PolitenessManager).FullName);
         protected IRobotsDotText _robotsDotText;
+        private IRobotsDotTextFinder _robotsDotTextFinder;
+        private IDomainRateLimiter _domainRateLimiter;
 
-        public PolitenessManager(CrawlConfiguration crawlConfiguration, ImplementationContainer implementationContainer)
-            :base(crawlConfiguration, implementationContainer)
+ 
+        public PolitenessManager(IRobotsDotTextFinder robotsDotTextFinder, IDomainRateLimiter domainRateLimiter)
         {
+            _robotsDotTextFinder = robotsDotTextFinder;
+            _domainRateLimiter = domainRateLimiter;
+
             int robotsDotTextCrawlDelayInSecs = 0;
             int robotsDotTextCrawlDelayInMillisecs = 0;
 
@@ -45,9 +55,7 @@ namespace Abot.Core
             }
 
             if (robotsDotTextCrawlDelayInSecs > 0 || _crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds > 0)
-                PageCrawlStarting += (s, e) => _domainRateLimiter.RateLimit(e.PageToCrawl.Uri);
-
-            return base.Crawl(uri, cancellationTokenSource);
+                !!!!!!PageCrawlStarting += (s, e) => _domainRateLimiter.RateLimit(e.PageToCrawl.Uri);!!!!!!!
         }
 
         protected bool ShouldCrawlPage(PageToCrawl pageToCrawl)
