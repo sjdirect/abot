@@ -1,4 +1,4 @@
-﻿using Abot.Crawler;
+﻿using Abot.Core;
 using Abot.Poco;
 using log4net;
 using System;

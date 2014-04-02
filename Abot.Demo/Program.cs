@@ -1,5 +1,5 @@
 ﻿
-using Abot.Crawler;
+using Abot.Core;
 using Abot.Poco;
 using System;
 

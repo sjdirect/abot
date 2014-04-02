@@ -20,7 +20,7 @@ namespace Abot.Core
             if (page == null)
                 throw new ArgumentNullException("page");
 
-            _pagesToProcess.Add(page);
+            _pagesToProcess.Enqueue(page);
         }
 
         public void Add(IEnumerable<CrawledPage> pages)
@@ -32,9 +32,11 @@ namespace Abot.Core
                 Add(page);
         }
 
-        public PageToCrawl GetNext()
+        public CrawledPage GetNext()
         {
-            return _pagesToProcess.GetNext();
+            CrawledPage nextPage;
+            _pagesToProcess.TryDequeue(out nextPage);
+            return nextPage;
         }
 
         public void Clear()

@@ -1,5 +1,5 @@
 ﻿using Abot.Core;
-using Abot.Crawler;
+using Abot.Core;
 using Abot.Poco;
 using NUnit.Framework;
 using System;
@@ -145,7 +145,7 @@ namespace Abot.Tests.Integration
             new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
             using(var onDiskUrlRepo = new OnDiskCrawledUrlRepository(null, null, true))
             {
-                PagesToCrawlScheduler onDiskScheduler = new PagesToCrawlScheduler(false, onDiskUrlRepo, new FifoPagesToCrawlRepository());
+                IScheduler<PageToCrawl> onDiskScheduler = new PagesToCrawlScheduler(false, onDiskUrlRepo, new FifoPagesToCrawlRepository());
                 base.CrawlAndAssert(new PoliteWebCrawler(null, null, null, onDiskScheduler, null, null, null, null, null));
             }
         }

@@ -1,5 +1,5 @@
 ﻿using Abot.Core;
-using Abot.Crawler;
+using Abot.Core;
 using Abot.Poco;
 using HtmlAgilityPack;
 using Moq;
@@ -14,7 +14,7 @@ namespace Abot.Tests.Unit.Crawler
     [TestFixture]
     public class WebCrawlerTest
     {
-        WebCrawler _unitUnderTest;
+        WebCrawlerBase _unitUnderTest;
         Mock<IPageRequester> _fakeHttpRequester;
         Mock<IHyperLinkParser> _fakeHyperLinkParser;
         Mock<ICrawlDecisionMaker> _fakeCrawlDecisionMaker;

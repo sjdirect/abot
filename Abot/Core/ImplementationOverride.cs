@@ -47,6 +47,9 @@ namespace Abot.Core
 
             PageRequesterEngine = implementationContainer.PageRequesterEngine ?? new PageRequesterEngine(config, this);
             PageProcessorEngine = implementationContainer.PageProcessorEngine ?? new PageProcessorEngine(config, this);
+
+            DomainRateLimiter = implementationContainer.DomainRateLimiter ?? new DomainRateLimiter(config.MinCrawlDelayPerDomainMilliSeconds);
+            RobotsDotTextFinder = implementationContainer.RobotsDotTextFinder ?? new RobotsDotTextFinder(PageRequester);
         }
     }
 }

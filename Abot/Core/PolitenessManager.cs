@@ -1,44 +1,15 @@
-﻿using Abot.Core;
-using Abot.Poco;
+﻿using Abot.Poco;
 using log4net;
-using System;
 
-namespace Abot.Crawler
+namespace Abot.Core
 {
-    using System.Threading;
-
-    /// <summary>
-    /// Extends the WebCrawler class and added politeness features like crawl delays and respecting robots.txt files. 
-    /// </summary>
-    public class PoliteWebCrawler : WebCrawler
+    public class PolitenessManager
     {
-        private static ILog _logger = LogManager.GetLogger(typeof(PoliteWebCrawler).FullName);
-        protected IDomainRateLimiter _domainRateLimiter;
-        protected IRobotsDotTextFinder _robotsDotTextFinder;
+        private static ILog _logger = LogManager.GetLogger(typeof(PolitenessManager).FullName);
         protected IRobotsDotText _robotsDotText;
 
-        public PoliteWebCrawler()
-            : this(null, null, null, null, null, null, null, null, null)
-        {
-        }
-
-        public PoliteWebCrawler(
-            CrawlConfiguration crawlConfiguration,
-            ICrawlDecisionMaker crawlDecisionMaker,
-            IThreadManager threadManager,
-            IPageToCrawlScheduler scheduler,
-            IPageRequester httpRequester,
-            IHyperLinkParser hyperLinkParser,
-            IMemoryManager memoryManager,
-            IDomainRateLimiter domainRateLimiter,
-            IRobotsDotTextFinder robotsDotTextFinder)
-            : base(crawlConfiguration, crawlDecisionMaker, threadManager, scheduler, httpRequester, hyperLinkParser, memoryManager)
-        {
-            _domainRateLimiter = domainRateLimiter ?? new DomainRateLimiter(_crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds);
-            _robotsDotTextFinder = robotsDotTextFinder ?? new RobotsDotTextFinder(new PageRequester(_crawlContext.CrawlConfiguration));
-        }
-
-        public override CrawlResult Crawl(Uri uri, CancellationTokenSource cancellationTokenSource)
+        public PolitenessManager(CrawlConfiguration crawlConfiguration, ImplementationContainer implementationContainer)
+            :base(crawlConfiguration, implementationContainer)
         {
             int robotsDotTextCrawlDelayInSecs = 0;
             int robotsDotTextCrawlDelayInMillisecs = 0;
@@ -47,7 +18,7 @@ namespace Abot.Crawler
             int maxRobotsDotTextCrawlDelayInMilliSecs = maxRobotsDotTextCrawlDelayInSeconds * 1000;
 
             //Load robots.txt
-            if (_crawlContext.CrawlConfiguration.IsRespectRobotsDotTextEnabled)
+            if (CrawlContext.CrawlConfiguration.IsRespectRobotsDotTextEnabled)
             {
                 _robotsDotText = _robotsDotTextFinder.Find(uri);
 
@@ -79,7 +50,7 @@ namespace Abot.Crawler
             return base.Crawl(uri, cancellationTokenSource);
         }
 
-        protected override bool ShouldCrawlPage(PageToCrawl pageToCrawl)
+        protected bool ShouldCrawlPage(PageToCrawl pageToCrawl)
         {
             bool allowedByRobots = true;
             if (_robotsDotText != null)

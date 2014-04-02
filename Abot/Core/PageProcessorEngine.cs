@@ -1,4 +1,4 @@
-﻿using Abot.Crawler;
+﻿using Abot.Core;
 using Abot.Poco;
 using log4net;
 using System;
@@ -287,6 +287,7 @@ namespace Abot.Core
 
         protected virtual void SignalCrawlStopIfNeeded(CrawlDecision decision)
         {
+            //TODO Dont need this anymore, use cancellation token
             if (decision.ShouldHardStopCrawl)
             {
                 _logger.InfoFormat("Decision marked crawl [Hard Stop] for site [{0}], [{1}]", CrawlContext.RootUri, decision.Reason);

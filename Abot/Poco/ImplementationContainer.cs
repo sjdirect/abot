@@ -32,9 +32,9 @@ namespace Abot.Poco
 
         public IScheduler<PageToCrawl> PagesToProcessScheduler { get; set; }
 
-        //public IDomainRateLimiter DomainRateLimiter { get; set; }
+        public IDomainRateLimiter DomainRateLimiter { get; set; }
 
-        //public IRobotsDotTextFinder RobotsDotTextFinder { get; set; }
+        public IRobotsDotTextFinder RobotsDotTextFinder { get; set; }
 
         public dynamic ImplementationBag { get; set; }
     }

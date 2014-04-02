@@ -1,4 +1,4 @@
-﻿using Abot.Crawler;
+﻿using Abot.Core;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;

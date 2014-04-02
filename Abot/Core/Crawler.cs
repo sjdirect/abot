@@ -6,9 +6,9 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 
-namespace Abot.Crawler
+namespace Abot.Core
 {
-    public interface IWebCrawler2
+    public interface IWebCrawler
     {
         CrawlContext CrawlContext { get; set; }
 
@@ -38,13 +38,13 @@ namespace Abot.Crawler
         IPageProcessorEngine PageProcessorEngine { get; set; }
     }
 
-    public abstract class WebCrawler2 : IWebCrawler2
+    public abstract class Crawler : IWebCrawler
     {
         //TODO Its this classes job to make using abot just as easy as the old one but also to
         //add access to things like the scheduler
 
         //!!!!!!!!!!!!!TODO make this a named logger before releasing 2.0!!!!!!!!!!!!!!
-        static ILog _logger = LogManager.GetLogger(typeof(WebCrawler2).FullName);
+        static ILog _logger = LogManager.GetLogger(typeof(Crawler).FullName);
         //!!!!!!!!!!!!!TODO make these protected properties before releasing 2.0!!!!!!!!!!!!!!
         protected bool _crawlComplete = false;
         protected bool _crawlStopReported = false;
@@ -59,7 +59,7 @@ namespace Abot.Crawler
 
         #region Constructors
 
-        static WebCrawler2()
+        static Crawler()
         {
             //This is a workaround for dealing with periods in urls (http://stackoverflow.com/questions/856885/httpwebrequest-to-url-with-dot-at-the-end)
             //Will not be needed when this project is upgraded to 4.5
@@ -81,25 +81,25 @@ namespace Abot.Crawler
             }
         }
 
-        public WebCrawler2()
+        public Crawler()
             : this(null, null)
         {
             
         }
 
-        public WebCrawler2(CrawlConfiguration crawlConfiguration)
+        public Crawler(CrawlConfiguration crawlConfiguration)
             : this(crawlConfiguration, null)
         {
             
         }
 
-        public WebCrawler2(ImplementationOverride implementationOverride)
+        public Crawler(ImplementationOverride implementationOverride)
             : this(null, implementationOverride)
         {
 
         }
 
-        public WebCrawler2(CrawlConfiguration crawlConfiguration, ImplementationContainer implementationContainer)
+        public Crawler(CrawlConfiguration crawlConfiguration, ImplementationContainer implementationContainer)
         {
             CrawlContext = new CrawlContext();
             CrawlContext.CrawlConfiguration = crawlConfiguration ?? GetCrawlConfigurationFromConfigFile();

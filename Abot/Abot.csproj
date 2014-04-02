@@ -71,6 +71,7 @@
     <Compile Include="Core\PagesToCrawlScheduler.cs" />
     <Compile Include="Core\ImplementationOverride.cs" />
     <Compile Include="Core\EngineBase.cs" />
+    <Compile Include="Core\PolitenessManager.cs" />
     <Compile Include="Poco\ImplementationContainer.cs" />
     <Compile Include="Core\PageProcessorEngine.cs" />
     <Compile Include="Core\PageRequesterEngine.cs" />
@@ -93,12 +94,11 @@
     <Compile Include="Core\RobotsDotTextFinder.cs" />
     <Compile Include="Core\TaskThreadManager.cs" />
     <Compile Include="Core\ThreadManager.cs" />
-    <Compile Include="Crawler\CrawlArgs.cs" />
-    <Compile Include="Crawler\WebCrawler2.cs" />
-    <Compile Include="Crawler\PageActionDisallowedArgs.cs" />
-    <Compile Include="Crawler\PageActionCompletedArgs.cs" />
-    <Compile Include="Crawler\PageActionStartingArgs.cs" />
-    <Compile Include="Crawler\PoliteWebCrawler.cs" />
+    <Compile Include="Core\CrawlArgs.cs" />
+    <Compile Include="Core\Crawler.cs" />
+    <Compile Include="Core\PageActionDisallowedArgs.cs" />
+    <Compile Include="Core\PageActionCompletedArgs.cs" />
+    <Compile Include="Core\PageActionStartingArgs.cs" />
     <Compile Include="Poco\CrawlConfiguration.cs" />
     <Compile Include="Poco\CrawlContext.cs" />
     <Compile Include="Poco\CrawlDecision.cs" />
@@ -106,7 +106,6 @@
     <Compile Include="Poco\CrawlResult.cs" />
     <Compile Include="Core\HyperLinkParser.cs" />
     <Compile Include="Core\PageRequester.cs" />
-    <Compile Include="Crawler\WebCrawler.cs" />
     <Compile Include="Poco\PageContent.cs" />
     <Compile Include="Poco\PageToCrawl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
