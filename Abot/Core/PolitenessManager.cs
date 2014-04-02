@@ -58,7 +58,18 @@ namespace Abot.Core
                 !!!!!!PageCrawlStarting += (s, e) => _domainRateLimiter.RateLimit(e.PageToCrawl.Uri);!!!!!!!
         }
 
-        protected bool ShouldCrawlPage(PageToCrawl pageToCrawl)
+        public void RateLimit(PageToCrawl pageToCrawl)
+        {
+        
+        }
+
+        public CrawlDecision ShouldCrawlUri(Uri uri)
+        {
+            return new CrawlDecision();
+        }
+
+        !!!!!!!!!!!!!!!!!how does this work????!!!!!!!!
+        public CrawlDecision ShouldCrawlPage(PageToCrawl pageToCrawl)
         {
             bool allowedByRobots = true;
             if (_robotsDotText != null)
