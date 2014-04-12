@@ -3,6 +3,9 @@ using System.Dynamic;
 
 namespace Abot.Poco
 {
+    /// <summary>
+    /// Holds all implementations of core interfaces that Abot needs to function. 
+    /// </summary>
     public class ImplementationContainer
     {
         public ImplementationContainer()

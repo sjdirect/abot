@@ -4,7 +4,7 @@ using System;
 namespace Abot.Core
 {
     /// <summary>
-    /// Creates the default implementations of core interfaces
+    /// Creates the default implementations of core interfaces that Abot needs to function
     /// </summary>
     public class ImplementationOverride : ImplementationContainer
     {
@@ -19,6 +19,7 @@ namespace Abot.Core
         {
 
         }
+
 
         public ImplementationOverride(CrawlConfiguration config, ImplementationContainer implementationContainer)
         {
