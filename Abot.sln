@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloomFilterLib", "BloomFilt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MurMur3", "MurMur3\MurMur3.csproj", "{0C22331E-8121-40CA-BB50-4FD97A608BF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot.Demo", "Abot.Demo\Abot.Demo.csproj", "{79F27061-3258-4D87-9339-2684CC9D3D42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +78,14 @@ Global
 		{0C22331E-8121-40CA-BB50-4FD97A608BF1}.Deploy-Release|Any CPU.Build.0 = Deploy-Release|Any CPU
 		{0C22331E-8121-40CA-BB50-4FD97A608BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C22331E-8121-40CA-BB50-4FD97A608BF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Deploy-Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Deploy-Dev|Any CPU.Build.0 = Debug|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Deploy-Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Deploy-Release|Any CPU.Build.0 = Release|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79F27061-3258-4D87-9339-2684CC9D3D42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

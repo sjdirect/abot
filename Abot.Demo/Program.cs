@@ -1,5 +1,4 @@
-﻿
-using Abot.Core;
+﻿using Abot.Core;
 using Abot.Poco;
 using System;
 
@@ -21,12 +20,21 @@ namespace Abot.Demo
             //crawler = GetManuallyConfiguredWebCrawler();
             //crawler = GetCustomBehaviorUsingLambdaWebCrawler();
 
-            //Subscribe to any of these asynchronous events, there are also sychronous versions of each.
+            //Subscribe to any of these synchronous/asynchronous events.
             //This is where you process data about specific events of the crawl
-            crawler.PageCrawlStartingAsync += crawler_ProcessPageCrawlStarting;
-            crawler.PageCrawlCompletedAsync += crawler_ProcessPageCrawlCompleted;
-            crawler.PageCrawlDisallowedAsync += crawler_PageCrawlDisallowed;
-            crawler.PageLinksCrawlDisallowedAsync += crawler_PageLinksCrawlDisallowed;
+            crawler.PageRequesterEngine.PageRequestStarting += PageRequesterEngine_PageRequestStarting;
+            crawler.PageRequesterEngine.PageRequestStartingAsync += PageRequesterEngine_PageRequestStartingAsync;
+            crawler.PageRequesterEngine.PageRequestCompleted += PageRequesterEngine_PageRequestCompleted;
+            crawler.PageRequesterEngine.PageRequestCompletedAsync += PageRequesterEngine_PageRequestCompletedAsync;
+
+            crawler.PageProcessorEngine.PageProcessingStarting += PageProcessorEngine_PageProcessingStarting;
+            crawler.PageProcessorEngine.PageProcessingStartingAsync += PageProcessorEngine_PageProcessingStartingAsync;
+            crawler.PageProcessorEngine.PageCrawlDisallowed += PageProcessorEngine_PageCrawlDisallowed;
+            crawler.PageProcessorEngine.PageCrawlDisallowedAsync += PageProcessorEngine_PageCrawlDisallowedAsync;
+            crawler.PageProcessorEngine.PageLinksCrawlDisallowed += PageProcessorEngine_PageLinksCrawlDisallowed;
+            crawler.PageProcessorEngine.PageLinksCrawlDisallowedAsync += PageProcessorEngine_PageLinksCrawlDisallowedAsync;
+            crawler.PageProcessorEngine.PageProcessingCompleted += PageProcessorEngine_PageProcessingCompleted;
+            crawler.PageProcessorEngine.PageProcessingCompletedAsync += PageProcessorEngine_PageProcessingCompletedAsync;
 
             //Start the crawl
             //This is a synchronous call
@@ -39,9 +47,25 @@ namespace Abot.Demo
             PrintDisclaimer();
         }
 
+
+        static void PageRequesterEngine_PageRequestStarting(            object sender, PageActionStartingArgs e){}
+        static void PageRequesterEngine_PageRequestStartingAsync(       object sender, PageActionStartingArgs e){}
+        static void PageRequesterEngine_PageRequestCompleted(           object sender, PageActionCompletedArgs e){}
+        static void PageRequesterEngine_PageRequestCompletedAsync(      object sender, PageActionCompletedArgs e){}
+
+        static void PageProcessorEngine_PageProcessingStarting(         object sender, PageActionStartingArgs e){}
+        static void PageProcessorEngine_PageProcessingStartingAsync(    object sender, PageActionStartingArgs e){}
+        static void PageProcessorEngine_PageLinksCrawlDisallowed(       object sender, PageActionDisallowedArgs e){}
+        static void PageProcessorEngine_PageLinksCrawlDisallowedAsync(  object sender, PageActionDisallowedArgs e){}
+        static void PageProcessorEngine_PageCrawlDisallowed(            object sender, PageActionDisallowedArgs e){}
+        static void PageProcessorEngine_PageCrawlDisallowedAsync(       object sender, PageActionDisallowedArgs e){}
+        static void PageProcessorEngine_PageProcessingCompleted(        object sender, PageActionCompletedArgs e){}
+        static void PageProcessorEngine_PageProcessingCompletedAsync(   object sender, PageActionCompletedArgs e){}
+        
+
         private static IWebCrawler GetDefaultWebCrawler()
         {
-            return new PoliteWebCrawler();
+            return new Crawler();
         }
 
         private static IWebCrawler GetManuallyConfiguredWebCrawler()
@@ -67,48 +91,48 @@ namespace Abot.Demo
 
             //Initialize the crawler with custom configuration created above.
             //This override the app.config file values
-            return new PoliteWebCrawler(config, null, null, null, null, null, null, null, null);
+            return new Crawler(config);
         }
 
-        private static IWebCrawler GetCustomBehaviorUsingLambdaWebCrawler()
-        {
-            IWebCrawler crawler = GetDefaultWebCrawler();
+        //private static IWebCrawler GetCustomBehaviorUsingLambdaWebCrawler()
+        //{
+        //    IWebCrawler crawler = GetDefaultWebCrawler();
 
-            //Register a lambda expression that will make Abot not crawl any url that has the word "ghost" in it.
-            //For example http://a.com/ghost, would not get crawled if the link were found during the crawl.
-            //If you set the log4net log level to "DEBUG" you will see a log message when any page is not allowed to be crawled.
-            //NOTE: This is lambda is run after the regular ICrawlDecsionMaker.ShouldCrawlPage method is run.
-            crawler.ShouldCrawlPage((pageToCrawl, crawlContext) =>
-            {
-                if (pageToCrawl.Uri.AbsoluteUri.Contains("ghost"))
-                    return new CrawlDecision { Allow = false, Reason = "Scared of ghosts" };
+        //    //Register a lambda expression that will make Abot not crawl any url that has the word "ghost" in it.
+        //    //For example http://a.com/ghost, would not get crawled if the link were found during the crawl.
+        //    //If you set the log4net log level to "DEBUG" you will see a log message when any page is not allowed to be crawled.
+        //    //NOTE: This is lambda is run after the regular ICrawlDecsionMaker.ShouldCrawlPage method is run.
+        //    crawler.ShouldCrawlPage((pageToCrawl, crawlContext) =>
+        //    {
+        //        if (pageToCrawl.Uri.AbsoluteUri.Contains("ghost"))
+        //            return new CrawlDecision { Allow = false, Reason = "Scared of ghosts" };
 
-                return new CrawlDecision { Allow = true };
-            });
+        //        return new CrawlDecision { Allow = true };
+        //    });
 
-            //Register a lambda expression that will tell Abot to not download the page content for any page after 5th.
-            //Abot will still make the http request but will not read the raw content from the stream
-            //NOTE: This lambda is run after the regular ICrawlDecsionMaker.ShouldDownloadPageContent method is run
-            crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
-            {
-                if (crawlContext.CrawledCount >= 5)
-                    return new CrawlDecision { Allow = false, Reason = "We already downloaded the raw page content for 5 pages" };
+        //    //Register a lambda expression that will tell Abot to not download the page content for any page after 5th.
+        //    //Abot will still make the http request but will not read the raw content from the stream
+        //    //NOTE: This lambda is run after the regular ICrawlDecsionMaker.ShouldDownloadPageContent method is run
+        //    crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
+        //    {
+        //        if (crawlContext.CrawledCount >= 5)
+        //            return new CrawlDecision { Allow = false, Reason = "We already downloaded the raw page content for 5 pages" };
 
-                return new CrawlDecision { Allow = true };
-            });
+        //        return new CrawlDecision { Allow = true };
+        //    });
 
-            //Register a lambda expression that will tell Abot to not crawl links on any page that is not internal to the root uri.
-            //NOTE: This lambda is run after the regular ICrawlDecsionMaker.ShouldCrawlPageLinks method is run
-            crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
-            {
-                if (!crawledPage.IsInternal)
-                    return new CrawlDecision { Allow = false, Reason = "We dont crawl links of external pages" };
+        //    //Register a lambda expression that will tell Abot to not crawl links on any page that is not internal to the root uri.
+        //    //NOTE: This lambda is run after the regular ICrawlDecsionMaker.ShouldCrawlPageLinks method is run
+        //    crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
+        //    {
+        //        if (!crawledPage.IsInternal)
+        //            return new CrawlDecision { Allow = false, Reason = "We dont crawl links of external pages" };
 
-                return new CrawlDecision { Allow = true };
-            });
+        //        return new CrawlDecision { Allow = true };
+        //    });
 
-            return crawler;
-        }
+        //    return crawler;
+        //}
 
         private static Uri GetSiteToCrawl(string[] args)
         {
@@ -142,24 +166,5 @@ namespace Abot.Demo
             System.Console.ForegroundColor = originalColor;
         }
 
-        static void crawler_ProcessPageCrawlStarting(object sender, PageActionStartingArgs e)
-        {
-            //Process data
-        }
-
-        static void crawler_ProcessPageCrawlCompleted(object sender, PageActionCompletedArgs e)
-        {
-            //Process data
-        }
-
-        static void crawler_PageLinksCrawlDisallowed(object sender, PageActionDisallowedArgs e)
-        {
-            //Process data
-        }
-
-        static void crawler_PageCrawlDisallowed(object sender, PageActionDisallowedArgs e)
-        {
-            //Process data
-        }
     }
 }

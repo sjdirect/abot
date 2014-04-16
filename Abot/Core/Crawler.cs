@@ -1,5 +1,4 @@
-﻿using Abot.Core;
-using Abot.Poco;
+﻿using Abot.Poco;
 using log4net;
 using System;
 using System.Diagnostics;
@@ -38,15 +37,14 @@ namespace Abot.Core
         IPageProcessorEngine PageProcessorEngine { get; set; }
     }
 
-    public abstract class Crawler : IWebCrawler
+    public class Crawler : IWebCrawler
     {
         //TODO Its this classes job to make using abot just as easy as the old one but also to
         //add access to things like the scheduler
 
         //!!!!!!!!!!!!!TODO make this a named logger before releasing 2.0!!!!!!!!!!!!!!
         static ILog _logger = LogManager.GetLogger(typeof(Crawler).FullName);
-        //!!!!!!!!!!!!!TODO make these protected properties before releasing 2.0!!!!!!!!!!!!!!
-        protected bool _crawlComplete = false;
+
         protected bool _crawlStopReported = false;
         protected bool _crawlCancellationReported = false;
         protected System.Timers.Timer _timeoutTimer;
@@ -103,7 +101,7 @@ namespace Abot.Core
         {
             CrawlContext = new CrawlContext();
             CrawlContext.CrawlConfiguration = crawlConfiguration ?? GetCrawlConfigurationFromConfigFile();
-            CrawlContext.ImplementationContainer = new ImplementationOverride(crawlConfiguration, implementationContainer);
+            CrawlContext.ImplementationContainer = new ImplementationOverride(CrawlContext.CrawlConfiguration, implementationContainer);
             CrawlBag = CrawlContext.CrawlBag;
 
             PageRequesterEngine = CrawlContext.ImplementationContainer.PageRequesterEngine;
@@ -136,7 +134,6 @@ namespace Abot.Core
             _crawlResult = new CrawlResult();
             _crawlResult.RootUri = CrawlContext.RootUri;
             _crawlResult.CrawlContext = CrawlContext;
-            _crawlComplete = false;
 
             _logger.InfoFormat("About to crawl site [{0}]", uri.AbsoluteUri);
 
@@ -196,24 +193,24 @@ namespace Abot.Core
             //TODO add configuration for MaxConcurrentCrawledPageProcessors
             //TODO retire MaxConcurrentThreads
 
-            _logger.DebugFormat("Starting PageRequesterEngine & PageProcessingEngine");
+            _logger.DebugFormat("Starting PageRequesterEngine & PageProcessorEngine");
             PageRequesterEngine.Start(CrawlContext);
             PageProcessorEngine.Start(CrawlContext);
 
-            while (!_crawlComplete)
+            bool crawlComplete = false;
+            while (!crawlComplete)
             {
                 RunPreWorkChecks();
                 if (PageRequesterEngine.IsDone && PageProcessorEngine.IsDone)
                 {
-                    //CrawlContext.PagesToCrawl.CompleteAdding();
-                    //CrawlContext.PagesToProcess.CompleteAdding();
+                    _logger.DebugFormat("Stopping PageRequesterEngine & PageProcessorEngine...");
                     PageRequesterEngine.Stop();
                     PageProcessorEngine.Stop();
-                    _crawlComplete = true;
+                    crawlComplete = true;
                 }
                 else
                 {
-                    _logger.DebugFormat("Health check, still working...");
+                    _logger.InfoFormat("Health check, still working...");
                     System.Threading.Thread.Sleep(2500);                
                 }
             }

@@ -1,5 +1,4 @@
-﻿using Abot.Core;
-using Abot.Poco;
+﻿using Abot.Poco;
 using log4net;
 using System;
 using System.Threading;
@@ -61,6 +60,7 @@ namespace Abot.Core
         {
             get
             {
+                _logger.DebugFormat("IsCancelled: {0}, ThreadsRunning: {1}, PagesToProcess: {2}", CancellationTokenSource.Token.IsCancellationRequested, ImplementationContainer.PageProcessorEngineThreadManager.HasRunningThreads(), CrawlContext.ImplementationContainer.PagesToProcessScheduler.Count);
                 return (CancellationTokenSource.Token.IsCancellationRequested ||
                     (!ImplementationContainer.PageProcessorEngineThreadManager.HasRunningThreads() && ImplementationContainer.PagesToProcessScheduler.Count == 0));
             }
@@ -169,7 +169,6 @@ namespace Abot.Core
                     }
                     else
                     {
-                        _logger.DebugFormat("About to process crawled page [{0}], [{1}] crawled pages left to process", nextPageToProcess.Uri, ImplementationContainer.PagesToProcessScheduler.Count);
                         ImplementationContainer.PageProcessorEngineThreadManager.DoWork(() => ProcessPage(nextPageToProcess));
                     }
                 }
@@ -178,13 +177,15 @@ namespace Abot.Core
                     CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                     _logger.DebugFormat("Waiting for pages to process...");
-                    System.Threading.Thread.Sleep(2500);
+                    System.Threading.Thread.Sleep(500);
                 }
             }
         }
 
         protected virtual void ProcessPage(CrawledPage crawledPage)
         {
+            _logger.DebugFormat("About to process crawled page [{0}], [{1}] crawled pages left to process", crawledPage.Uri, ImplementationContainer.PagesToProcessScheduler.Count);
+
             base.FirePageActionStartingEventAsync(CrawlContext, PageProcessingStarting, crawledPage, "PageProcessingStartingAsync");
             base.FirePageActionStartingEvent(CrawlContext, PageProcessingStarting, crawledPage, "PageProcessingStarting");
 
@@ -198,6 +199,8 @@ namespace Abot.Core
                 SchedulePageLinks(crawledPage);
 
             CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+            _logger.InfoFormat("Page processing complete, Url:[{0}] ", crawledPage.Uri.AbsoluteUri);
 
             base.FirePageActionCompletedEventAsync(CrawlContext, PageProcessingCompletedAsync, crawledPage, "PageProcessingStartingAsync");
             base.FirePageActionCompletedEvent(CrawlContext, PageProcessingCompleted, crawledPage, "PageProcessingStarting");

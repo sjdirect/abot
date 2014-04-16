@@ -1,5 +1,4 @@
-﻿using Abot.Core;
-using Abot.Poco;
+﻿using Abot.Poco;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -64,8 +63,10 @@ namespace Abot.Core
         {
             get
             {
+                _logger.DebugFormat("IsCancelled: {0}, ThreadsRunning: {1}, PagesToCrawl: {2}", CancellationTokenSource.Token.IsCancellationRequested, ImplementationContainer.PageRequesterEngineThreadManager.HasRunningThreads(), CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Count);
                 return (CancellationTokenSource.Token.IsCancellationRequested ||
-                    (!ImplementationContainer.PageRequesterEngineThreadManager.HasRunningThreads() && CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Count == 0));
+                    (!ImplementationContainer.PageRequesterEngineThreadManager.HasRunningThreads() && 
+                    CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Count == 0));
             }
         }
 
@@ -145,9 +146,6 @@ namespace Abot.Core
                 if (ImplementationContainer.PagesToCrawlScheduler.Count > 0)
                 {
                     CancellationTokenSource.Token.ThrowIfCancellationRequested();
-
-                    PageToCrawl pageToCrawl = ImplementationContainer.PagesToCrawlScheduler.GetNext();
-                    _logger.DebugFormat("About to request [{0}], [{1}] pages left to request", pageToCrawl.Uri, ImplementationContainer.PagesToCrawlScheduler.Count);
                     ImplementationContainer.PageRequesterEngineThreadManager.DoWork(() => MakeRequest(ImplementationContainer.PagesToCrawlScheduler.GetNext()));
                 }
                 else
@@ -155,9 +153,11 @@ namespace Abot.Core
                     CancellationTokenSource.Token.ThrowIfCancellationRequested();
 
                     _logger.DebugFormat("Waiting for pages to crawl...");
-                    System.Threading.Thread.Sleep(2500);
+                    System.Threading.Thread.Sleep(500);
                 }
             }
+
+            _logger.DebugFormat("Done making http requests");
         }
 
         protected internal virtual void MakeRequest(PageToCrawl pageToCrawl)
@@ -168,6 +168,8 @@ namespace Abot.Core
                     return;
 
                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                _logger.DebugFormat("About to request [{0}], [{1}] pages left to request", pageToCrawl.Uri, ImplementationContainer.PagesToCrawlScheduler.Count);
 
                 base.FirePageActionStartingEventAsync(CrawlContext, PageRequestStartingAsync, pageToCrawl, "PageRequestStartingAsync");
                 base.FirePageActionStartingEvent(CrawlContext, PageRequestStarting, pageToCrawl, "PageRequestStarting");
@@ -211,7 +213,7 @@ namespace Abot.Core
 
         protected virtual CrawledPage CrawlThePage(PageToCrawl pageToCrawl)
         {
-            _logger.DebugFormat("About to crawl page [{0}]", pageToCrawl.Uri.AbsoluteUri);
+            _logger.DebugFormat("Requesting page [{0}]", pageToCrawl.Uri.AbsoluteUri);
 
             CrawledPage crawledPage = ImplementationContainer.PageRequester.MakeRequest(pageToCrawl.Uri, (x) => ImplementationContainer.CrawlDecisionMaker.ShouldDownloadPageContent(x, CrawlContext));
             dynamic combinedPageBag = CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
@@ -220,9 +222,9 @@ namespace Abot.Core
             crawledPage.PageBag = combinedPageBag;
 
             if (crawledPage.HttpWebResponse == null)
-                _logger.InfoFormat("Page crawl complete, Status:[NA] Url:[{0}] Parent:[{1}]", crawledPage.Uri.AbsoluteUri, crawledPage.ParentUri);
+                _logger.InfoFormat("Page request complete, Status:[NA] Url:[{0}] Parent:[{1}]", crawledPage.Uri.AbsoluteUri, crawledPage.ParentUri);
             else
-                _logger.InfoFormat("Page crawl complete, Status:[{0}] Url:[{1}] Parent:[{2}]", Convert.ToInt32(crawledPage.HttpWebResponse.StatusCode), crawledPage.Uri.AbsoluteUri, crawledPage.ParentUri);
+                _logger.InfoFormat("Page request complete, Status:[{0}] Url:[{1}] Parent:[{2}]", Convert.ToInt32(crawledPage.HttpWebResponse.StatusCode), crawledPage.Uri.AbsoluteUri, crawledPage.ParentUri);
 
             return crawledPage;
         }
