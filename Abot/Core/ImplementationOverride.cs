@@ -35,6 +35,7 @@ namespace Abot.Core
                 MemoryManager = implementationContainer.MemoryManager ?? new MemoryManager(MemoryMonitor);
             }
 
+            //TODO Need a more generic scheduler like ItemScheduler<T>
             PagesToCrawlScheduler = implementationContainer.PagesToCrawlScheduler ?? new PagesToCrawlScheduler(config.IsUriRecrawlingEnabled, null, null);
             PagesToProcessScheduler = implementationContainer.PagesToProcessScheduler ?? new PagesToCrawlScheduler(false, null, null);
 

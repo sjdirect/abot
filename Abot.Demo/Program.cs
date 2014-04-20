@@ -94,45 +94,45 @@ namespace Abot.Demo
             return new Crawler(config);
         }
 
-        //private static IWebCrawler GetCustomBehaviorUsingLambdaWebCrawler()
-        //{
-        //    IWebCrawler crawler = GetDefaultWebCrawler();
+        private static IWebCrawler GetCustomBehaviorUsingLambdaWebCrawler()
+        {
+            ImplementationOverride implOverride = new ImplementationOverride();
 
-        //    //Register a lambda expression that will make Abot not crawl any url that has the word "ghost" in it.
-        //    //For example http://a.com/ghost, would not get crawled if the link were found during the crawl.
-        //    //If you set the log4net log level to "DEBUG" you will see a log message when any page is not allowed to be crawled.
-        //    //NOTE: This is lambda is run after the regular ICrawlDecsionMaker.ShouldCrawlPage method is run.
-        //    crawler.ShouldCrawlPage((pageToCrawl, crawlContext) =>
-        //    {
-        //        if (pageToCrawl.Uri.AbsoluteUri.Contains("ghost"))
-        //            return new CrawlDecision { Allow = false, Reason = "Scared of ghosts" };
+            //Tell Abot not crawl any url that has the word "ghost" in it.
+            //For example http://a.com/ghost, would not get crawled if the link were found during the crawl.
+            //If you set the log4net log level to "DEBUG" you will see a log message when any page is not allowed to be crawled.
+            //NOTE: This is run after the ICrawlDecsionMaker.ShouldCrawlPage method is run.
+            implOverride.ShouldCrawlPage = (pageToCrawl, crawlContext) =>
+            {
+                if (pageToCrawl.Uri.AbsoluteUri.Contains("ghost"))
+                    return new CrawlDecision { Allow = false, Reason = "Scared of ghosts" };
 
-        //        return new CrawlDecision { Allow = true };
-        //    });
+                return new CrawlDecision { Allow = true };
+            };
 
-        //    //Register a lambda expression that will tell Abot to not download the page content for any page after 5th.
-        //    //Abot will still make the http request but will not read the raw content from the stream
-        //    //NOTE: This lambda is run after the regular ICrawlDecsionMaker.ShouldDownloadPageContent method is run
-        //    crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
-        //    {
-        //        if (crawlContext.CrawledCount >= 5)
-        //            return new CrawlDecision { Allow = false, Reason = "We already downloaded the raw page content for 5 pages" };
+            //Tell Abot to not download the page content for any page after 5th.
+            //Abot will still make the http request but will not read the raw content from the stream
+            //NOTE: This is run after the ICrawlDecsionMaker.ShouldDownloadPageContent method is run
+            implOverride.ShouldDownloadPageContent = (crawledPage, crawlContext) =>
+            {
+                if (crawlContext.CrawledCount >= 5)
+                    return new CrawlDecision { Allow = false, Reason = "We already downloaded the raw page content for 5 pages" };
 
-        //        return new CrawlDecision { Allow = true };
-        //    });
+                return new CrawlDecision { Allow = true };
+            };
 
-        //    //Register a lambda expression that will tell Abot to not crawl links on any page that is not internal to the root uri.
-        //    //NOTE: This lambda is run after the regular ICrawlDecsionMaker.ShouldCrawlPageLinks method is run
-        //    crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
-        //    {
-        //        if (!crawledPage.IsInternal)
-        //            return new CrawlDecision { Allow = false, Reason = "We dont crawl links of external pages" };
+            //Tell Abot to not crawl links on any page that is not internal to the root uri.
+            //NOTE: This run after the ICrawlDecsionMaker.ShouldCrawlPageLinks method is run
+            implOverride.ShouldCrawlPageLinks = (crawledPage, crawlContext) =>
+            {
+                if (!crawledPage.IsInternal)
+                    return new CrawlDecision { Allow = false, Reason = "We dont crawl links of external pages" };
 
-        //        return new CrawlDecision { Allow = true };
-        //    });
+                return new CrawlDecision { Allow = true };
+            };
 
-        //    return crawler;
-        //}
+            return new Crawler(implOverride);
+        }
 
         private static Uri GetSiteToCrawl(string[] args)
         {

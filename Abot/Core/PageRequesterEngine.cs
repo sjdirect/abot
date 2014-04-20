@@ -200,6 +200,7 @@ namespace Abot.Core
 
         protected virtual bool PageSizeIsAboveMax(CrawledPage crawledPage)
         {
+            //TODO move this to the CrawlDecisionMaker, not sure how it ended up here
             bool isAboveMax = false;
             if (CrawlContext.CrawlConfiguration.MaxPageSizeInBytes > 0 &&
                 crawledPage.Content.Bytes != null &&
@@ -215,7 +216,7 @@ namespace Abot.Core
         {
             _logger.DebugFormat("Requesting page [{0}]", pageToCrawl.Uri.AbsoluteUri);
 
-            CrawledPage crawledPage = ImplementationContainer.PageRequester.MakeRequest(pageToCrawl.Uri, (x) => ImplementationContainer.CrawlDecisionMaker.ShouldDownloadPageContent(x, CrawlContext));
+            CrawledPage crawledPage = ImplementationContainer.PageRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldDownloadPageContent(x, CrawlContext));
             dynamic combinedPageBag = CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             AutoMapper.Mapper.CreateMap<PageToCrawl, CrawledPage>();
             AutoMapper.Mapper.Map(pageToCrawl, crawledPage);
@@ -227,6 +228,15 @@ namespace Abot.Core
                 _logger.InfoFormat("Page request complete, Status:[{0}] Url:[{1}] Parent:[{2}]", Convert.ToInt32(crawledPage.HttpWebResponse.StatusCode), crawledPage.Uri.AbsoluteUri, crawledPage.ParentUri);
 
             return crawledPage;
+        }
+
+        protected virtual CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage, CrawlContext crawlContext)
+        {
+            CrawlDecision shouldDownloadContentDecision = ImplementationContainer.CrawlDecisionMaker.ShouldDownloadPageContent(crawledPage, CrawlContext);
+            if(shouldDownloadContentDecision.Allow && ImplementationContainer.ShouldDownloadPageContent != null)
+                shouldDownloadContentDecision = ImplementationContainer.ShouldDownloadPageContent(crawledPage, crawlContext);
+
+            return shouldDownloadContentDecision;
         }
 
         protected virtual dynamic CombinePageBags(dynamic pageToCrawlBag, dynamic crawledPageBag)

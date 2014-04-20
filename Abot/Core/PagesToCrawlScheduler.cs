@@ -35,6 +35,7 @@ namespace Abot.Core
         void Clear();
     }
 
+    //TODO Need a more generic scheduler like ItemScheduler<T>
     public class PagesToCrawlScheduler : IScheduler<PageToCrawl>
     {
         ICrawledUrlRepository _crawledUrlRepo;

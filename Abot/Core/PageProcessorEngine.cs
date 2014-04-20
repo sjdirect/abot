@@ -209,6 +209,8 @@ namespace Abot.Core
         protected virtual bool ShouldCrawlPageLinks(CrawledPage crawledPage)
         {
             CrawlDecision shouldCrawlPageLinksDecision = ImplementationContainer.CrawlDecisionMaker.ShouldCrawlPageLinks(crawledPage, CrawlContext);
+            if (shouldCrawlPageLinksDecision.Allow)
+                shouldCrawlPageLinksDecision = (ImplementationContainer.ShouldCrawlPageLinks != null) ? ImplementationContainer.ShouldCrawlPageLinks(crawledPage, CrawlContext) : new CrawlDecision { Allow = true };
 
             if (!shouldCrawlPageLinksDecision.Allow)
             {
@@ -224,6 +226,8 @@ namespace Abot.Core
         protected virtual bool ShouldCrawlPage(PageToCrawl pageToCrawl)
         {
             CrawlDecision shouldCrawlPageDecision = ImplementationContainer.CrawlDecisionMaker.ShouldCrawlPage(pageToCrawl, CrawlContext);
+            if (shouldCrawlPageDecision.Allow)
+                shouldCrawlPageDecision = (ImplementationContainer.ShouldCrawlPage != null) ? ImplementationContainer.ShouldCrawlPage(pageToCrawl, CrawlContext) : new CrawlDecision { Allow = true };
 
             if (shouldCrawlPageDecision.Allow)
             {
@@ -270,24 +274,31 @@ namespace Abot.Core
                     PageToCrawl page = new PageToCrawl(uri);
                     page.ParentUri = crawledPage.Uri;
                     page.CrawlDepth = crawledPage.CrawlDepth + 1;
-                    page.IsInternal = ImplementationContainer.CrawlDecisionMaker.IsInternal(uri, CrawlContext);
+                    page.IsInternal = (ImplementationContainer.IsInternalUri != null) ? ImplementationContainer.IsInternalUri(uri, CrawlContext.RootUri) : ImplementationContainer.CrawlDecisionMaker.IsInternal(uri, CrawlContext);
                     page.IsRoot = false;
 
-                    if (ShouldSchedulePageLink(page))
+                    if (ShouldSchedulePageLink(page, crawledPage))
                         CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Add(page);
                 }
                 catch { }
             }
         }
 
-        protected virtual bool ShouldSchedulePageLink(PageToCrawl page)
+        protected virtual bool ShouldSchedulePageLink(PageToCrawl pageToCrawl, CrawledPage crawledPage)
         {
-            if ((page.IsInternal == true || CrawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled == true) && (ShouldCrawlPage(page)))
-                return true;
+            bool shouldSchedule = false;
+            if ((pageToCrawl.IsInternal == true || CrawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled == true) && ShouldCrawlPage(pageToCrawl))
+            {
+                if (ImplementationContainer.ShouldScheduleLink != null)
+                    shouldSchedule = ImplementationContainer.ShouldScheduleLink(pageToCrawl.Uri, crawledPage, CrawlContext);
+                else
+                    shouldSchedule = true;
+            }
 
-            return false;
+            return shouldSchedule;
         }
 
+        [Obsolete]
         protected virtual void SignalCrawlStopIfNeeded(CrawlDecision decision)
         {
             //TODO Dont need this anymore, use cancellation token
