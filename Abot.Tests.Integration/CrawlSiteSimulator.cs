@@ -31,7 +31,6 @@ namespace Abot.Tests.Integration
             
             CrawlConfiguration configuration = new CrawlConfiguration();
             configuration.MaxPagesToCrawl = 5;
-            configuration.MaxConcurrentThreads = 1;//TODO REMOVE ME, THIS WAS JUST FOR TESTING
 
             int pagesCrawledCount = 0;
 
