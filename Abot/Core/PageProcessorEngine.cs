@@ -244,6 +244,7 @@ namespace Abot.Core
             return shouldCrawlPageDecision.Allow;
         }
 
+        //TODO !!!!!!!!! There is a duplicate method in the Crawler.cs class. This should be removed!!!!!!
         protected virtual void AddPageToContext(PageToCrawl pageToCrawl)
         {
             if (pageToCrawl.IsRetry)

@@ -31,6 +31,7 @@ namespace Abot.Tests.Integration
             
             CrawlConfiguration configuration = new CrawlConfiguration();
             configuration.MaxPagesToCrawl = 5;
+            configuration.MaxConcurrentThreads = 1;//TODO REMOVE ME, THIS WAS JUST FOR TESTING
 
             int pagesCrawledCount = 0;
 
@@ -140,11 +141,12 @@ namespace Abot.Tests.Integration
         [Test]
         public void Crawl_UsingOnDiskCrawledUrlRepository_VerifyCrawlResultIsAsExpected()
         {
-            new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
+            CrawlConfiguration crawlConfig = new CrawlConfiguration { UserAgentString = "aaa" };
+            new PageRequester(crawlConfig).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
             using(var onDiskUrlRepo = new OnDiskCrawledUrlRepository(null, null, true))
             {
                 IScheduler<PageToCrawl> onDiskScheduler = new PagesToCrawlScheduler(false, onDiskUrlRepo, new FifoPagesToCrawlRepository());
-                base.CrawlAndAssert(new Crawler(new ImplementationOverride { PagesToCrawlScheduler = onDiskScheduler }));
+                base.CrawlAndAssert(new Crawler(new ImplementationOverride(crawlConfig) { PagesToCrawlScheduler = onDiskScheduler }));
             }
         }
 

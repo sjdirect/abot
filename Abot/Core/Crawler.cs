@@ -187,8 +187,19 @@ namespace Abot.Core
 
         protected virtual void CrawlSite(Uri uri)
         {
-            CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Add(new PageToCrawl(uri) { ParentUri = uri, IsInternal = true, IsRoot = true });
-            
+            PageToCrawl rootPageToCrawl = new PageToCrawl(uri) { ParentUri = uri, IsInternal = true, IsRoot = true };
+
+            CrawlDecision shouldCrawlRootUri = CrawlContext.ImplementationContainer.CrawlDecisionMaker.ShouldCrawlPage(rootPageToCrawl, CrawlContext);
+            if (shouldCrawlRootUri.Allow)
+            {
+                AddPageToContext(rootPageToCrawl);
+                CrawlContext.ImplementationContainer.PagesToCrawlScheduler.Add(rootPageToCrawl);
+            }
+            else
+            {
+                _logger.FatalFormat("Could not crawl site [{0}], [{1}]", rootPageToCrawl, shouldCrawlRootUri.Reason);
+            }
+                
             //TODO add configuration for MaxConcurrentHttpRequests
             //TODO add configuration for MaxConcurrentCrawledPageProcessors
             //TODO retire MaxConcurrentThreads
@@ -346,6 +357,23 @@ namespace Abot.Core
 
             _logger.DebugFormat("abot config section was found");
             return configFromFile.Convert();
+        }
+
+        protected virtual void AddPageToContext(PageToCrawl pageToCrawl)
+        {
+            if (pageToCrawl.IsRetry)
+                return;
+
+            int domainCount = 0;
+            Interlocked.Increment(ref CrawlContext.CrawledCount);
+            _logger.DebugFormat("Adding [{0}] to crawled context, [{1}] pages currently crawled", pageToCrawl.Uri.AbsoluteUri, CrawlContext.CrawledCount);
+            lock (CrawlContext.CrawlCountByDomain)
+            {
+                if (CrawlContext.CrawlCountByDomain.TryGetValue(pageToCrawl.Uri.Authority, out domainCount))
+                    CrawlContext.CrawlCountByDomain[pageToCrawl.Uri.Authority] = domainCount + 1;
+                else
+                    CrawlContext.CrawlCountByDomain.TryAdd(pageToCrawl.Uri.Authority, 1);
+            }
         }
     }
 }

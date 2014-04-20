@@ -8,11 +8,6 @@ namespace Abot.Core
     /// </summary>
     public class ImplementationOverride : ImplementationContainer
     {
-        public ImplementationOverride()
-            :this(null)
-        {
-
-        }
 
         public ImplementationOverride(CrawlConfiguration config)
             :this(config, new ImplementationContainer())

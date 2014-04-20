@@ -50,7 +50,10 @@ namespace Abot.Core
         public PagesToCrawlScheduler(bool allowUriRecrawling, ICrawledUrlRepository crawledUrlRepo, IPagesToCrawlRepository pagesToCrawlRepo)
         {
             _allowUriRecrawling = allowUriRecrawling;
-            _crawledUrlRepo = crawledUrlRepo ?? new MemoryBloomUrlRepository();
+            //TODO !!!!!!!!!!!Using the MemoryBloomUrlRepsitory caused OOM exceptions in the integration tests like the following
+            //Test 'Abot.Tests.Integration.CrawlSiteSimulator.Crawl_VerifyCrawlResultIsAsExpected' failed: System.OutOfMemoryException : Exception of type 'System.OutOfMemoryException' was thrown.
+            //Test 'Abot.Tests.Integration.CrawlSiteSimulator.Crawl_MaxPagesTo5_WithCrawlDelay_OnlyCrawls5Pages' failed: System.OutOfMemoryException : Exception of type 'System.OutOfMemoryException' was thrown.
+            _crawledUrlRepo = crawledUrlRepo ?? new InMemoryCrawledUrlRepository();//new MemoryBloomUrlRepository();
             _pagesToCrawlRepo = pagesToCrawlRepo ?? new FifoPagesToCrawlRepository();
         }
 
