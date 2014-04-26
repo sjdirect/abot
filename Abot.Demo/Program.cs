@@ -94,9 +94,9 @@ namespace Abot.Demo
             return new Crawler(config);
         }
 
-        private static IWebCrawler GetCustomBehaviorUsingLambdaWebCrawler()
+        private static IWebCrawler GetCustomBehaviorUsingLambdaWebCrawler(CrawlConfiguration crawlConfig)
         {
-            ImplementationOverride implOverride = new ImplementationOverride();
+            ImplementationOverride implOverride = new ImplementationOverride(crawlConfig);
 
             //Tell Abot not crawl any url that has the word "ghost" in it.
             //For example http://a.com/ghost, would not get crawled if the link were found during the crawl.
