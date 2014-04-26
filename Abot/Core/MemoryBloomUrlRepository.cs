@@ -9,7 +9,7 @@ namespace Abot.Core
         BloomFilter _urlRepository = null;
 
 
-        public MemoryBloomUrlRepository(double falsePositiveProbability = .0001, int expectedElements = 100000000)
+        public MemoryBloomUrlRepository(double falsePositiveProbability = .0001, int expectedElements = 1000000)
             : this(new BloomFilter(falsePositiveProbability, expectedElements))
         {
             

@@ -62,7 +62,7 @@ namespace Abot.Tests.Integration
         [Test]
         public void Crawl_MaxPagesTo5_WithCrawlDelay_OnlyCrawls5Pages()
         {
-            new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
+            new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
 
             CrawlConfiguration configuration = new CrawlConfiguration();
             configuration.MinCrawlDelayPerDomainMilliSeconds = 1000; //adding delay since it increases the chance of issues with abot crawling more than MaxPagesToCrawl.
