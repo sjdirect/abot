@@ -1,10 +1,11 @@
 ﻿using Abot.Poco;
+using System;
 using System.Net;
 
 namespace Abot.Core
 {
     /// <summary>
-    /// Determines what pages should be crawled, whether the raw content should be downloaded and if the links on a page should be crawled
+    /// Make key decisions during the crawl process
     /// </summary>
     public interface ICrawlDecisionMaker
     {
@@ -19,9 +20,14 @@ namespace Abot.Core
         CrawlDecision ShouldCrawlPageLinks(CrawledPage crawledPage, CrawlContext crawlContext);
 
         /// <summary>
-        /// Decides whether the page's content should be dowloaded
+        /// Decides whether the page's content should be downloaded
         /// </summary>
         CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage, CrawlContext crawlContext);
+
+        /// <summary>
+        /// Decides whether the uri should be treated as an internal to the crawl origin or root
+        /// </summary>
+        bool IsInternal(Uri uri, CrawlContext crawlContext);
     }
 
     public class CrawlDecisionMaker : ICrawlDecisionMaker
@@ -114,6 +120,14 @@ namespace Abot.Core
                 return new CrawlDecision { Allow = false, Reason = string.Format("Page size of [{0}] bytes is above the max allowable of [{1}] bytes", crawledPage.HttpWebResponse.ContentLength, crawlContext.CrawlConfiguration.MaxPageSizeInBytes) };
 
             return new CrawlDecision { Allow = true };            
+        }
+    
+        public virtual bool IsInternal(Uri uri, CrawlContext crawlContext)
+        {
+            if(uri == null || crawlContext == null)
+                return false;    
+
+ 	        return uri.Authority == crawlContext.RootUri.Authority;
         }
     }
 }

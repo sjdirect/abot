@@ -9,6 +9,7 @@ namespace Abot.Core
         bool AddIfNew(Uri uri);
     }
 
+    [Obsolete("Will be removed in future release. Use MemoryBloomUrlRepository instead.")]
     public class InMemoryCrawledUrlRepository : ICrawledUrlRepository
     {
         ConcurrentDictionary<string, byte> _urlRepository = new ConcurrentDictionary<string, byte>();

@@ -82,7 +82,9 @@ namespace Abot.Core
             }
             else
             {
+                Interlocked.Increment(ref _numberOfRunningThreads);
                 RunAction(action, false);
+                Interlocked.Decrement(ref _numberOfRunningThreads);
             }
         }
 

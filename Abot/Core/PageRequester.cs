@@ -6,6 +6,9 @@ using System.Reflection;
 
 namespace Abot.Core
 {
+    /// <summary>
+    /// Handles making http requests
+    /// </summary>
     public interface IPageRequester
     {
         /// <summary>
@@ -98,7 +101,7 @@ namespace Abot.Core
                     if (shouldDownloadContentDecision.Allow)
                         crawledPage.Content = _extractor.GetContent(response);
                     else
-                        _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
+                        _logger.DebugFormat("Content not downloaded for page [{0}], [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
 
                     response.Close();//Should already be closed by _extractor but just being safe
                 }

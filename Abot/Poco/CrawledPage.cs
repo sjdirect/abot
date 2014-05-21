@@ -23,12 +23,6 @@ namespace Abot.Poco
         }
 
         /// <summary>
-        /// The raw content of the request
-        /// </summary>
-        [Obsolete("Please use CrawledPage.Content.Text instead", true)]
-        public string RawContent { get; set; }
-
-        /// <summary>
         /// Lazy loaded Html Agility Pack (http://htmlagilitypack.codeplex.com/) document that can be used to retrieve/modify html elements on the crawled page.
         /// </summary>
         public HtmlDocument HtmlDocument { get { return _htmlDocument.Value; } }
@@ -60,12 +54,6 @@ namespace Abot.Poco
             else
                 return string.Format("{0}[{1}]", Uri.AbsoluteUri, (int)HttpWebResponse.StatusCode);
         }
-
-        /// <summary>
-        /// The actual byte size of the page's raw content. This property is due to the Content-length header being untrustable.
-        /// </summary>
-        [Obsolete("Please use CrawledPage.Content.Bytes.Length instead", true)]
-        public long PageSizeInBytes { get; set; }
 
         /// <summary>
         /// Links parsed from page. This value is set by the WebCrawler.SchedulePageLinks() method only If the "ShouldCrawlPageLinks" rules return true or if the IsForcedLinkParsingEnabled config value is set to true.

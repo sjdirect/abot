@@ -21,11 +21,13 @@ namespace Abot.Poco
         /// <summary>
         /// Whether the crawl should be stopped. Will clear all scheduled pages but will allow any threads that are currently crawling to complete.
         /// </summary>
+        //TODO Dont need this anymore, use cancellation token
         public bool ShouldStopCrawl { get; set; }
 
         /// <summary>
         /// Whether the crawl should be "hard stopped". Will clear all scheduled pages and cancel any threads that are currently crawling.
         /// </summary>
+        //TODO Dont need this anymore, use cancellation token
         public bool ShouldHardStopCrawl { get; set; }
     }
 }

@@ -1,13 +1,13 @@
 ﻿using Abot.Poco;
 using System;
 
-namespace Abot.Crawler
+namespace Abot.Core
 {
-    public class PageCrawlStartingArgs : CrawlArgs
+    public class PageActionStartingArgs : CrawlArgs
     {
         public PageToCrawl PageToCrawl { get; private set; }
 
-        public PageCrawlStartingArgs(CrawlContext crawlContext, PageToCrawl pageToCrawl)
+        public PageActionStartingArgs(CrawlContext crawlContext, PageToCrawl pageToCrawl)
             : base(crawlContext)
         {
             if (pageToCrawl == null)

@@ -94,7 +94,7 @@ namespace Abot.Core
             }
             catch (Exception e)
             {
-                _logger.InfoFormat("Error dentitizing uri: {0} This usually means that it contains unexpected characters", hrefValue);
+                _logger.InfoFormat("Error dentitizing uri: {0} This usually means that it contains unexpected characters. Message: {1}", hrefValue, e.Message);
             }
 
             return dentitizedHref;

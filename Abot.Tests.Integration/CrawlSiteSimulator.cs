@@ -1,5 +1,4 @@
 ﻿using Abot.Core;
-using Abot.Crawler;
 using Abot.Poco;
 using NUnit.Framework;
 using System;
@@ -22,7 +21,7 @@ namespace Abot.Tests.Integration
         public void Crawl_VerifyCrawlResultIsAsExpected()
         {
             new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
-            base.CrawlAndAssert(new PoliteWebCrawler());
+            base.CrawlAndAssert(new Crawler());
         }
 
         [Test]
@@ -35,9 +34,8 @@ namespace Abot.Tests.Integration
 
             int pagesCrawledCount = 0;
 
-            PoliteWebCrawler crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
-            crawler.PageCrawlCompletedAsync += (a, b) => pagesCrawledCount++;
-
+            Crawler crawler = new Crawler(configuration);
+            crawler.PageRequesterEngine.PageRequestCompletedAsync += (a, b) => pagesCrawledCount++;
             crawler.Crawl(new Uri("http://localhost:1111/"));
 
             Assert.AreEqual(5, pagesCrawledCount);
@@ -53,8 +51,8 @@ namespace Abot.Tests.Integration
 
             int pagesCrawledCount = 0;
 
-            PoliteWebCrawler crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
-            crawler.PageCrawlCompletedAsync += (a, b) => pagesCrawledCount++;
+            Crawler crawler = new Crawler(configuration);
+            crawler.PageRequesterEngine.PageRequestCompletedAsync += (a, b) => pagesCrawledCount++;
 
             crawler.Crawl(new Uri("http://localhost:1111/"));
 
@@ -64,7 +62,7 @@ namespace Abot.Tests.Integration
         [Test]
         public void Crawl_MaxPagesTo5_WithCrawlDelay_OnlyCrawls5Pages()
         {
-            new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
+            new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
 
             CrawlConfiguration configuration = new CrawlConfiguration();
             configuration.MinCrawlDelayPerDomainMilliSeconds = 1000; //adding delay since it increases the chance of issues with abot crawling more than MaxPagesToCrawl.
@@ -72,8 +70,8 @@ namespace Abot.Tests.Integration
 
             int pagesCrawledCount = 0;
 
-            PoliteWebCrawler crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
-            crawler.PageCrawlCompletedAsync += (a, b) => pagesCrawledCount++;
+            Crawler crawler = new Crawler(configuration);
+            crawler.PageRequesterEngine.PageRequestCompletedAsync += (a, b) => pagesCrawledCount++;
 
             crawler.Crawl(new Uri("http://localhost:1111/"));
 
@@ -88,8 +86,8 @@ namespace Abot.Tests.Integration
 
             int pagesCrawledCount = 0;
 
-            PoliteWebCrawler crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
-            crawler.PageCrawlCompletedAsync += (a, b) => pagesCrawledCount++;
+            Crawler crawler = new Crawler(configuration);
+            crawler.PageRequesterEngine.PageRequestCompletedAsync += (a, b) => pagesCrawledCount++;
 
             CrawlResult result = crawler.Crawl(new Uri("http://localhost:1111/"));
 
@@ -111,7 +109,7 @@ namespace Abot.Tests.Integration
             };
             timer.Start();
 
-            PoliteWebCrawler crawler = new PoliteWebCrawler();
+            Crawler crawler = new Crawler();
             CrawlResult result = crawler.Crawl(new Uri("http://localhost:1111/"), cancellationTokenSource);
 
             Assert.IsTrue(result.ErrorOccurred);
@@ -131,7 +129,7 @@ namespace Abot.Tests.Integration
             };
             timer.Start();
 
-            PoliteWebCrawler crawler = new PoliteWebCrawler();
+            Crawler crawler = new Crawler();
             Task<CrawlResult> task = Task.Factory.StartNew<CrawlResult>(() => crawler.Crawl(new Uri("http://localhost:1111/"), cancellationTokenSource));
             CrawlResult result = task.Result;
 
@@ -142,11 +140,12 @@ namespace Abot.Tests.Integration
         [Test]
         public void Crawl_UsingOnDiskCrawledUrlRepository_VerifyCrawlResultIsAsExpected()
         {
-            new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
+            CrawlConfiguration crawlConfig = new CrawlConfiguration { UserAgentString = "aaa" };
+            new PageRequester(crawlConfig).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
             using(var onDiskUrlRepo = new OnDiskCrawledUrlRepository(null, null, true))
             {
-                Scheduler onDiskScheduler = new Scheduler(false, onDiskUrlRepo, new FifoPagesToCrawlRepository());
-                base.CrawlAndAssert(new PoliteWebCrawler(null, null, null, onDiskScheduler, null, null, null, null, null));
+                IScheduler<PageToCrawl> onDiskScheduler = new PagesToCrawlScheduler(false, onDiskUrlRepo, new FifoPagesToCrawlRepository());
+                base.CrawlAndAssert(new Crawler(new ImplementationOverride(crawlConfig) { PagesToCrawlScheduler = onDiskScheduler }));
             }
         }
 

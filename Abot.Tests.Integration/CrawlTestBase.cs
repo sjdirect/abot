@@ -1,4 +1,4 @@
-﻿using Abot.Crawler;
+﻿using Abot.Core;
 using Abot.Poco;
 using log4net;
 using NUnit.Framework;
@@ -25,7 +25,7 @@ namespace Abot.Tests.Integration
 
         public void CrawlAndAssert(IWebCrawler crawler)
         {
-            crawler.PageCrawlCompletedAsync += crawler_PageCrawlCompleted;
+            crawler.PageRequesterEngine.PageRequestCompletedAsync += crawler_PageCrawlCompleted;
 
             CrawlResult result = crawler.Crawl(_rootUri);
 
@@ -68,7 +68,7 @@ namespace Abot.Tests.Integration
             }
         }
 
-        private void crawler_PageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
+        private void crawler_PageCrawlCompleted(object sender, PageActionCompletedArgs e)
         {
             PageResult pageResult = new PageResult();
             pageResult.Url = e.CrawledPage.Uri.AbsoluteUri;

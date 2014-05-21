@@ -1,7 +1,7 @@
 ﻿using Abot.Poco;
 using System;
 
-namespace Abot.Crawler
+namespace Abot.Core
 {
     public class CrawlArgs : EventArgs
     {

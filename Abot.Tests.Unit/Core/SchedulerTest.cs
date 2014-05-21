@@ -10,7 +10,7 @@ namespace Abot.Tests.Unit.Core
     [TestFixture]
     public class SchedulerTest
     {
-        Scheduler _unitUnderTest;
+        PagesToCrawlScheduler _unitUnderTest;
         Mock<ICrawledUrlRepository> _fakeCrawledUrlRepo;
         Mock<IPagesToCrawlRepository> _fakePagesToCrawlRepo;
         PageToCrawl _page;
@@ -24,13 +24,13 @@ namespace Abot.Tests.Unit.Core
             _fakeCrawledUrlRepo = new Mock<ICrawledUrlRepository>();
             _fakePagesToCrawlRepo = new Mock<IPagesToCrawlRepository>();
 
-            _unitUnderTest = new Scheduler(false, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
+            _unitUnderTest = new PagesToCrawlScheduler(false, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
         }
 
         [Test]
         public void Constructor_NoParams()
         {
-            Assert.IsNotNull(new Scheduler());
+            Assert.IsNotNull(new PagesToCrawlScheduler());
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace Abot.Tests.Unit.Core
         public void Add_UriRecrawlingDisabled_UrlHasBeenCrawled_IsRetry_AddsToBothRepos()
         {
             _page.IsRetry = true;
-            _unitUnderTest = new Scheduler(false, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
+            _unitUnderTest = new PagesToCrawlScheduler(false, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
 
             _unitUnderTest.Add(_page);
 
@@ -90,7 +90,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void Add_UriRecrawlingEnabled_AddsToPagesToCrawlRepo()
         {
-            _unitUnderTest = new Scheduler(true, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
+            _unitUnderTest = new PagesToCrawlScheduler(true, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
 
             _unitUnderTest.Add(_page);
 
@@ -136,7 +136,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void Add_UriRecrawlingEnabled_AddsBothToPagesToCrawlRepo()
         {
-            _unitUnderTest = new Scheduler(true, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
+            _unitUnderTest = new PagesToCrawlScheduler(true, _fakeCrawledUrlRepo.Object, _fakePagesToCrawlRepo.Object);
 
             _unitUnderTest.Add(_pages);
 

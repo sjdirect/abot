@@ -1,4 +1,4 @@
-﻿using Abot.Crawler;
+﻿using Abot.Core;
 using Abot.Poco;
 using NUnit.Framework;
 using System;
@@ -6,13 +6,13 @@ using System;
 namespace Abot.Tests.Unit.Crawler
 {
     [TestFixture]
-    public class PageCrawlCompletedArgsTest
+    public class PageActionCompletedArgsTest
     {
         [Test]
         public void Constructor_ValidArg_SetsPublicProperty()
         {
             CrawledPage page = new CrawledPage(new Uri("http://aaa.com/"));
-            PageCrawlCompletedArgs uut = new PageCrawlCompletedArgs(new CrawlContext(), page);
+            PageActionCompletedArgs uut = new PageActionCompletedArgs(new CrawlContext(), page);
 
             Assert.AreSame(page, uut.CrawledPage);
         }
@@ -21,7 +21,7 @@ namespace Abot.Tests.Unit.Crawler
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullArg()
         {
-            new PageCrawlCompletedArgs(new CrawlContext(), null);
+            new PageActionCompletedArgs(new CrawlContext(), null);
         }
     }
 }

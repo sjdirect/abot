@@ -678,6 +678,28 @@ namespace Abot.Tests.Unit.Core
             Assert.IsFalse(result.ShouldStopCrawl);
         }
 
+        [Test]
+        public void IsInternal_IsSameAuthority_ReturnsTrue()
+        {
+            Assert.IsTrue(_unitUnderTest.IsInternal(new Uri("http://a.com/a"), new CrawlContext { RootUri = new Uri("http://a.com/") }));
+            Assert.IsTrue(_unitUnderTest.IsInternal(new Uri("http://a.com/"), new CrawlContext { RootUri = new Uri("http://a.com/a") }));
+        }
+
+        [Test]
+        public void IsInternal_DifferentAuthority_ReturnsFalse()
+        {
+            Assert.IsFalse(_unitUnderTest.IsInternal(new Uri("http://a.com/a"), new CrawlContext { RootUri = new Uri("http://b.com/") }));
+            Assert.IsFalse(_unitUnderTest.IsInternal(new Uri("http://b.com/"), new CrawlContext { RootUri = new Uri("http://a.com/a") }));
+        }
+
+        [Test]
+        public void IsInternal_DifferentAuthorityBySubdomain_ReturnsFalse()
+        {
+            Assert.IsFalse(_unitUnderTest.IsInternal(new Uri("http://aaa.a.com/"), new CrawlContext { RootUri = new Uri("http://a.com/") }));
+            Assert.IsFalse(_unitUnderTest.IsInternal(new Uri("http://a.com/"), new CrawlContext { RootUri = new Uri("http://aaa.a.com/") }));
+        }
+
+
         private HtmlDocument GetHtmlDocument(string html)
         {
             HtmlDocument doc = new HtmlDocument();

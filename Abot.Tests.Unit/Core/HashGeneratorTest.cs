@@ -1,11 +1,7 @@
 ﻿using Abot.Core;
-using Abot.Poco;
-using Commoner.Core.Testing;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 
 namespace Abot.Tests.Unit.Core
 {
@@ -35,7 +31,7 @@ namespace Abot.Tests.Unit.Core
                     hashes.Add(input.AbsoluteUri, _unitUnderTest.GenerateHash(input.AbsoluteUri));
                 }
             }
-            catch (Exception e)
+            catch
             {
                 Assert.Fail();
             }

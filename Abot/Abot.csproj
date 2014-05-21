@@ -67,10 +67,18 @@
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
     <Compile Include="Core\CachedMemoryMonitor.cs" />
+    <Compile Include="Core\PagesToProcessScheduler.cs" />
+    <Compile Include="Core\PagesToCrawlScheduler.cs" />
+    <Compile Include="Core\ImplementationOverride.cs" />
+    <Compile Include="Core\EngineBase.cs" />
+    <Compile Include="Core\PolitenessManager.cs" />
+    <Compile Include="Poco\ImplementationContainer.cs" />
+    <Compile Include="Core\PageProcessorEngine.cs" />
+    <Compile Include="Core\PageRequesterEngine.cs" />
     <Compile Include="Core\Md5HashGenerator.cs" />
+    <Compile Include="Core\MemoryBloomUrlRepository.cs" />
     <Compile Include="Core\Murmur3HashGenerator.cs" />
     <Compile Include="Core\OnDiskCrawledUrlRepository.cs" />
-    <Compile Include="Core\Scheduler.cs" />
     <Compile Include="Core\WebContentExtractor.cs" />
     <Compile Include="Core\GcMemoryMonitor.cs" />
     <Compile Include="Core\InMemoryCrawledUrlRepository.cs" />
@@ -86,21 +94,18 @@
     <Compile Include="Core\RobotsDotTextFinder.cs" />
     <Compile Include="Core\TaskThreadManager.cs" />
     <Compile Include="Core\ThreadManager.cs" />
-    <Compile Include="Crawler\CrawlArgs.cs" />
-    <Compile Include="Crawler\PageLinksCrawlDisallowedArgs.cs" />
-    <Compile Include="Crawler\PageCrawlDisallowedArgs.cs" />
-    <Compile Include="Crawler\PageCrawlCompletedArgs.cs" />
-    <Compile Include="Crawler\PageCrawlStartingArgs.cs" />
-    <Compile Include="Crawler\PoliteWebCrawler.cs" />
+    <Compile Include="Core\CrawlArgs.cs" />
+    <Compile Include="Core\Crawler.cs" />
+    <Compile Include="Core\PageActionDisallowedArgs.cs" />
+    <Compile Include="Core\PageActionCompletedArgs.cs" />
+    <Compile Include="Core\PageActionStartingArgs.cs" />
     <Compile Include="Poco\CrawlConfiguration.cs" />
     <Compile Include="Poco\CrawlContext.cs" />
     <Compile Include="Poco\CrawlDecision.cs" />
     <Compile Include="Poco\CrawledPage.cs" />
     <Compile Include="Poco\CrawlResult.cs" />
-    <Compile Include="Core\FifoScheduler.cs" />
     <Compile Include="Core\HyperLinkParser.cs" />
     <Compile Include="Core\PageRequester.cs" />
-    <Compile Include="Crawler\WebCrawler.cs" />
     <Compile Include="Poco\PageContent.cs" />
     <Compile Include="Poco\PageToCrawl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -111,6 +116,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BloomFilterLib\BloomFilterLib.csproj">
+      <Project>{078a6bbb-5f13-4120-a200-33f9cd5d9f30}</Project>
+      <Name>BloomFilterLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MurMur3\MurMur3.csproj">
+      <Project>{0c22331e-8121-40ca-bb50-4fd97a608bf1}</Project>
+      <Name>MurMur3</Name>
+    </ProjectReference>
     <ProjectReference Include="..\nrobots\Robots\Robots.csproj">
       <Project>{2583d0b0-9f70-4b5c-a190-673c86af3318}</Project>
       <Name>Robots</Name>

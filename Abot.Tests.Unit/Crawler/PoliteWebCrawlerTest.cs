@@ -1,5 +1,5 @@
 ﻿using Abot.Core;
-using Abot.Crawler;
+using Abot.Core;
 using Abot.Poco;
 using Moq;
 using NUnit.Framework;
@@ -19,7 +19,7 @@ namespace Abot.Tests.Unit.Crawler
         Mock<IMemoryManager> _fakeMemoryManager;
         Mock<IRobotsDotTextFinder> _fakeRobotsDotTextFinder;
         Mock<IRobotsDotText> _fakeRobotsDotText;
-        Scheduler _dummyScheduler;
+        PagesToCrawlScheduler _dummyScheduler;
         ManualThreadManager _dummyThreadManager;
         CrawlConfiguration _dummyConfiguration;
         Uri _rootUri;
@@ -35,7 +35,7 @@ namespace Abot.Tests.Unit.Crawler
             _fakeRobotsDotTextFinder = new Mock<IRobotsDotTextFinder>();
             _fakeRobotsDotText = new Mock<IRobotsDotText>();
 
-            _dummyScheduler = new Scheduler();
+            _dummyScheduler = new PagesToCrawlScheduler();
             _dummyThreadManager = new ManualThreadManager(1);
             _dummyConfiguration = new CrawlConfiguration();
             _dummyConfiguration.ConfigurationExtensions.Add("somekey", "someval");
