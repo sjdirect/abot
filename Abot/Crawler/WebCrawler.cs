@@ -645,8 +645,9 @@ namespace Abot.Crawler
 
                 ThrowIfCancellationRequested();
 
+                AddPageToContext(pageToCrawl);
                 CrawledPage crawledPage = CrawlThePage(pageToCrawl);
-
+                
                 if (PageSizeIsAboveMax(crawledPage))
                     return;
 
@@ -723,11 +724,7 @@ namespace Abot.Crawler
             if (shouldCrawlPageDecision.Allow)
                 shouldCrawlPageDecision = (_shouldCrawlPageDecisionMaker != null) ? _shouldCrawlPageDecisionMaker.Invoke(pageToCrawl, _crawlContext) : new CrawlDecision { Allow = true };
 
-            if (shouldCrawlPageDecision.Allow)
-            {
-                AddPageToContext(pageToCrawl);
-            }
-            else
+            if (!shouldCrawlPageDecision.Allow)
             {
                 _logger.DebugFormat("Page [{0}] not crawled, [{1}]", pageToCrawl.Uri.AbsoluteUri, shouldCrawlPageDecision.Reason);
                 FirePageCrawlDisallowedEventAsync(pageToCrawl, shouldCrawlPageDecision.Reason);
@@ -806,7 +803,9 @@ namespace Abot.Crawler
                         page.IsRoot = false;
 
                         if (ShouldSchedulePageLink(page))
+                        {
                             _scheduler.Add(page);
+                        }
                     }
                     catch { }
                 }

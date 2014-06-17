@@ -42,7 +42,7 @@ namespace Abot.Core
 
             if (!pageToCrawl.IsRetry &&
                 crawlContext.CrawlConfiguration.MaxPagesToCrawl > 0 &&
-                crawlContext.CrawledCount + 1 > crawlContext.CrawlConfiguration.MaxPagesToCrawl)
+                crawlContext.CrawledCount + crawlContext.Scheduler.Count + 1 > crawlContext.CrawlConfiguration.MaxPagesToCrawl)
             {
                 return new CrawlDecision { Allow = false, Reason = string.Format("MaxPagesToCrawl limit of [{0}] has been reached", crawlContext.CrawlConfiguration.MaxPagesToCrawl) };
             }

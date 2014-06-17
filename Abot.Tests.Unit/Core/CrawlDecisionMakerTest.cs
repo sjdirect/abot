@@ -1,6 +1,7 @@
 ﻿using Abot.Core;
 using Abot.Poco;
 using HtmlAgilityPack;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Concurrent;
@@ -12,12 +13,15 @@ namespace Abot.Tests.Unit.Core
     {
         CrawlDecisionMaker _unitUnderTest;
         CrawlContext _crawlContext;
+        Mock<IScheduler> _fakeScheduler;
 
         [SetUp]
         public void SetUp()
         {
+            _fakeScheduler = new Mock<IScheduler>();
             _crawlContext = new CrawlContext();
             _crawlContext.CrawlConfiguration = new CrawlConfiguration { UserAgentString = "aaa" };
+            _crawlContext.Scheduler = _fakeScheduler.Object;
             _unitUnderTest = new CrawlDecisionMaker();
         }
 
@@ -47,18 +51,14 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPage_NonDuplicate_ReturnsTrue()
         {
-            CrawlContext crawlContext = new CrawlContext
-            {
-                CrawlConfiguration = new CrawlConfiguration(),
-                CrawlStartDate = DateTime.Now
-            };
+            _crawlContext.CrawlStartDate = DateTime.Now;
 
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
                 {
                     IsInternal = true
                 },
-                crawlContext);
+                _crawlContext);
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
@@ -104,16 +104,26 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPage_OverMaxPageToCrawlLimit_ReturnsFalse()
         {
-            CrawlContext crawlContext = new CrawlContext
-                {
-                    CrawlConfiguration = new CrawlConfiguration
-                    {
-                        MaxPagesToCrawl = 100
-                    },
-                    CrawledCount = 100
-                };
+            _crawlContext.CrawlConfiguration.MaxPagesToCrawl = 100;
+            _crawlContext.CrawledCount = 100;
 
-            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("http://a.com/b")) { IsInternal = true }, crawlContext);
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("http://a.com/b")) { IsInternal = true }, _crawlContext);
+
+            Assert.IsFalse(result.Allow);
+            Assert.AreEqual("MaxPagesToCrawl limit of [100] has been reached", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+        [Test]
+        public void ShouldCrawlPage_OverMaxPageToCrawlLimitByScheduler_ReturnsFalse()
+        {
+            _crawlContext.CrawlConfiguration.MaxPagesToCrawl = 100;
+            _crawlContext.CrawledCount = 1;
+
+            _fakeScheduler.Setup(f => f.Count).Returns(100);
+
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(new PageToCrawl(new Uri("http://a.com/b")) { IsInternal = true }, _crawlContext);
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("MaxPagesToCrawl limit of [100] has been reached", result.Reason);
@@ -141,20 +151,14 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPage_IsExternalPageCrawlingEnabledFalse_PageIsExternal_ReturnsFalse()
         {
-            CrawlContext crawlContext = new CrawlContext
-            {
-                CrawlStartDate = DateTime.Now.AddSeconds(-100),
-                CrawlConfiguration = new CrawlConfiguration
-                {
-                    CrawlTimeoutSeconds = 0 //equivalent to infinity
-                }
-            };
+            _crawlContext.CrawlStartDate = DateTime.Now.AddSeconds(-100);
+            _crawlContext.CrawlConfiguration.CrawlTimeoutSeconds = 0;
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
                 {
                     IsInternal = false
                 }, 
-                crawlContext);
+                _crawlContext);
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("Link is external", result.Reason);
@@ -165,21 +169,15 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPage_IsExternalPageCrawlingEnabledTrue_PageIsExternal_ReturnsTrue()
         {
-            CrawlContext crawlContext = new CrawlContext
-                {
-                    CrawlConfiguration = new CrawlConfiguration
-                    {
-                        IsExternalPageCrawlingEnabled = true
-                    },
-                    CrawlStartDate = DateTime.Now,
-                };
+            _crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled = true;
+            _crawlContext.CrawlStartDate = DateTime.Now;
 
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
                 {
                     IsInternal = false
                 },
-                crawlContext);
+                _crawlContext);
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
@@ -190,21 +188,15 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPage_IsExternalPageCrawlingEnabledFalse_PageIsInternal_ReturnsTrue()
         {
-            CrawlContext crawlContext = new CrawlContext
-            {
-                CrawlConfiguration = new CrawlConfiguration
-                {
-                    IsExternalPageCrawlingEnabled = false
-                },
-                CrawlStartDate = DateTime.Now,
-            };
+            _crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled = false;
+            _crawlContext.CrawlStartDate = DateTime.Now;
 
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
                 {
                     IsInternal = true
                 },
-                crawlContext);
+                _crawlContext);
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
@@ -215,21 +207,15 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPage_IsExternalPageCrawlingEnabledTrue_PageIsInternal_ReturnsTrue()
         {
-            CrawlContext crawlContext = new CrawlContext
-            {
-                CrawlConfiguration = new CrawlConfiguration
-                {
-                    IsExternalPageCrawlingEnabled = true
-                },
-                CrawlStartDate = DateTime.Now,
-            };
+            _crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled = true;
+            _crawlContext.CrawlStartDate = DateTime.Now;
 
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
                 {
                     IsInternal = true
                 },
-                crawlContext);
+                _crawlContext);
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
@@ -241,25 +227,20 @@ namespace Abot.Tests.Unit.Core
         public void ShouldCrawlPage_OverMaxPagesToCrawlPerDomain_ReturnsFalse()
         {
             Uri uri = new Uri("http://a.com/");
-            CrawlConfiguration config = new CrawlConfiguration
-            {
-                MaxPagesToCrawlPerDomain = 100
-            };
+
             ConcurrentDictionary<string,int> countByDomain = new ConcurrentDictionary<string,int>();
             countByDomain.TryAdd(uri.Authority, 100);
-            CrawlContext crawlContext = new CrawlContext
-                {
-                    CrawlConfiguration = config,
-                    CrawlStartDate = DateTime.Now,
-                    CrawlCountByDomain = countByDomain
-                };
+
+            _crawlContext.CrawlStartDate = DateTime.Now;
+            _crawlContext.CrawlCountByDomain = countByDomain;
+            _crawlContext.CrawlConfiguration.MaxPagesToCrawlPerDomain = 100;
 
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri(uri.AbsoluteUri + "anotherpage"))
                 {
                     IsInternal = true
                 },
-                crawlContext);
+                _crawlContext);
 
             Assert.IsFalse(result.Allow);
             Assert.AreEqual("MaxPagesToCrawlPerDomain limit of [100] has been reached for domain [a.com]", result.Reason);
@@ -325,13 +306,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldCrawlPage_EqualToMaxCrawlDepth_ReturnsTrue()
         {
-            CrawlContext crawlContext = new CrawlContext
-            {
-                CrawlConfiguration = new CrawlConfiguration
-                {
-                    MaxCrawlDepth = 2
-                }
-            };
+            _crawlContext.CrawlConfiguration.MaxCrawlDepth = 2;
 
             CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
@@ -339,7 +314,7 @@ namespace Abot.Tests.Unit.Core
                     IsInternal = true,
                     CrawlDepth = 2
                 },
-                crawlContext);
+                _crawlContext);
 
             Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
