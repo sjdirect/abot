@@ -49,7 +49,7 @@ namespace Abot.Core
             timer.Stop();
 
             if(timer.ElapsedMilliseconds > 10)
-                _logger.DebugFormat("Rate limited [{0}] [{1}] milliseconds", uri.AbsolutePath, timer.ElapsedMilliseconds);
+                _logger.DebugFormat("Rate limited [{0}] [{1}] milliseconds", uri.AbsoluteUri, timer.ElapsedMilliseconds);
         }
 
         public void AddDomain(Uri uri, long minCrawlDelayInMillisecs)
