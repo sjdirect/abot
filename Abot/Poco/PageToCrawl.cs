@@ -37,7 +37,7 @@ namespace Abot.Poco
         /// <summary>
         /// The number of times the http request was be retried.
         /// </summary>
-        public bool RetryCount { get; set; }
+        public int RetryCount { get; set; }
 
         /// <summary>
         /// Whether the page is the root uri of the crawl
