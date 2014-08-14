@@ -272,7 +272,7 @@ namespace Abot.Crawler
             }
 
             _crawlResult.Elapsed = timer.Elapsed;
-            _logger.InfoFormat("Crawl complete for site [{0}]: [{1}]", _crawlResult.RootUri.AbsoluteUri, _crawlResult.Elapsed);
+            _logger.InfoFormat("Crawl complete for site [{0}]: Crawled [{1}] pages in [{2}]", _crawlResult.RootUri.AbsoluteUri, _crawlResult.CrawlContext.CrawledCount, _crawlResult.Elapsed);
 
             return _crawlResult;
         }
