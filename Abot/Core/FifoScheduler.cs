@@ -9,7 +9,7 @@ namespace Abot.Core
     [Obsolete("Please use Scheduler.cs instead", false)]
     public class FifoScheduler : IScheduler
     {
-        static ILog _logger = LogManager.GetLogger(typeof(FifoScheduler).FullName);
+        static ILog _logger = LogManager.GetLogger("AbotLogger");
         ConcurrentQueue<PageToCrawl> _pagesToCrawl = new ConcurrentQueue<PageToCrawl>();
         ConcurrentDictionary<string, object> _scheduledOrCrawled = new ConcurrentDictionary<string, object>();
 

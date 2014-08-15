@@ -11,7 +11,7 @@ namespace Abot.Core
 
     public class GcMemoryMonitor : IMemoryMonitor
     {
-        static ILog _logger = LogManager.GetLogger(typeof(GcMemoryMonitor).FullName);
+        static ILog _logger = LogManager.GetLogger("AbotLogger");
 
         public virtual int GetCurrentUsageInMb()
         {

@@ -22,7 +22,7 @@ namespace Abot.Core
 
     public class MemoryManager : IMemoryManager
     {
-        static ILog _logger = LogManager.GetLogger(typeof(MemoryManager).FullName);
+        static ILog _logger = LogManager.GetLogger("AbotLogger");
         IMemoryMonitor _memoryMonitor;
 
         public MemoryManager(IMemoryMonitor memoryMonitor)

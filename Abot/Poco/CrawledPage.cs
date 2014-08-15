@@ -9,7 +9,7 @@ namespace Abot.Poco
 {
     public class CrawledPage : PageToCrawl
     {
-        ILog _logger = LogManager.GetLogger(typeof(CrawledPage).FullName);
+        ILog _logger = LogManager.GetLogger("AbotLogger");
 
         Lazy<HtmlDocument> _htmlDocument;
         Lazy<CQ> _csQueryDocument;

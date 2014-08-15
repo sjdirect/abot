@@ -20,7 +20,7 @@ namespace Abot.Core
 
     public abstract class HyperLinkParser : IHyperLinkParser
     {
-        protected ILog _logger = LogManager.GetLogger(typeof(HyperLinkParser));
+        protected ILog _logger = LogManager.GetLogger("AbotLogger");
         protected bool IsRespectMetaRobotsNoFollowEnabled { get; set; }
 
         public HyperLinkParser()

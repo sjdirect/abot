@@ -22,7 +22,7 @@ namespace Abot.Core
 
     public class RobotsDotTextFinder : IRobotsDotTextFinder
     {
-        static ILog _logger = LogManager.GetLogger(typeof(RobotsDotTextFinder).FullName);
+        static ILog _logger = LogManager.GetLogger("AbotLogger");
         IPageRequester _pageRequester;
 
         public RobotsDotTextFinder(IPageRequester pageRequester)

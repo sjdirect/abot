@@ -12,7 +12,7 @@ namespace Abot.Core
 {
     public class OnDiskCrawledUrlRepository : ICrawledUrlRepository
     {
-        static ILog _logger = LogManager.GetLogger(typeof(OnDiskCrawledUrlRepository).FullName);
+        static ILog _logger = LogManager.GetLogger("AbotLogger");
         IHashGenerator _hashGenerator;
         BlockingCollection<Uri> _urisToWriteToDisk = new BlockingCollection<Uri>();
         CancellationTokenSource _cancellationToken;

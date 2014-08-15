@@ -12,7 +12,7 @@ namespace Abot.Tests.Integration
     [TestFixture]
     public abstract class CrawlTestBase
     {
-        static ILog _logger = LogManager.GetLogger(typeof(CrawlTestBase).FullName);
+        static ILog _logger = LogManager.GetLogger("AbotLogger");
         ConcurrentBag<PageResult> _actualCrawledPages = new ConcurrentBag<PageResult>();
         int _maxSecondsToCrawl;
         Uri _rootUri;
