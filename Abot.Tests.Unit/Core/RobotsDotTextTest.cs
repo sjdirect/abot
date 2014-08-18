@@ -140,7 +140,7 @@ Sitemap: http://b.com/sitemap.xml
         [Test]
         public void IsUrlAllowed_ExternalPages_ReturnsTrue()
         {
-            Uri externalUri = new Uri("http://yahoo.com/");
+            Uri externalUri = new Uri("http://amazon.com/");
             string userAgentString = _userAgentString;
             Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri, userAgentString));
             Assert.IsTrue(_unitUnderTest.IsUrlAllowed(externalUri.AbsoluteUri + "allowedfolder/aa.html", userAgentString));

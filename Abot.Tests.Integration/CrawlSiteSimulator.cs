@@ -206,7 +206,7 @@ namespace Abot.Tests.Integration
                 new PageResult { Url = "http://localhost:1111/HttpResponse/Status200/Page17", HttpStatusCode = 200},
                 new PageResult { Url = "http://localhost:1111/HttpResponse/Status200/Page18", HttpStatusCode = 200},
                 new PageResult { Url = "http://localhost:1111/HttpResponse/Status200/Page19", HttpStatusCode = 200},
-                new PageResult { Url = "http://yahoo.com/", HttpStatusCode = 200},
+                new PageResult { Url = "http://amazon.com/", HttpStatusCode = 200},
                 new PageResult { Url = "http://localhost:1111/HttpResponse/Status503/Page8", HttpStatusCode = 503},
                 new PageResult { Url = "http://localhost:1111/HttpResponse/Status200/Page20", HttpStatusCode = 200},
                 new PageResult { Url = "http://localhost:1111/HttpResponse/Status503/Page7", HttpStatusCode = 503},
