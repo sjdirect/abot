@@ -628,7 +628,9 @@ namespace Abot.Tests.Unit.Core
                 });
 
             Assert.IsFalse(result.Allow);
-            Assert.AreEqual("Page size of [1298] bytes is above the max allowable of [5] bytes", result.Reason);
+            //Assert.AreEqual("Page size of [1298] bytes is above the max allowable of [5] bytes", result.Reason); //This fluctuates depending on the .net version runtime installed
+            Assert.IsTrue(result.Reason.StartsWith("Page size of ["));
+            Assert.IsTrue(result.Reason.EndsWith("] bytes is above the max allowable of [5] bytes"));
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
         }
