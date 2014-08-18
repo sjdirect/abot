@@ -29,19 +29,19 @@ namespace Abot.Poco
         /// Maximum number of pages to crawl.
         /// This value is required.
         /// </summary>
-        public long MaxPagesToCrawl { get; set; }
+        public int MaxPagesToCrawl { get; set; }
 
         /// <summary>
         /// Maximum number of pages to crawl per domain
         /// If zero, this setting has no effect.
         /// </summary>
-        public long MaxPagesToCrawlPerDomain { get; set; }
+        public int MaxPagesToCrawlPerDomain { get; set; }
 
         /// <summary>
         /// Maximum size of page. If the page size is above this value, it will not be downloaded or processed
         /// If zero, this setting has no effect.
         /// </summary>
-        public long MaxPageSizeInBytes { get; set; }
+        public int MaxPageSizeInBytes { get; set; }
 
         /// <summary>
         /// The maximum numer of seconds to respect in the robots.txt "Crawl-delay: X" directive. 
@@ -59,7 +59,7 @@ namespace Abot.Poco
         /// Maximum seconds before the crawl times out and stops. 
         /// If zero, this setting has no effect.
         /// </summary>
-        public long CrawlTimeoutSeconds { get; set; }
+        public int CrawlTimeoutSeconds { get; set; }
 
         /// <summary>
         /// Dictionary that stores additional keyvalue pairs that can be accessed throught the crawl pipeline
@@ -170,7 +170,7 @@ namespace Abot.Poco
         /// <summary>
         /// The number of milliseconds to wait in between http requests to the same domain.
         /// </summary>
-        public long MinCrawlDelayPerDomainMilliSeconds { get; set; }
+        public int MinCrawlDelayPerDomainMilliSeconds { get; set; }
         
         #endregion
     }

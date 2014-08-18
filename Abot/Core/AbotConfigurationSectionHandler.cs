@@ -84,9 +84,9 @@ namespace Abot.Core
         }
 
         [ConfigurationProperty("minCrawlDelayPerDomainMilliSeconds", IsRequired = true)]
-        public long MinCrawlDelayPerDomainMilliSeconds
+        public int MinCrawlDelayPerDomainMilliSeconds
         {
-            get { return (long)this["minCrawlDelayPerDomainMilliSeconds"]; }
+            get { return (int)this["minCrawlDelayPerDomainMilliSeconds"]; }
         }
     }
 

@@ -61,7 +61,7 @@ namespace Abot.Tests.Unit.Core
             Assert.IsNotNull(result.HtmlDocument);
             Assert.IsNotNull(result.CsQueryDocument);
             Assert.AreEqual(200, (int)result.HttpWebResponse.StatusCode);
-            Assert.AreEqual(938, result.Content.Bytes.Length);
+            Assert.AreEqual(1295, result.Content.Bytes.Length);
         }
 
         [Test]
