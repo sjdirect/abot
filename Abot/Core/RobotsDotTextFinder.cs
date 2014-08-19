@@ -12,8 +12,8 @@ namespace Abot.Core
     {
         /// <summary>
         /// Finds the robots.txt file using the rootUri. 
-        /// If rootUri is http://amazon.com, it will look for robots at http://amazon.com/robots.txt.
-        /// If rootUri is http://music.amazon.com, it will look for robots at http://music.amazon.com/robots.txt
+        /// If rootUri is http://yahoo.com, it will look for robots at http://yahoo.com/robots.txt.
+        /// If rootUri is http://music.yahoo.com, it will look for robots at http://music.yahoo.com/robots.txt
         /// </summary>
         /// <param name="rootUri">The root domain</param>
         /// <returns>Object representing the robots.txt file or returns null</returns>

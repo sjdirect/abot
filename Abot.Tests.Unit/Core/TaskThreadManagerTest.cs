@@ -27,7 +27,7 @@ namespace Abot.Tests.Unit.Core
 
             uut.AbortAll();
 
-            System.Threading.Thread.Sleep(250);
+            System.Threading.Thread.Sleep(500);
             Assert.IsTrue(count < 5);
         }
 
