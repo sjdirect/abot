@@ -3,11 +3,17 @@ using System.Collections;
 
 namespace Abot.Util
 {
+    public interface IBloomFilter<T>
+    {
+        void Add(T item);
+        bool Contains(T item);
+    }
+
 	/// <summary>
 	/// Bloom filter.
 	/// </summary>
 	/// <typeparam name="T">Item type </typeparam>
-	public class Filter<T>
+	public class BloomFilter<T> : IBloomFilter<T>
 	{
 		private readonly int _hashFunctionCount;
 		private readonly BitArray _hashBits;
@@ -18,7 +24,7 @@ namespace Abot.Util
 		/// A secondary hash function will be provided for you if your type T is either string or int. Otherwise an exception will be thrown. If you are not using these types please use the overload that supports custom hash functions.
 		/// </summary>
 		/// <param name="capacity">The anticipated number of items to be added to the filter. More than this number of items can be added, but the error rate will exceed what is expected.</param>
-		public Filter(int capacity)
+		public BloomFilter(int capacity)
 			: this(capacity, null)
 		{
 		}
@@ -29,7 +35,7 @@ namespace Abot.Util
 		/// </summary>
 		/// <param name="capacity">The anticipated number of items to be added to the filter. More than this number of items can be added, but the error rate will exceed what is expected.</param>
 		/// <param name="errorRate">The accepable false-positive rate (e.g., 0.01F = 1%)</param>
-		public Filter(int capacity, float errorRate)
+		public BloomFilter(int capacity, float errorRate)
 			: this(capacity, errorRate, null)
 		{
 		}
@@ -39,7 +45,7 @@ namespace Abot.Util
 		/// </summary>
 		/// <param name="capacity">The anticipated number of items to be added to the filter. More than this number of items can be added, but the error rate will exceed what is expected.</param>
 		/// <param name="hashFunction">The function to hash the input values. Do not use GetHashCode(). If it is null, and T is string or int a hash function will be provided for you.</param>
-		public Filter(int capacity, HashFunction hashFunction)
+		public BloomFilter(int capacity, HashFunction hashFunction)
 			: this(capacity, BestErrorRate(capacity), hashFunction)
 		{
 		}
@@ -50,7 +56,7 @@ namespace Abot.Util
 		/// <param name="capacity">The anticipated number of items to be added to the filter. More than this number of items can be added, but the error rate will exceed what is expected.</param>
 		/// <param name="errorRate">The accepable false-positive rate (e.g., 0.01F = 1%)</param>
 		/// <param name="hashFunction">The function to hash the input values. Do not use GetHashCode(). If it is null, and T is string or int a hash function will be provided for you.</param>
-		public Filter(int capacity, float errorRate, HashFunction hashFunction)
+		public BloomFilter(int capacity, float errorRate, HashFunction hashFunction)
 			: this(capacity, errorRate, hashFunction, BestM(capacity, errorRate), BestK(capacity, errorRate))
 		{
 		}
@@ -63,7 +69,7 @@ namespace Abot.Util
 		/// <param name="hashFunction">The function to hash the input values. Do not use GetHashCode(). If it is null, and T is string or int a hash function will be provided for you.</param>
 		/// <param name="m">The number of elements in the BitArray.</param>
 		/// <param name="k">The number of hash functions to use.</param>
-		public Filter(int capacity, float errorRate, HashFunction hashFunction, int m, int k)
+		public BloomFilter(int capacity, float errorRate, HashFunction hashFunction, int m, int k)
 		{
 			// validate the params are in range
 			if (capacity < 1)

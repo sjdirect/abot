@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Abot.Tests.Unit.Util
 {
-    class BloomFilterTest
+    public class BloomFilterTest
     {
+        //Functionality tested in BloomFilterCrawledUrlRepositoryTest.cs
     }
 }
