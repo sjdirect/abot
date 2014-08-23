@@ -75,7 +75,6 @@
     <Compile Include="Util\CachedMemoryMonitor.cs" />
     <Compile Include="Util\Md5HashGenerator.cs" />
     <Compile Include="Util\Murmur3HashGenerator.cs" />
-    <Compile Include="Core\OnDiskCrawledUrlRepository.cs" />
     <Compile Include="Core\Scheduler.cs" />
     <Compile Include="Core\WebContentExtractor.cs" />
     <Compile Include="Util\GcMemoryMonitor.cs" />

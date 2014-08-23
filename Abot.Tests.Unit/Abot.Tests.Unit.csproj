@@ -100,7 +100,6 @@
     <Compile Include="Core\PagesToCrawlRepositoryTest.cs" />
     <Compile Include="Core\CrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\FifoPagesToCrawlRepositoryTest.cs" />
-    <Compile Include="Core\OnDiskCrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\InMemoryCrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\SchedulerTest.cs" />
     <Compile Include="Core\WebContentExtractorTest.cs" />

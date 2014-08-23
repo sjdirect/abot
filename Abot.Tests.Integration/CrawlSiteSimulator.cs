@@ -139,17 +139,6 @@ namespace Abot.Tests.Integration
             Assert.IsTrue(result.ErrorException is OperationCanceledException);
         }
 
-        [Test]
-        public void Crawl_UsingOnDiskCrawledUrlRepository_VerifyCrawlResultIsAsExpected()
-        {
-            new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
-            using(var onDiskUrlRepo = new OnDiskCrawledUrlRepository(null, null, true))
-            {
-                Scheduler onDiskScheduler = new Scheduler(false, onDiskUrlRepo, new FifoPagesToCrawlRepository());
-                base.CrawlAndAssert(new PoliteWebCrawler(null, null, null, onDiskScheduler, null, null, null, null, null));
-            }
-        }
-
         protected override List<PageResult> GetExpectedCrawlResult()
         {
             List<PageResult> expectedCrawlResult = new List<PageResult>
