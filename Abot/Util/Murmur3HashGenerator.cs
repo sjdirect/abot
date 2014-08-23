@@ -1,7 +1,8 @@
 ﻿using System;
 
-namespace Abot.Core
+namespace Abot.Util
 {
+    [Obsolete("This impl has reported erros")]
     public class Murmur3HashGenerator : IHashGenerator
     {
         static Murmur3 _murmurImpl = new Murmur3();

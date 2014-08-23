@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace Abot.Core
+namespace Abot.Util
 {
     public interface IRateLimiter
     {

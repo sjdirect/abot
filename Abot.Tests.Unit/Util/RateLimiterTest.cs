@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using Abot.Util;
 using NUnit.Framework;
-using Abot.Core;
+using System;
+using System.Diagnostics;
 
-namespace Abot.Tests.Unit.Core
+namespace Abot.Tests.Unit.Util
 {
     [TestFixture]
     public class RateLimiterTest

@@ -2,7 +2,7 @@
 using System;
 using System.Timers;
 
-namespace Abot.Core
+namespace Abot.Util
 {
     public class CachedMemoryMonitor : IMemoryMonitor, IDisposable
     {

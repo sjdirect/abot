@@ -1,6 +1,7 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 
-namespace Abot.Core
+namespace Abot.Util
 {
     public interface IHashGenerator
     {
@@ -8,6 +9,7 @@ namespace Abot.Core
         byte[] GenerateHash(string input);
     }
 
+    [Obsolete("Nothing uses this")]
     public class Md5HashGenerator : IHashGenerator
     {
         static MD5 _md5Impl = System.Security.Cryptography.MD5.Create();

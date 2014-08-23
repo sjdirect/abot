@@ -1,6 +1,6 @@
-﻿using Abot.Core;
+﻿using Abot.Util;
 
-namespace Abot.Tests.Unit.Core
+namespace Abot.Tests.Unit.Util
 {
     public class Murmur3HashGeneratorTest : HashGeneratorTest
     {

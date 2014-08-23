@@ -2,7 +2,7 @@
 using System;
 using System.Threading;
 
-namespace Abot.Core
+namespace Abot.Util
 {
     /// <summary>
     /// Handles the multithreading implementation details

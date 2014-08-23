@@ -70,26 +70,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\AbotConfigurationSectionHandler.cs" />
-    <Compile Include="Core\CachedMemoryMonitor.cs" />
-    <Compile Include="Core\Md5HashGenerator.cs" />
-    <Compile Include="Core\Murmur3HashGenerator.cs" />
+    <Compile Include="Util\BloomFilter.cs" />
+    <Compile Include="Util\CachedMemoryMonitor.cs" />
+    <Compile Include="Util\Md5HashGenerator.cs" />
+    <Compile Include="Util\Murmur3HashGenerator.cs" />
     <Compile Include="Core\OnDiskCrawledUrlRepository.cs" />
     <Compile Include="Core\Scheduler.cs" />
     <Compile Include="Core\WebContentExtractor.cs" />
-    <Compile Include="Core\GcMemoryMonitor.cs" />
+    <Compile Include="Util\GcMemoryMonitor.cs" />
     <Compile Include="Core\InMemoryCrawledUrlRepository.cs" />
     <Compile Include="Core\FifoPagesToCrawlRepository.cs" />
-    <Compile Include="Core\ManualThreadManager.cs" />
-    <Compile Include="Core\MemoryManager.cs" />
+    <Compile Include="Util\ManualThreadManager.cs" />
+    <Compile Include="Util\MemoryManager.cs" />
     <Compile Include="Core\HapHyperLinkParser.cs" />
     <Compile Include="Core\CsQueryHyperLinkParser.cs" />
     <Compile Include="Core\CrawlDecisionMaker.cs" />
     <Compile Include="Core\DomainRateLimiter.cs" />
-    <Compile Include="Core\RateLimiter.cs" />
+    <Compile Include="Util\RateLimiter.cs" />
     <Compile Include="Core\RobotsDotText.cs" />
     <Compile Include="Core\RobotsDotTextFinder.cs" />
-    <Compile Include="Core\TaskThreadManager.cs" />
-    <Compile Include="Core\ThreadManager.cs" />
+    <Compile Include="Util\TaskThreadManager.cs" />
+    <Compile Include="Util\ThreadManager.cs" />
     <Compile Include="Crawler\CrawlArgs.cs" />
     <Compile Include="Crawler\PageLinksCrawlDisallowedArgs.cs" />
     <Compile Include="Crawler\PageCrawlDisallowedArgs.cs" />

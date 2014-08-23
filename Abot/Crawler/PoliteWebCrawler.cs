@@ -5,6 +5,7 @@ using System;
 
 namespace Abot.Crawler
 {
+    using Abot.Util;
     using System.Threading;
 
     /// <summary>

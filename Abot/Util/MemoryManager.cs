@@ -2,7 +2,7 @@
 using System;
 using System.Runtime;
 
-namespace Abot.Core
+namespace Abot.Util
 {
     /// <summary>
     /// Handles memory monitoring/usage

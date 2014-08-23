@@ -1,9 +1,9 @@
-﻿using Abot.Core;
+﻿using Abot.Util;
 using NUnit.Framework;
 using System;
 using System.Threading;
 
-namespace Abot.Tests.Unit.Core
+namespace Abot.Tests.Unit.Util
 {
     [TestFixture]
     public abstract class ThreadManagerTest

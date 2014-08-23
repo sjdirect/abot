@@ -8,6 +8,7 @@ using System.Threading;
 
 namespace Abot.Crawler
 {
+    using Abot.Util;
     using System.Collections.Generic;
     using System.Dynamic;
 

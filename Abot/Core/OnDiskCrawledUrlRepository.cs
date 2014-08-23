@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using Abot.Util;
+using log4net;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Abot.Core
 {
+    [Obsolete("This can be replaced by a bloom filter")]
     public class OnDiskCrawledUrlRepository : ICrawledUrlRepository
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");

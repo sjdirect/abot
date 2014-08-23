@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Abot.Core
+namespace Abot.Util
 {
 
     /// <summary>

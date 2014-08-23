@@ -92,10 +92,10 @@
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
-    <Compile Include="Core\CachedMemoryMonitorTest.cs" />
-    <Compile Include="Core\Murmur3HashGeneratorTest.cs" />
-    <Compile Include="Core\HashGeneratorTest.cs" />
-    <Compile Include="Core\Md5HashGeneratorTest.cs" />
+    <Compile Include="Util\CachedMemoryMonitorTest.cs" />
+    <Compile Include="Util\Murmur3HashGeneratorTest.cs" />
+    <Compile Include="Util\HashGeneratorTest.cs" />
+    <Compile Include="Util\Md5HashGeneratorTest.cs" />
     <Compile Include="Core\PagesToCrawlRepositoryTest.cs" />
     <Compile Include="Core\CrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\FifoPagesToCrawlRepositoryTest.cs" />
@@ -103,11 +103,11 @@
     <Compile Include="Core\InMemoryCrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\SchedulerTest.cs" />
     <Compile Include="Core\WebContentExtractorTest.cs" />
-    <Compile Include="Core\ManualThreadManagerTest.cs" />
-    <Compile Include="Core\GcMemoryMonitorTest.cs" />
-    <Compile Include="Core\MemoryManagerTest.cs" />
-    <Compile Include="Core\TaskThreadManagerTest.cs" />
-    <Compile Include="Core\ThreadManagerTest.cs" />
+    <Compile Include="Util\ManualThreadManagerTest.cs" />
+    <Compile Include="Util\GcMemoryMonitorTest.cs" />
+    <Compile Include="Util\MemoryManagerTest.cs" />
+    <Compile Include="Util\TaskThreadManagerTest.cs" />
+    <Compile Include="Util\ThreadManagerTest.cs" />
     <Compile Include="Core\HapHyperLinkParserTest.cs" />
     <Compile Include="Core\CrawlDecisionMakerTest.cs" />
     <Compile Include="Core\CsQueryHyperLinkParserTest.cs" />
@@ -115,7 +115,7 @@
     <Compile Include="Core\FifoSchedulerTest.cs" />
     <Compile Include="Core\HyperlinkParserTest.cs" />
     <Compile Include="Core\PageRequesterTest.cs" />
-    <Compile Include="Core\RateLimiterTest.cs" />
+    <Compile Include="Util\RateLimiterTest.cs" />
     <Compile Include="Core\RobotsDotTextFinderTest.cs" />
     <Compile Include="Core\RobotsDotTextTest.cs" />
     <Compile Include="Crawler\CrawlArgsTest.cs" />
@@ -141,6 +141,7 @@
     <Compile Include="SiteSimulator\Controllers\HttpResponseControllerTest.cs" />
     <Compile Include="SiteSimulator\Controllers\PageGeneratorControllerTest.cs" />
     <Compile Include="SiteSimulator\Controllers\ThrottlingControllerTest.cs" />
+    <Compile Include="Util\BloomFilterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

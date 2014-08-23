@@ -1,13 +1,9 @@
-﻿using Abot.Core;
-using Abot.Poco;
-using Commoner.Core.Testing;
+﻿using Abot.Util;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 
-namespace Abot.Tests.Unit.Core
+namespace Abot.Tests.Unit.Util
 {
     [TestFixture]
     public abstract class HashGeneratorTest

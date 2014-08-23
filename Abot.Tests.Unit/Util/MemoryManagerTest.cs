@@ -1,9 +1,9 @@
-﻿using Abot.Core;
+﻿using Abot.Util;
 using Moq;
 using NUnit.Framework;
 using System;
 
-namespace Abot.Tests.Unit.Core
+namespace Abot.Tests.Unit.Util
 {
     [TestFixture]
     public class MemoryManagerTest
