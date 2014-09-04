@@ -35,11 +35,11 @@ namespace Abot.Core
             }
 
             PageContent pageContent = new PageContent();
-            pageContent.Bytes = e.GetBytes(content);
+            pageContent.Bytes = memoryStream.ToArray();
             pageContent.Charset = charset;
             pageContent.Encoding = e;
             pageContent.Text = content;
-
+            
             return pageContent;
         }
 
@@ -127,7 +127,6 @@ namespace Abot.Core
 
             return rawData;
         }
-
     }
 
 }
