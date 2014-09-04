@@ -35,7 +35,7 @@ namespace Abot.Core
             }
 
             PageContent pageContent = new PageContent();
-            pageContent.Bytes = e.GetBytes(content);
+            pageContent.Bytes = memoryStream.ToArray();
             pageContent.Charset = charset;
             pageContent.Encoding = e;
             pageContent.Text = content;
@@ -63,7 +63,7 @@ namespace Abot.Core
             MemoryStream ms = rawdata;
             ms.Seek(0, SeekOrigin.Begin);
 
-            
+
             //Do not wrapp in closing statement to prevent closing of the is stream
             StreamReader srr = new StreamReader(ms, Encoding.ASCII);
             String meta = srr.ReadToEnd();
@@ -127,7 +127,6 @@ namespace Abot.Core
 
             return rawData;
         }
-
     }
 
 }
