@@ -63,7 +63,7 @@ namespace Abot.Core
             MemoryStream ms = rawdata;
             ms.Seek(0, SeekOrigin.Begin);
 
-            
+
             //Do not wrapp in closing statement to prevent closing of the is stream
             StreamReader srr = new StreamReader(ms, Encoding.ASCII);
             String meta = srr.ReadToEnd();
