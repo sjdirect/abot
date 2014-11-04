@@ -18,7 +18,8 @@ namespace Abot.Core
 
         public PageContent GetContent(WebResponse response)
         {
-            MemoryStream memoryStream = GetRawData(response);
+			using (MemoryStream memoryStream = GetRawData(response))
+			{
 
             String charset = GetCharsetFromHeaders(response);
 
@@ -41,6 +42,7 @@ namespace Abot.Core
             pageContent.Text = content;
             
             return pageContent;
+			}
         }
 
         private string GetCharsetFromHeaders(WebResponse webResponse)

@@ -7,7 +7,7 @@ namespace Abot.Core
     /// <summary>
     /// Handles memory monitoring/usage
     /// </summary>
-    public interface IMemoryManager : IMemoryMonitor, IDisposable
+    public interface IMemoryManager : IMemoryMonitor
     {
         /// <summary>
         /// Whether the current process that is hosting this instance is allocated/using above the param value of memory in mb

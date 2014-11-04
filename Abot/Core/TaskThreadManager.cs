@@ -17,7 +17,7 @@ namespace Abot.Core
         {
         }
 
-        public TaskThreadManager(int maxConcurrentTasks, CancellationTokenSource cancellationTokenSource)
+		public TaskThreadManager(int maxConcurrentTasks, CancellationTokenSource cancellationTokenSource)
             : base(maxConcurrentTasks)
         {
             _cancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();

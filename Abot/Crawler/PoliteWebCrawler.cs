@@ -90,7 +90,7 @@ namespace Abot.Crawler
                 string message = string.Format("Page [{0}] not crawled, [Disallowed by robots.txt file], set IsRespectRobotsDotText=false in config file if you would like to ignore robots.txt files.", pageToCrawl.Uri.AbsoluteUri);
                 _logger.DebugFormat(message);
 
-                FirePageCrawlDisallowedEventAsync(pageToCrawl, message);
+                //FirePageCrawlDisallowedEventAsync(pageToCrawl, message);
                 FirePageCrawlDisallowedEvent(pageToCrawl, message);
 
                 return false;

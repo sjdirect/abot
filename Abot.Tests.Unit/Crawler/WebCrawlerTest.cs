@@ -462,10 +462,10 @@ namespace Abot.Tests.Unit.Crawler
             int _pageCrawlCompletedCount = 0;
             int _pageCrawlDisallowedCount = 0;
             int _pageLinksCrawlDisallowedCount = 0;
-            _unitUnderTest.PageCrawlCompletedAsync += (s, e) => ++_pageCrawlCompletedCount;
-            _unitUnderTest.PageCrawlStartingAsync += (s, e) => ++_pageCrawlStartingCount;
-            _unitUnderTest.PageCrawlDisallowedAsync += (s, e) => ++_pageCrawlDisallowedCount;
-            _unitUnderTest.PageLinksCrawlDisallowedAsync += (s, e) => ++_pageLinksCrawlDisallowedCount;
+            _unitUnderTest.PageCrawlCompleted += (s, e) => ++_pageCrawlCompletedCount;
+            _unitUnderTest.PageCrawlStarting += (s, e) => ++_pageCrawlStartingCount;
+            _unitUnderTest.PageCrawlDisallowed += (s, e) => ++_pageCrawlDisallowedCount;
+            _unitUnderTest.PageLinksCrawlDisallowed += (s, e) => ++_pageLinksCrawlDisallowedCount;
 
             _unitUnderTest.Crawl(_rootUri);
             System.Threading.Thread.Sleep(100);//sleep since the events are async and may not complete before returning
@@ -493,10 +493,10 @@ namespace Abot.Tests.Unit.Crawler
             int _pageCrawlCompletedCount = 0;
             int _pageCrawlDisallowedCount = 0;
             int _pageLinksCrawlDisallowedCount = 0;
-            _unitUnderTest.PageCrawlCompletedAsync += (s, e) => ++_pageCrawlCompletedCount;
-            _unitUnderTest.PageCrawlStartingAsync += (s, e) => ++_pageCrawlStartingCount;
-            _unitUnderTest.PageCrawlDisallowedAsync += (s, e) => ++_pageCrawlDisallowedCount;
-            _unitUnderTest.PageLinksCrawlDisallowedAsync += (s, e) => ++_pageLinksCrawlDisallowedCount;
+            _unitUnderTest.PageCrawlCompleted += (s, e) => ++_pageCrawlCompletedCount;
+            _unitUnderTest.PageCrawlStarting += (s, e) => ++_pageCrawlStartingCount;
+            _unitUnderTest.PageCrawlDisallowed += (s, e) => ++_pageCrawlDisallowedCount;
+            _unitUnderTest.PageLinksCrawlDisallowed += (s, e) => ++_pageLinksCrawlDisallowedCount;
 
             _unitUnderTest.Crawl(_rootUri);
             System.Threading.Thread.Sleep(100);//sleep since the events are async and may not complete before returning
@@ -521,10 +521,10 @@ namespace Abot.Tests.Unit.Crawler
             int _pageCrawlCompletedCount = 0;
             int _pageCrawlDisallowedCount = 0;
             int _pageLinksCrawlDisallowedCount = 0;
-            _unitUnderTest.PageCrawlCompletedAsync += (s, e) => ++_pageCrawlCompletedCount;
-            _unitUnderTest.PageCrawlStartingAsync += (s, e) => ++_pageCrawlStartingCount;
-            _unitUnderTest.PageCrawlDisallowedAsync += (s, e) => ++_pageCrawlDisallowedCount;
-            _unitUnderTest.PageLinksCrawlDisallowedAsync += (s, e) => ++_pageLinksCrawlDisallowedCount;
+            _unitUnderTest.PageCrawlCompleted += (s, e) => ++_pageCrawlCompletedCount;
+            _unitUnderTest.PageCrawlStarting += (s, e) => ++_pageCrawlStartingCount;
+            _unitUnderTest.PageCrawlDisallowed += (s, e) => ++_pageCrawlDisallowedCount;
+            _unitUnderTest.PageLinksCrawlDisallowed += (s, e) => ++_pageLinksCrawlDisallowedCount;
 
             _unitUnderTest.Crawl(_rootUri);
             System.Threading.Thread.Sleep(100);//sleep since the events are async and may not complete before returning
@@ -553,12 +553,12 @@ namespace Abot.Tests.Unit.Crawler
             int _pageCrawlCompletedCount = 0;
             int _pageCrawlDisallowedCount = 0;
             int _pageLinksCrawlDisallowedCount = 0;
-            _unitUnderTest.PageCrawlCompletedAsync += (s, e) => ++_pageCrawlCompletedCount;
-            _unitUnderTest.PageCrawlStartingAsync += (s, e) => ++_pageCrawlStartingCount;
-            _unitUnderTest.PageCrawlStartingAsync += new EventHandler<PageCrawlStartingArgs>(ThrowExceptionWhen_PageCrawlStarting);
-            _unitUnderTest.PageCrawlCompletedAsync += new EventHandler<PageCrawlCompletedArgs>(ThrowExceptionWhen_PageCrawlCompleted);
-            _unitUnderTest.PageCrawlDisallowedAsync += (s, e) => ++_pageCrawlDisallowedCount;
-            _unitUnderTest.PageLinksCrawlDisallowedAsync += (s, e) => ++_pageLinksCrawlDisallowedCount;
+            _unitUnderTest.PageCrawlCompleted += (s, e) => ++_pageCrawlCompletedCount;
+            _unitUnderTest.PageCrawlStarting += (s, e) => ++_pageCrawlStartingCount;
+            _unitUnderTest.PageCrawlStarting += new EventHandler<PageCrawlStartingArgs>(ThrowExceptionWhen_PageCrawlStarting);
+            _unitUnderTest.PageCrawlCompleted += new EventHandler<PageCrawlCompletedArgs>(ThrowExceptionWhen_PageCrawlCompleted);
+            _unitUnderTest.PageCrawlDisallowed += (s, e) => ++_pageCrawlDisallowedCount;
+            _unitUnderTest.PageLinksCrawlDisallowed += (s, e) => ++_pageLinksCrawlDisallowedCount;
 
             CrawlResult result = _unitUnderTest.Crawl(_rootUri);
             System.Threading.Thread.Sleep(1000);//sleep since the events are async and may not complete
@@ -584,12 +584,12 @@ namespace Abot.Tests.Unit.Crawler
             int _pageCrawlCompletedCount = 0;
             int _pageCrawlDisallowedCount = 0;
             int _pageLinksCrawlDisallowedCount = 0;
-            _unitUnderTest.PageCrawlCompletedAsync += (s, e) => ++_pageCrawlCompletedCount;
-            _unitUnderTest.PageCrawlStartingAsync += (s, e) => ++_pageCrawlStartingCount;
-            _unitUnderTest.PageCrawlDisallowedAsync += (s, e) => ++_pageCrawlDisallowedCount;
-            _unitUnderTest.PageLinksCrawlDisallowedAsync += (s, e) => ++_pageLinksCrawlDisallowedCount;
-            _unitUnderTest.PageCrawlDisallowedAsync += new EventHandler<PageCrawlDisallowedArgs>(ThrowExceptionWhen_PageCrawlDisallowed);
-            _unitUnderTest.PageLinksCrawlDisallowedAsync += new EventHandler<PageLinksCrawlDisallowedArgs>(ThrowExceptionWhen_PageLinksCrawlDisallowed);
+            _unitUnderTest.PageCrawlCompleted += (s, e) => ++_pageCrawlCompletedCount;
+            _unitUnderTest.PageCrawlStarting += (s, e) => ++_pageCrawlStartingCount;
+            _unitUnderTest.PageCrawlDisallowed += (s, e) => ++_pageCrawlDisallowedCount;
+            _unitUnderTest.PageLinksCrawlDisallowed += (s, e) => ++_pageLinksCrawlDisallowedCount;
+            _unitUnderTest.PageCrawlDisallowed += new EventHandler<PageCrawlDisallowedArgs>(ThrowExceptionWhen_PageCrawlDisallowed);
+            _unitUnderTest.PageLinksCrawlDisallowed += new EventHandler<PageLinksCrawlDisallowedArgs>(ThrowExceptionWhen_PageLinksCrawlDisallowed);
 
             CrawlResult result = _unitUnderTest.Crawl(_rootUri);
             System.Threading.Thread.Sleep(1500);//sleep since the events are async and may not complete
@@ -615,10 +615,10 @@ namespace Abot.Tests.Unit.Crawler
             int _pageCrawlCompletedCount = 0;
             int _pageCrawlDisallowedCount = 0;
             int _pageLinksCrawlDisallowedCount = 0;
-            _unitUnderTest.PageCrawlCompletedAsync += (s, e) => ++_pageCrawlCompletedCount;
-            _unitUnderTest.PageCrawlStartingAsync += (s, e) => ++_pageCrawlStartingCount;
-            _unitUnderTest.PageCrawlDisallowedAsync += (s, e) => ++_pageCrawlDisallowedCount;
-            _unitUnderTest.PageLinksCrawlDisallowedAsync += (s, e) => ++_pageLinksCrawlDisallowedCount;
+            _unitUnderTest.PageCrawlCompleted += (s, e) => ++_pageCrawlCompletedCount;
+            _unitUnderTest.PageCrawlStarting += (s, e) => ++_pageCrawlStartingCount;
+            _unitUnderTest.PageCrawlDisallowed += (s, e) => ++_pageCrawlDisallowedCount;
+            _unitUnderTest.PageLinksCrawlDisallowed += (s, e) => ++_pageLinksCrawlDisallowedCount;
             //_unitUnderTest.PageLinksCrawlDisallowed += new EventHandler<PageLinksCrawlDisallowedArgs>(ThrowExceptionWhen_PageLinksCrawlDisallowed);
 
             CrawlResult result = _unitUnderTest.Crawl(_rootUri);
@@ -647,7 +647,7 @@ namespace Abot.Tests.Unit.Crawler
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false, Reason = "aaaa" });
 
-            _unitUnderTest.PageCrawlStartingAsync += new EventHandler<PageCrawlStartingArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
+            _unitUnderTest.PageCrawlStarting += new EventHandler<PageCrawlStartingArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
 
             Stopwatch timer = Stopwatch.StartNew();
             _unitUnderTest.Crawl(_rootUri);
@@ -673,7 +673,7 @@ namespace Abot.Tests.Unit.Crawler
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
 
-            _unitUnderTest.PageCrawlCompletedAsync += new EventHandler<PageCrawlCompletedArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
+            _unitUnderTest.PageCrawlCompleted += new EventHandler<PageCrawlCompletedArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
 
             Stopwatch timer = Stopwatch.StartNew();
             _unitUnderTest.Crawl(_rootUri);
@@ -693,7 +693,7 @@ namespace Abot.Tests.Unit.Crawler
             _fakeHyperLinkParser.Setup(f => f.GetLinks(It.IsAny<CrawledPage>())).Returns(new List<Uri>());
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false, Reason = "aaa" });
 
-            _unitUnderTest.PageCrawlDisallowedAsync += new EventHandler<PageCrawlDisallowedArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
+            _unitUnderTest.PageCrawlDisallowed += new EventHandler<PageCrawlDisallowedArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
 
             Stopwatch timer = Stopwatch.StartNew();
             _unitUnderTest.Crawl(_rootUri);
@@ -712,7 +712,7 @@ namespace Abot.Tests.Unit.Crawler
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false, Reason = "aaa" });
 
-            _unitUnderTest.PageLinksCrawlDisallowedAsync += new EventHandler<PageLinksCrawlDisallowedArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
+            _unitUnderTest.PageLinksCrawlDisallowed += new EventHandler<PageLinksCrawlDisallowedArgs>((sender, args) => System.Threading.Thread.Sleep(elapsedTimeForLongJob));
 
             Stopwatch timer = Stopwatch.StartNew();
             _unitUnderTest.Crawl(_rootUri);

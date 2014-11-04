@@ -11,7 +11,7 @@ namespace Abot.Crawler
     using System.Collections.Generic;
     using System.Dynamic;
 
-    public interface IWebCrawler
+    public interface IWebCrawler : IDisposable
     {
         /// <summary>
         /// Synchronous event that is fired before a page is crawled.
@@ -36,22 +36,22 @@ namespace Abot.Crawler
         /// <summary>
         /// Asynchronous event that is fired before a page is crawled.
         /// </summary>
-        event EventHandler<PageCrawlStartingArgs> PageCrawlStartingAsync;
+        //event EventHandler<PageCrawlStartingArgs> PageCrawlStartingAsync;
 
         /// <summary>
         /// Asynchronous event that is fired when an individual page has been crawled.
         /// </summary>
-        event EventHandler<PageCrawlCompletedArgs> PageCrawlCompletedAsync;
+        //event EventHandler<PageCrawlCompletedArgs> PageCrawlCompletedAsync;
 
         /// <summary>
         /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawl impl returned false. This means the page or its links were not crawled.
         /// </summary>
-        event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowedAsync;
+        //event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowedAsync;
 
         /// <summary>
         /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlLinks impl returned false. This means the page's links were not crawled.
         /// </summary>
-        event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowedAsync;
+        //event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowedAsync;
 
         /// <summary>
         /// Synchronous method that registers a delegate to be called to determine whether a page should be crawled or not
@@ -361,98 +361,98 @@ namespace Abot.Crawler
 
         #endregion
 
-        #region Asynchronous Events
+		//#region Asynchronous Events
 
-        /// <summary>
-        /// Asynchronous event that is fired before a page is crawled.
-        /// </summary>
-        public event EventHandler<PageCrawlStartingArgs> PageCrawlStartingAsync;
+		///// <summary>
+		///// Asynchronous event that is fired before a page is crawled.
+		///// </summary>
+		//public event EventHandler<PageCrawlStartingArgs> PageCrawlStartingAsync;
 
-        /// <summary>
-        /// Asynchronous event that is fired when an individual page has been crawled.
-        /// </summary>
-        public event EventHandler<PageCrawlCompletedArgs> PageCrawlCompletedAsync;
+		///// <summary>
+		///// Asynchronous event that is fired when an individual page has been crawled.
+		///// </summary>
+		//public event EventHandler<PageCrawlCompletedArgs> PageCrawlCompletedAsync;
 
-        /// <summary>
-        /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawl impl returned false. This means the page or its links were not crawled.
-        /// </summary>
-        public event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowedAsync;
+		///// <summary>
+		///// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawl impl returned false. This means the page or its links were not crawled.
+		///// </summary>
+		//public event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowedAsync;
 
-        /// <summary>
-        /// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlLinks impl returned false. This means the page's links were not crawled.
-        /// </summary>
-        public event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowedAsync;
+		///// <summary>
+		///// Asynchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlLinks impl returned false. This means the page's links were not crawled.
+		///// </summary>
+		//public event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowedAsync;
 
-        protected virtual void FirePageCrawlStartingEventAsync(PageToCrawl pageToCrawl)
-        {
-            EventHandler<PageCrawlStartingArgs> threadSafeEvent = PageCrawlStartingAsync;
-            if (threadSafeEvent != null)
-            {
-                //Fire each subscribers delegate async
-                foreach (EventHandler<PageCrawlStartingArgs> del in threadSafeEvent.GetInvocationList())
-                {
-                    del.BeginInvoke(this, new PageCrawlStartingArgs(_crawlContext, pageToCrawl), null, null);
-                }
-            }
-        }
+		//protected virtual void FirePageCrawlStartingEventAsync(PageToCrawl pageToCrawl)
+		//{
+		//	EventHandler<PageCrawlStartingArgs> threadSafeEvent = PageCrawlStartingAsync;
+		//	if (threadSafeEvent != null)
+		//	{
+		//		//Fire each subscribers delegate async
+		//		foreach (EventHandler<PageCrawlStartingArgs> del in threadSafeEvent.GetInvocationList())
+		//		{
+		//			del.BeginInvoke(this, new PageCrawlStartingArgs(_crawlContext, pageToCrawl), null, null);
+		//		}
+		//	}
+		//}
 
-        protected virtual void FirePageCrawlCompletedEventAsync(CrawledPage crawledPage)
-        {
-            EventHandler<PageCrawlCompletedArgs> threadSafeEvent = PageCrawlCompletedAsync;
+		//protected virtual void FirePageCrawlCompletedEventAsync(CrawledPage crawledPage)
+		//{
+		//	EventHandler<PageCrawlCompletedArgs> threadSafeEvent = PageCrawlCompletedAsync;
             
-            if (threadSafeEvent == null)
-                return;
+		//	if (threadSafeEvent == null)
+		//		return;
 
-            if (_scheduler.Count == 0)
-            {
-                //Must be fired synchronously to avoid main thread exiting before completion of event handler for first or last page crawled
-                try
-                {
-                    threadSafeEvent(this, new PageCrawlCompletedArgs(_crawlContext, crawledPage));
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("An unhandled exception was thrown by a subscriber of the PageCrawlCompleted event for url:" + crawledPage.Uri.AbsoluteUri);
-                    _logger.Error(e);
-                }
-            }
-            else
-            {
-                //Fire each subscribers delegate async
-                foreach (EventHandler<PageCrawlCompletedArgs> del in threadSafeEvent.GetInvocationList())
-                {
-                    del.BeginInvoke(this, new PageCrawlCompletedArgs(_crawlContext, crawledPage), null, null);
-                }
-            }
-        }
+		//	if (_scheduler.Count == 0)
+		//	{
+		//		//Must be fired synchronously to avoid main thread exiting before completion of event handler for first or last page crawled
+		//		try
+		//		{
+		//			threadSafeEvent(this, new PageCrawlCompletedArgs(_crawlContext, crawledPage));
+		//		}
+		//		catch (Exception e)
+		//		{
+		//			_logger.Error("An unhandled exception was thrown by a subscriber of the PageCrawlCompleted event for url:" + crawledPage.Uri.AbsoluteUri);
+		//			_logger.Error(e);
+		//		}
+		//	}
+		//	else
+		//	{
+		//		//Fire each subscribers delegate async
+		//		foreach (EventHandler<PageCrawlCompletedArgs> del in threadSafeEvent.GetInvocationList())
+		//		{
+		//			del.BeginInvoke(this, new PageCrawlCompletedArgs(_crawlContext, crawledPage), null, null);
+		//		}
+		//	}
+		//}
 
-        protected virtual void FirePageCrawlDisallowedEventAsync(PageToCrawl pageToCrawl, string reason)
-        {
-            EventHandler<PageCrawlDisallowedArgs> threadSafeEvent = PageCrawlDisallowedAsync;
-            if (threadSafeEvent != null)
-            {
-                //Fire each subscribers delegate async
-                foreach (EventHandler<PageCrawlDisallowedArgs> del in threadSafeEvent.GetInvocationList())
-                {
-                    del.BeginInvoke(this, new PageCrawlDisallowedArgs(_crawlContext, pageToCrawl, reason), null, null);
-                }
-            }
-        }
+		//protected virtual void FirePageCrawlDisallowedEventAsync(PageToCrawl pageToCrawl, string reason)
+		//{
+		//	EventHandler<PageCrawlDisallowedArgs> threadSafeEvent = PageCrawlDisallowedAsync;
+		//	if (threadSafeEvent != null)
+		//	{
+		//		//Fire each subscribers delegate async
+		//		foreach (EventHandler<PageCrawlDisallowedArgs> del in threadSafeEvent.GetInvocationList())
+		//		{
+		//			del.BeginInvoke(this, new PageCrawlDisallowedArgs(_crawlContext, pageToCrawl, reason), null, null);
+		//		}
+		//	}
+		//}
 
-        protected virtual void FirePageLinksCrawlDisallowedEventAsync(CrawledPage crawledPage, string reason)
-        {
-            EventHandler<PageLinksCrawlDisallowedArgs> threadSafeEvent = PageLinksCrawlDisallowedAsync;
-            if (threadSafeEvent != null)
-            {
-                //Fire each subscribers delegate async
-                foreach (EventHandler<PageLinksCrawlDisallowedArgs> del in threadSafeEvent.GetInvocationList())
-                {
-                    del.BeginInvoke(this, new PageLinksCrawlDisallowedArgs(_crawlContext, crawledPage, reason), null, null);
-                }
-            }
-        }
+		//protected virtual void FirePageLinksCrawlDisallowedEventAsync(CrawledPage crawledPage, string reason)
+		//{
+		//	EventHandler<PageLinksCrawlDisallowedArgs> threadSafeEvent = PageLinksCrawlDisallowedAsync;
+		//	if (threadSafeEvent != null)
+		//	{
+		//		//Fire each subscribers delegate async
+		//		foreach (EventHandler<PageLinksCrawlDisallowedArgs> del in threadSafeEvent.GetInvocationList())
+		//		{
+		//			del.BeginInvoke(this, new PageLinksCrawlDisallowedArgs(_crawlContext, crawledPage, reason), null, null);
+		//		}
+		//	}
+		//}
 
-        #endregion
+		//#endregion
 
 
         /// <summary>
@@ -606,10 +606,10 @@ namespace Abot.Crawler
                 PageCrawlCompleted = null;
                 PageCrawlDisallowed = null;
                 PageLinksCrawlDisallowed = null;
-                PageCrawlStartingAsync = null;
-                PageCrawlCompletedAsync = null;
-                PageCrawlDisallowedAsync = null;
-                PageLinksCrawlDisallowedAsync = null;
+				//PageCrawlStartingAsync = null;
+				//PageCrawlCompletedAsync = null;
+				//PageCrawlDisallowedAsync = null;
+				//PageLinksCrawlDisallowedAsync = null;
             }
         }
 
@@ -645,27 +645,28 @@ namespace Abot.Crawler
 
                 ThrowIfCancellationRequested();
 
-                AddPageToContext(pageToCrawl);
-                CrawledPage crawledPage = CrawlThePage(pageToCrawl);
-                
-                if (PageSizeIsAboveMax(crawledPage))
-                    return;
+				AddPageToContext(pageToCrawl);
 
-                ThrowIfCancellationRequested();
+				using (CrawledPage crawledPage = CrawlThePage(pageToCrawl))
+				{
+					if (PageSizeIsAboveMax(crawledPage))
+						return;
+					ThrowIfCancellationRequested();
 
-                bool shouldCrawlPageLinks = ShouldCrawlPageLinks(crawledPage);
-                if (shouldCrawlPageLinks || _crawlContext.CrawlConfiguration.IsForcedLinkParsingEnabled)
-                    ParsePageLinks(crawledPage);
+					bool shouldCrawlPageLinks = ShouldCrawlPageLinks(crawledPage);
+					if (shouldCrawlPageLinks || _crawlContext.CrawlConfiguration.IsForcedLinkParsingEnabled)
+						ParsePageLinks(crawledPage);
 
-                ThrowIfCancellationRequested();
+					ThrowIfCancellationRequested();
 
-                if (shouldCrawlPageLinks)
-                    SchedulePageLinks(crawledPage);
+					if (shouldCrawlPageLinks)
+						SchedulePageLinks(crawledPage);
 
-                ThrowIfCancellationRequested();
+					ThrowIfCancellationRequested();
 
-                FirePageCrawlCompletedEventAsync(crawledPage);
-                FirePageCrawlCompletedEvent(crawledPage);
+					//FirePageCrawlCompletedEventAsync(crawledPage);
+					FirePageCrawlCompletedEvent(crawledPage);
+				}
             }
             catch (OperationCanceledException oce)
             {
@@ -710,7 +711,7 @@ namespace Abot.Crawler
             if (!shouldCrawlPageLinksDecision.Allow)
             {
                 _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldCrawlPageLinksDecision.Reason);
-                FirePageLinksCrawlDisallowedEventAsync(crawledPage, shouldCrawlPageLinksDecision.Reason);
+                //FirePageLinksCrawlDisallowedEventAsync(crawledPage, shouldCrawlPageLinksDecision.Reason);
                 FirePageLinksCrawlDisallowedEvent(crawledPage, shouldCrawlPageLinksDecision.Reason);
             }
 
@@ -727,7 +728,7 @@ namespace Abot.Crawler
             if (!shouldCrawlPageDecision.Allow)
             {
                 _logger.DebugFormat("Page [{0}] not crawled, [{1}]", pageToCrawl.Uri.AbsoluteUri, shouldCrawlPageDecision.Reason);
-                FirePageCrawlDisallowedEventAsync(pageToCrawl, shouldCrawlPageDecision.Reason);
+                //FirePageCrawlDisallowedEventAsync(pageToCrawl, shouldCrawlPageDecision.Reason);
                 FirePageCrawlDisallowedEvent(pageToCrawl, shouldCrawlPageDecision.Reason);
             }
 
@@ -738,10 +739,10 @@ namespace Abot.Crawler
         protected virtual CrawledPage CrawlThePage(PageToCrawl pageToCrawl)
         {
             _logger.DebugFormat("About to crawl page [{0}]", pageToCrawl.Uri.AbsoluteUri);
-            FirePageCrawlStartingEventAsync(pageToCrawl);
+            //FirePageCrawlStartingEventAsync(pageToCrawl);
             FirePageCrawlStartingEvent(pageToCrawl);
 
-            CrawledPage crawledPage = _httpRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
+            CrawledPage crawledPage = _httpRequester.MakeRequest(pageToCrawl.Uri, ShouldDownloadPageContentWrapper);
             dynamic combinedPageBag = this.CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             AutoMapper.Mapper.CreateMap<PageToCrawl, CrawledPage>();
             AutoMapper.Mapper.Map(pageToCrawl, crawledPage);
@@ -860,5 +861,16 @@ namespace Abot.Crawler
                 _crawlContext.IsCrawlStopRequested = decision.ShouldStopCrawl;
             }
         }
+
+	    /// <summary>
+	    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+	    /// </summary>
+	    public void Dispose()
+	    {
+			_crawlContext.Dispose();
+			_threadManager.Dispose();
+			_memoryManager.Dispose();
+
+	    }
     }
 }

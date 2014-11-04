@@ -7,7 +7,7 @@ using System.Net;
 
 namespace Abot.Poco
 {
-    public class CrawledPage : PageToCrawl
+    public class CrawledPage : PageToCrawl, IDisposable
     {
         ILog _logger = LogManager.GetLogger("AbotLogger");
 
@@ -61,7 +61,15 @@ namespace Abot.Poco
                 return string.Format("{0}[{1}]", Uri.AbsoluteUri, (int)HttpWebResponse.StatusCode);
         }
 
-        /// <summary>
+	    /// <summary>
+	    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+	    /// </summary>
+	    public void Dispose()
+	    {
+			if (HttpWebResponse != null) ((IDisposable)HttpWebResponse).Dispose();
+	    }
+
+	    /// <summary>
         /// The actual byte size of the page's raw content. This property is due to the Content-length header being untrustable.
         /// </summary>
         [Obsolete("Please use CrawledPage.Content.Bytes.Length instead", true)]
