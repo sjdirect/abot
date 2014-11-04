@@ -17,8 +17,6 @@ namespace Abot.Tests.Unit.Core
         {
             Assert.IsNotNull(ValueHelper.GetFieldValue(_unitUnderTest, "_urlQueue"));
 
-            _unitUnderTest.Dispose();
-
             Assert.IsNull(ValueHelper.GetFieldValue(_unitUnderTest, "_urlQueue"));
         }
     }

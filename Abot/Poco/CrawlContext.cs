@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Abot.Poco
 {
-    public class CrawlContext
+    public class CrawlContext : IDisposable
     {
         public CrawlContext()
         {
@@ -73,5 +73,13 @@ namespace Abot.Poco
         /// Cancellation token used to hard stop the crawl. Will clear all scheduled pages and abort any threads that are currently crawling.
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; set; }
+
+	    /// <summary>
+	    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+	    /// </summary>
+	    public void Dispose()
+	    {
+			CancellationTokenSource.Dispose();
+	    }
     }
 }

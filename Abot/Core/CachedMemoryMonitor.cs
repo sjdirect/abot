@@ -4,9 +4,9 @@ using System.Timers;
 
 namespace Abot.Core
 {
-    public class CachedMemoryMonitor : IMemoryMonitor, IDisposable
+    public class CachedMemoryMonitor : IMemoryMonitor
     {
-        static ILog _logger = LogManager.GetLogger("AbotLogger");
+        static ILog _logger = LogManager.GetLogger(typeof(GcMemoryMonitor).FullName);
         IMemoryMonitor _memoryMonitor;
         Timer _usageRefreshTimer;
         int _cachedCurrentUsageInMb;
@@ -44,6 +44,7 @@ namespace Abot.Core
         {
             _usageRefreshTimer.Stop();
             _usageRefreshTimer.Dispose();
+			_memoryMonitor.Dispose();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 
 namespace Abot.Core
 {
-    public interface IPagesToCrawlRepository : IDisposable
+    public interface IPagesToCrawlRepository 
     {
         void Add(PageToCrawl page);
         PageToCrawl GetNext();
@@ -40,10 +40,6 @@ namespace Abot.Core
             return _urlQueue.Count;
         }
 
-        public virtual void Dispose()
-        {
-            _urlQueue = null;
-        }
     }
 
 }
