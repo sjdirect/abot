@@ -95,6 +95,7 @@ namespace Abot.Util
         public virtual void Dispose()
         {
             AbortAll();
+            _resetEvent.Dispose();
         }
 
         public virtual bool HasRunningThreads()
