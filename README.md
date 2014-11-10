@@ -9,3 +9,5 @@ Abot targets .NET version 4.0.
 
 Latest documentation: http://code.google.com/p/abot/  
 Community Forum: http://groups.google.com/group/abot-web-crawler
+
+Please Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ
