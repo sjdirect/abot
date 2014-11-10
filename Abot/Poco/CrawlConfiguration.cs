@@ -16,6 +16,8 @@ namespace Abot.Poco
             HttpRequestMaxAutoRedirects = 7;
             IsHttpRequestAutoRedirectsEnabled = true;
             MaxCrawlDepth = 100;
+            HttpServicePointConnectionLimit = 200;
+            HttpRequestTimeoutInSeconds = 15;
         }
 
         #region crawlBehavior
