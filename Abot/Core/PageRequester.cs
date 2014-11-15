@@ -71,6 +71,7 @@ namespace Abot.Core
             {
                 request = BuildRequestObject(uri);
                 response = (HttpWebResponse)request.GetResponse();
+                ProcessResponseObject(response);
             }
             catch (WebException e)
             {
@@ -124,6 +125,45 @@ namespace Abot.Core
                 request.Timeout = _config.HttpRequestTimeoutInSeconds * 1000;
 
             return request;
+        }
+
+        protected virtual void ProcessResponseObject (HttpWebResponse response)
+        {
+            // override to extract cookies
+        }
+    }
+
+    public class PageRequesterWithCookies : PageRequester
+    {
+        readonly CookieContainer container = new CookieContainer();
+
+        protected override HttpWebRequest BuildRequestObject(Uri uri)
+        {
+            var webRequest = base.BuildRequestObject(uri);
+            if (webRequest != null)
+            {
+                webRequest.CookieContainer = container;
+            }
+            return webRequest;
+        }
+
+        protected override void ProcessResponseObject (HttpWebResponse response)
+        {
+            if (response != null)
+            {
+                CookieCollection cookies = response.Cookies;
+                container.Add(cookies);
+            }
+        }
+
+        public PageRequesterWithCookies(CrawlConfiguration config)
+            : this(config, null)
+        {
+        }
+
+        public PageRequesterWithCookies(CrawlConfiguration config, IWebContentExtractor contentExtractor)
+            : base (config, contentExtractor)
+        {
         }
     }
 }
