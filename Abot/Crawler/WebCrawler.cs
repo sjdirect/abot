@@ -498,7 +498,7 @@ namespace Abot.Crawler
             _isInternalDecisionMaker = decisionMaker;
         }
 
-        private CrawlConfiguration GetCrawlConfigurationFromConfigFile()
+        public static CrawlConfiguration GetCrawlConfigurationFromConfigFile()
         {
             AbotConfigurationSectionHandler configFromFile = AbotConfigurationSectionHandler.LoadFromXml();
 
