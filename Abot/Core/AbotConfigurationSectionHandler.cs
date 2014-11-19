@@ -182,6 +182,12 @@ namespace Abot.Core
             get { return (bool)this["isHttpRequestAutomaticDecompressionEnabled"]; }
         }
 
+        [ConfigurationProperty("isSendingCookiesEnabled", IsRequired = true)]
+        public bool IsSendingCookiesEnabled
+        {
+            get { return (bool)this["isSendingCookiesEnabled"]; }
+        }
+
         [ConfigurationProperty("minAvailableMemoryRequiredInMb", IsRequired = true)]
         public int MinAvailableMemoryRequiredInMb
         {

@@ -117,6 +117,11 @@ namespace Abot.Poco
         public bool IsHttpRequestAutomaticDecompressionEnabled { get; set; }
 
         /// <summary>
+        /// Whether the cookies should be set and resent with every request
+        /// </summary>
+        public bool IsSendingCookiesEnabled { get; set; }
+
+        /// <summary>
         /// Uses closest mulitple of 16 to the value set. If there is not at least this much memory available before starting a crawl, throws InsufficientMemoryException.
         /// If zero, this setting has no effect.
         /// </summary>
