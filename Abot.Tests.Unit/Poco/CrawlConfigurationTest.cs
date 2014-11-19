@@ -29,8 +29,8 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual("Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; abot v@ABOTASSEMBLYVERSION@ http://code.google.com/p/abot)", unitUnderTest.UserAgentString);
             Assert.AreEqual("abot", unitUnderTest.RobotsDotTextUserAgentString);
             Assert.AreEqual(0, unitUnderTest.MaxPageSizeInBytes);
-            Assert.AreEqual(0, unitUnderTest.HttpServicePointConnectionLimit);
-            Assert.AreEqual(0, unitUnderTest.HttpRequestTimeoutInSeconds);
+            Assert.AreEqual(200, unitUnderTest.HttpServicePointConnectionLimit);
+            Assert.AreEqual(15, unitUnderTest.HttpRequestTimeoutInSeconds);
             Assert.AreEqual(7, unitUnderTest.HttpRequestMaxAutoRedirects);
             Assert.AreEqual(true, unitUnderTest.IsHttpRequestAutoRedirectsEnabled);
             Assert.AreEqual(false, unitUnderTest.IsHttpRequestAutomaticDecompressionEnabled);
