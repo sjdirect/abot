@@ -16,6 +16,8 @@ namespace Abot.Poco
             HttpRequestMaxAutoRedirects = 7;
             IsHttpRequestAutoRedirectsEnabled = true;
             MaxCrawlDepth = 100;
+            HttpServicePointConnectionLimit = 200;
+            HttpRequestTimeoutInSeconds = 15;
         }
 
         #region crawlBehavior
@@ -113,6 +115,11 @@ namespace Abot.Poco
         /// Gets or sets a value that indicates gzip and deflate will be automatically accepted and decompressed
         /// </summary>
         public bool IsHttpRequestAutomaticDecompressionEnabled { get; set; }
+
+        /// <summary>
+        /// Whether the cookies should be set and resent with every request
+        /// </summary>
+        public bool IsSendingCookiesEnabled { get; set; }
 
         /// <summary>
         /// Uses closest mulitple of 16 to the value set. If there is not at least this much memory available before starting a crawl, throws InsufficientMemoryException.

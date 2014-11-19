@@ -18,29 +18,30 @@ namespace Abot.Core
 
         public PageContent GetContent(WebResponse response)
         {
-            MemoryStream memoryStream = GetRawData(response);
-
-            String charset = GetCharsetFromHeaders(response);
-
-            if (charset == null)
-                charset = GetCharsetFromBody(memoryStream);
-
-            memoryStream.Seek(0, SeekOrigin.Begin);
-
-            Encoding e = GetEncoding(charset);
-            string content = "";
-            using (StreamReader sr = new StreamReader(memoryStream, e))
+            using (MemoryStream memoryStream = GetRawData(response))
             {
-                content = sr.ReadToEnd();
-            }
+                String charset = GetCharsetFromHeaders(response);
 
-            PageContent pageContent = new PageContent();
-            pageContent.Bytes = memoryStream.ToArray();
-            pageContent.Charset = charset;
-            pageContent.Encoding = e;
-            pageContent.Text = content;
-            
-            return pageContent;
+                if (charset == null)
+                    charset = GetCharsetFromBody(memoryStream);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                Encoding e = GetEncoding(charset);
+                string content = "";
+                using (StreamReader sr = new StreamReader(memoryStream, e))
+                {
+                    content = sr.ReadToEnd();
+                }
+
+                PageContent pageContent = new PageContent();
+                pageContent.Bytes = memoryStream.ToArray();
+                pageContent.Charset = charset;
+                pageContent.Encoding = e;
+                pageContent.Text = content;
+
+                return pageContent;
+            }
         }
 
         private string GetCharsetFromHeaders(WebResponse webResponse)

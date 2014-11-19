@@ -28,6 +28,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(23, _config.CrawlBehavior.HttpRequestMaxAutoRedirects);
             Assert.AreEqual(true, _config.CrawlBehavior.IsHttpRequestAutoRedirectsEnabled);
             Assert.AreEqual(true, _config.CrawlBehavior.IsHttpRequestAutomaticDecompressionEnabled);
+            Assert.AreEqual(true, _config.CrawlBehavior.IsSendingCookiesEnabled);
             Assert.AreEqual(25, _config.CrawlBehavior.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(26, _config.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(27, _config.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
@@ -70,6 +71,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(result.HttpRequestMaxAutoRedirects, _config.CrawlBehavior.HttpRequestMaxAutoRedirects);
             Assert.AreEqual(true, _config.CrawlBehavior.IsHttpRequestAutoRedirectsEnabled);
             Assert.AreEqual(true, _config.CrawlBehavior.IsHttpRequestAutomaticDecompressionEnabled);
+            Assert.AreEqual(true, _config.CrawlBehavior.IsSendingCookiesEnabled);
             Assert.AreEqual(result.MinAvailableMemoryRequiredInMb, _config.CrawlBehavior.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(result.MaxMemoryUsageInMb, _config.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(result.MaxMemoryUsageCacheTimeInSeconds, _config.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);

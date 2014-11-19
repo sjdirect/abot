@@ -26,6 +26,7 @@ namespace Abot.Core
         protected CrawlConfiguration _config;
         protected string _userAgentString;
         protected IWebContentExtractor _extractor;
+        protected CookieContainer container = new CookieContainer();
 
         public PageRequester(CrawlConfiguration config)
             : this(config, null)
@@ -71,6 +72,7 @@ namespace Abot.Core
             {
                 request = BuildRequestObject(uri);
                 response = (HttpWebResponse)request.GetResponse();
+                ProcessResponseObject(response);
             }
             catch (WebException e)
             {
@@ -103,7 +105,7 @@ namespace Abot.Core
                     response.Close();//Should already be closed by _extractor but just being safe
                 }
             }
-            
+
             return crawledPage;
         }
 
@@ -123,7 +125,19 @@ namespace Abot.Core
             if(_config.HttpRequestTimeoutInSeconds > 0)
                 request.Timeout = _config.HttpRequestTimeoutInSeconds * 1000;
 
+            if (_config.IsSendingCookiesEnabled)
+                request.CookieContainer = container;
+
             return request;
+        }
+
+        protected virtual void ProcessResponseObject(HttpWebResponse response)
+        {
+            if (response != null && _config.IsSendingCookiesEnabled)
+            {
+                CookieCollection cookies = response.Cookies;
+                container.Add(cookies);
+            }
         }
     }
 }
