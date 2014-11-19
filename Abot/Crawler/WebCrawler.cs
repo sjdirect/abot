@@ -221,14 +221,13 @@ namespace Abot.Crawler
             _crawlComplete = false;
 
             _logger.InfoFormat("About to crawl site [{0}]", uri.AbsoluteUri);
+            PrintConfigValues(_crawlContext.CrawlConfiguration);
 
             if (_memoryManager != null)
             {
                 _crawlContext.MemoryUsageBeforeCrawlInMb = _memoryManager.GetCurrentUsageInMb();
                 _logger.InfoFormat("Starting memory usage for site [{0}] is [{1}mb]", uri.AbsoluteUri, _crawlContext.MemoryUsageBeforeCrawlInMb);
             }
-
-            PrintConfigValues(_crawlContext.CrawlConfiguration);
 
             _crawlContext.CrawlStartDate = DateTime.Now;
             Stopwatch timer = Stopwatch.StartNew();
@@ -836,9 +835,13 @@ namespace Abot.Crawler
             _logger.Info("Configuration Values:");
 
             string indentString = new string(' ', 2);
+            string abotVersion = Assembly.GetAssembly(this.GetType()).GetName().Version.ToString();
+            _logger.InfoFormat("{0}Abot Version: {1}", indentString, abotVersion);
             foreach (PropertyInfo property in config.GetType().GetProperties())
             {
-                if (property.Name != "ConfigurationExtensions")
+                if(property.Name == "UserAgentString")
+                    _logger.InfoFormat("{0}{1}: {2}", indentString, property.Name, property.GetValue(config, null).ToString().Replace("@ABOTASSEMBLYVERSION@", abotVersion));
+                else if (property.Name != "ConfigurationExtensions")
                     _logger.InfoFormat("{0}{1}: {2}", indentString, property.Name, property.GetValue(config, null));
             }
 
