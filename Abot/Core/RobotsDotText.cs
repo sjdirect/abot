@@ -1,5 +1,5 @@
 ﻿using log4net;
-using Robots;
+using RobotsTxt;
 using System;
 
 namespace Abot.Core
@@ -9,7 +9,7 @@ namespace Abot.Core
         /// <summary>
         /// Gets the number of seconds to delay between internal page crawls. Returns 0 by default.
         /// </summary>
-        int GetCrawlDelay(string userAgentString);
+        long GetCrawlDelay(string userAgentString);
 
         /// <summary>
         /// Whether the spider is "allowed" to crawl the param link
@@ -24,9 +24,11 @@ namespace Abot.Core
 
     public class RobotsDotText : IRobotsDotText
     {
+        !!!!Waiting on https://code.google.com/p/robotstxt/issues/detail?id=6
         ILog _logger = LogManager.GetLogger("AbotLogger");
-        IRobots _robotsDotTextUtil = null;
+        Robots _robotsDotTextUtil = null;
         Uri _rootUri = null;
+        bool _isAnyPathDisallowed;
 
         public RobotsDotText(Uri rootUri, string content)
         {
@@ -37,12 +39,13 @@ namespace Abot.Core
                 throw new ArgumentNullException("content");
 
             _rootUri = rootUri;
-            Load(rootUri, content);           
+            _robotsDotTextUtil = Robots.Load(content);
+            _isAnyPathDisallowed = _robotsDotTextUtil.IsAnyPathDisallowed;
         }
 
-        public int GetCrawlDelay(string userAgentString)
+        public long GetCrawlDelay(string userAgentString)
         {
-            return _robotsDotTextUtil.GetCrawlDelay(userAgentString);
+            return _robotsDotTextUtil.CrawlDelay(userAgentString) / 1000;
         }
 
         public bool IsUrlAllowed(string url, string userAgentString)
@@ -50,18 +53,31 @@ namespace Abot.Core
             if (!_rootUri.IsBaseOf(new Uri(url)))
                 return true;
 
-            return _robotsDotTextUtil.Allowed(url, userAgentString);
+            bool isAllowed = false;
+            try
+            {
+                isAllowed = _robotsDotTextUtil.IsPathAllowed(userAgentString, url);
+            }
+            catch(ArgumentException)
+            {
+                isAllowed = true;
+            }
+
+            return isAllowed;
         }
 
         public bool IsUserAgentAllowed(string userAgentString)
         {
-            return _robotsDotTextUtil.Allowed(_rootUri.AbsoluteUri, userAgentString);
-        }
-
-        private void Load(Uri rootUri, string content)
-        {
-            _robotsDotTextUtil = new Robots.Robots();
-            _robotsDotTextUtil.LoadContent(content, rootUri.AbsoluteUri);
+            bool isAllowed = false;
+            try
+            {
+                isAllowed = _robotsDotTextUtil.IsPathAllowed(userAgentString, _rootUri.AbsoluteUri);
+            }
+            catch (ArgumentException)
+            {
+                isAllowed = true;
+            }
+            return isAllowed;
         }
     }
 }

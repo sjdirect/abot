@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2E5344D9-2733-4C6E-8B95-1A7715D23B61}"
 	ProjectSection(SolutionItems) = preProject
@@ -21,8 +21,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot.SiteSimulator", "Abot.SiteSimulator\Abot.SiteSimulator.csproj", "{48CBD934-4E30-4F48-ABD4-BC10EEA239A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commoner.Core", "commoner\Commoner.Core\Commoner.Core.csproj", "{F1F31E93-9E66-413E-A0C8-E68504FF8AA4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Robots", "nrobots\Robots\Robots.csproj", "{2583D0B0-9F70-4B5C-A190-673C86AF3318}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,14 +78,6 @@ Global
 		{F1F31E93-9E66-413E-A0C8-E68504FF8AA4}.Deploy-Release|Any CPU.Build.0 = Release|Any CPU
 		{F1F31E93-9E66-413E-A0C8-E68504FF8AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1F31E93-9E66-413E-A0C8-E68504FF8AA4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Deploy-Dev|Any CPU.ActiveCfg = Debug|Any CPU
-		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Deploy-Dev|Any CPU.Build.0 = Debug|Any CPU
-		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Deploy-Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Deploy-Release|Any CPU.Build.0 = Release|Any CPU
-		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2583D0B0-9F70-4B5C-A190-673C86AF3318}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

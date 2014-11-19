@@ -78,15 +78,15 @@ namespace Abot.Core
         }
 
         [ConfigurationProperty("maxRobotsDotTextCrawlDelayInSeconds", IsRequired = true)]
-        public int MaxRobotsDotTextCrawlDelayInSeconds
+        public long MaxRobotsDotTextCrawlDelayInSeconds
         {
-            get { return (int)this["maxRobotsDotTextCrawlDelayInSeconds"]; }
+            get { return (long)this["maxRobotsDotTextCrawlDelayInSeconds"]; }
         }
 
         [ConfigurationProperty("minCrawlDelayPerDomainMilliSeconds", IsRequired = true)]
-        public int MinCrawlDelayPerDomainMilliSeconds
+        public long MinCrawlDelayPerDomainMilliSeconds
         {
-            get { return (int)this["minCrawlDelayPerDomainMilliSeconds"]; }
+            get { return (long)this["minCrawlDelayPerDomainMilliSeconds"]; }
         }
     }
 

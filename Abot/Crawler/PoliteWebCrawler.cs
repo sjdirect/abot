@@ -41,11 +41,11 @@ namespace Abot.Crawler
 
         public override CrawlResult Crawl(Uri uri, CancellationTokenSource cancellationTokenSource)
         {
-            int robotsDotTextCrawlDelayInSecs = 0;
-            int robotsDotTextCrawlDelayInMillisecs = 0;
+            long robotsDotTextCrawlDelayInSecs = 0;
+            long robotsDotTextCrawlDelayInMillisecs = 0;
 
-            int maxRobotsDotTextCrawlDelayInSeconds = _crawlContext.CrawlConfiguration.MaxRobotsDotTextCrawlDelayInSeconds;
-            int maxRobotsDotTextCrawlDelayInMilliSecs = maxRobotsDotTextCrawlDelayInSeconds * 1000;
+            long maxRobotsDotTextCrawlDelayInSeconds = _crawlContext.CrawlConfiguration.MaxRobotsDotTextCrawlDelayInSeconds;
+            long maxRobotsDotTextCrawlDelayInMilliSecs = maxRobotsDotTextCrawlDelayInSeconds * 1000;
 
             //Load robots.txt
             if (_crawlContext.CrawlConfiguration.IsRespectRobotsDotTextEnabled)
