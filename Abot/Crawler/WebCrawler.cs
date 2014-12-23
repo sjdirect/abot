@@ -526,7 +526,6 @@ namespace Abot.Crawler
                 else
                 {
                     _logger.DebugFormat("Waiting for links to be scheduled...");
-                    System.Threading.Thread.Sleep(2500);
                 }
             }
         }
