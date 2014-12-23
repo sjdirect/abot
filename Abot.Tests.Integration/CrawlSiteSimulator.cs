@@ -49,7 +49,7 @@ namespace Abot.Tests.Integration
             new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
 
             CrawlConfiguration configuration = new CrawlConfiguration();
-            configuration.MaxPagesToCrawl = 2;
+            configuration.MaxPagesToCrawl = 3;
             configuration.MinCrawlDelayPerDomainMilliSeconds = 1000; // 1 second * 2 pages = 2 (or more) seconds
             
             int pagesCrawledCount = 0;
