@@ -50,7 +50,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreNotEqual(0, result.Bytes.Length);
             Assert.AreEqual("Shift_JIS", result.Charset);
             Assert.AreNotEqual(Encoding.UTF8, result.Encoding);
-            Assert.IsTrue(result.Text.StartsWith("<!DOCTYPE HTML PUBLIC"));
+            Assert.IsTrue(result.Text.StartsWith("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=Shift_JIS\">"));
         }
 
         private WebResponse GetWebStream(Uri uri)
