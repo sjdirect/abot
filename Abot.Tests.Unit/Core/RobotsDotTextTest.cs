@@ -221,8 +221,8 @@ Disallow: /";
         [Test]
         public void GetCrawlDelay_ValueDoesNotExists_ReturnsZero()
         {
-            Assert.AreEqual(20, _unitUnderTest.GetCrawlDelay("badagent"));//should inherit from crawldelay for agent *
-            Assert.AreEqual(20, _unitUnderTest.GetCrawlDelay("userAgentCrawlDelayNotSpecified"));//should inherit from crawldelay for agent *
+            Assert.AreEqual(0, _unitUnderTest.GetCrawlDelay("badagent"));
+            Assert.AreEqual(0, _unitUnderTest.GetCrawlDelay("userAgentCrawlDelayNotSpecified"));
             Assert.AreEqual(0, _unitUnderTest.GetCrawlDelay("userAgentCrawlDelayEmpty"));
         }
     }
