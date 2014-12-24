@@ -23,6 +23,11 @@ namespace Abot.Crawler
         {
         }
 
+        public PoliteWebCrawler(CrawlConfiguration crawlConfiguration)
+            : this(crawlConfiguration, null, null, null, null, null, null, null, null)
+        {
+        }
+
         public PoliteWebCrawler(
             CrawlConfiguration crawlConfiguration,
             ICrawlDecisionMaker crawlDecisionMaker,
