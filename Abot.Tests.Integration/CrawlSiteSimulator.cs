@@ -139,6 +139,29 @@ namespace Abot.Tests.Integration
             Assert.IsTrue(result.ErrorException is OperationCanceledException);
         }
 
+        [Test]
+        public void Crawl_IsRateLimited()
+        {
+            new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
+
+            CrawlConfiguration configuration = new CrawlConfiguration();
+            configuration.MaxPagesToCrawl = 3;
+            configuration.MinCrawlDelayPerDomainMilliSeconds = 1000; // 1 second * 2 pages = 2 (or more) seconds
+            
+            int pagesCrawledCount = 0;
+
+            var crawler = new PoliteWebCrawler(configuration);
+            crawler.PageCrawlCompletedAsync += (a, b) => pagesCrawledCount++;
+
+            var uriToCrawl = new Uri("http://localhost:1111/");
+            var start = DateTime.Now;
+            crawler.Crawl(uriToCrawl);
+            var elapsed = DateTime.Now - start;
+
+            Assert.GreaterOrEqual(elapsed.TotalMilliseconds, 2000);
+            Assert.AreEqual(3, pagesCrawledCount);
+        }
+
         protected override List<PageResult> GetExpectedCrawlResult()
         {
             List<PageResult> expectedCrawlResult = new List<PageResult>
