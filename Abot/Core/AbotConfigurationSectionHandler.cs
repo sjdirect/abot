@@ -53,37 +53,37 @@ namespace Abot.Core
 
     public class PolitenessElement : ConfigurationElement
     {
-        [ConfigurationProperty("isRespectRobotsDotTextEnabled", IsRequired = true)]
+        [ConfigurationProperty("isRespectRobotsDotTextEnabled", IsRequired = false)]
         public bool IsRespectRobotsDotTextEnabled
         {
             get { return (bool)this["isRespectRobotsDotTextEnabled"]; }
         }
 
-        [ConfigurationProperty("isRespectMetaRobotsNoFollowEnabled", IsRequired = true)]
+        [ConfigurationProperty("isRespectMetaRobotsNoFollowEnabled", IsRequired = false)]
         public bool IsRespectMetaRobotsNoFollowEnabled
         {
             get { return (bool)this["isRespectMetaRobotsNoFollowEnabled"]; }
         }
 
-        [ConfigurationProperty("isRespectAnchorRelNoFollowEnabled", IsRequired = true)]
+        [ConfigurationProperty("isRespectAnchorRelNoFollowEnabled", IsRequired = false)]
         public bool IsRespectAnchorRelNoFollowEnabled
         {
             get { return (bool)this["isRespectAnchorRelNoFollowEnabled"]; }
         }
 
-        [ConfigurationProperty("robotsDotTextUserAgentString", IsRequired = true)]
+        [ConfigurationProperty("robotsDotTextUserAgentString", IsRequired = false, DefaultValue = "abot")]
         public string RobotsDotTextUserAgentString
         {
             get { return (string)this["robotsDotTextUserAgentString"]; }
         }
 
-        [ConfigurationProperty("maxRobotsDotTextCrawlDelayInSeconds", IsRequired = true)]
+        [ConfigurationProperty("maxRobotsDotTextCrawlDelayInSeconds", IsRequired = false, DefaultValue = 5)]
         public int MaxRobotsDotTextCrawlDelayInSeconds
         {
             get { return (int)this["maxRobotsDotTextCrawlDelayInSeconds"]; }
         }
 
-        [ConfigurationProperty("minCrawlDelayPerDomainMilliSeconds", IsRequired = true)]
+        [ConfigurationProperty("minCrawlDelayPerDomainMilliSeconds", IsRequired = false)]
         public int MinCrawlDelayPerDomainMilliSeconds
         {
             get { return (int)this["minCrawlDelayPerDomainMilliSeconds"]; }
@@ -92,127 +92,127 @@ namespace Abot.Core
 
     public class CrawlBehaviorElement : ConfigurationElement
     {
-        [ConfigurationProperty("maxConcurrentThreads", IsRequired = true)]
+        [ConfigurationProperty("maxConcurrentThreads", IsRequired = false, DefaultValue = 10)]
         public int MaxConcurrentThreads
         {
             get { return (int)this["maxConcurrentThreads"]; }
         }
 
-        [ConfigurationProperty("maxPagesToCrawl", IsRequired = true)]
+        [ConfigurationProperty("maxPagesToCrawl", IsRequired = false, DefaultValue = 1000)]
         public int MaxPagesToCrawl
         {
             get { return (int)this["maxPagesToCrawl"]; }
         }
 
-        [ConfigurationProperty("maxPagesToCrawlPerDomain", IsRequired = true)]
+        [ConfigurationProperty("maxPagesToCrawlPerDomain", IsRequired = false)]
         public int MaxPagesToCrawlPerDomain
         {
             get { return (int)this["maxPagesToCrawlPerDomain"]; }
         }
 
-        [ConfigurationProperty("maxPageSizeInBytes", IsRequired = true)]
+        [ConfigurationProperty("maxPageSizeInBytes", IsRequired = false)]
         public int MaxPageSizeInBytes
         {
             get { return (int)this["maxPageSizeInBytes"]; }
         }
 
-        [ConfigurationProperty("userAgentString", IsRequired = true)]
+        [ConfigurationProperty("userAgentString", IsRequired = false, DefaultValue = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; abot v@ABOTASSEMBLYVERSION@ http://code.google.com/p/abot)")]
         public string UserAgentString
         {
             get { return (string)this["userAgentString"]; }
         }
 
-        [ConfigurationProperty("crawlTimeoutSeconds", IsRequired = true)]
+        [ConfigurationProperty("crawlTimeoutSeconds", IsRequired = false)]
         public int CrawlTimeoutSeconds
         {
             get { return (int)this["crawlTimeoutSeconds"]; }
         }
 
-        [ConfigurationProperty("downloadableContentTypes", IsRequired = true)]
+        [ConfigurationProperty("downloadableContentTypes", IsRequired = false, DefaultValue = "text/html")]
         public string DownloadableContentTypes
         {
             get { return (string)this["downloadableContentTypes"]; }
         }
 
-        [ConfigurationProperty("isUriRecrawlingEnabled", IsRequired = true)]
+        [ConfigurationProperty("isUriRecrawlingEnabled", IsRequired = false)]
         public bool IsUriRecrawlingEnabled
         {
             get { return (bool)this["isUriRecrawlingEnabled"]; }
         }
 
-        [ConfigurationProperty("isExternalPageCrawlingEnabled", IsRequired = true)]
+        [ConfigurationProperty("isExternalPageCrawlingEnabled", IsRequired = false)]
         public bool IsExternalPageCrawlingEnabled
         {
             get { return (bool)this["isExternalPageCrawlingEnabled"]; }
         }
 
-        [ConfigurationProperty("isExternalPageLinksCrawlingEnabled", IsRequired = true)]
+        [ConfigurationProperty("isExternalPageLinksCrawlingEnabled", IsRequired = false)]
         public bool IsExternalPageLinksCrawlingEnabled
         {
             get { return (bool)this["isExternalPageLinksCrawlingEnabled"]; }
         }
 
-        [ConfigurationProperty("httpServicePointConnectionLimit", IsRequired = true)]
+        [ConfigurationProperty("httpServicePointConnectionLimit", IsRequired = false, DefaultValue = 200)]
         public int HttpServicePointConnectionLimit
         {
             get { return (int)this["httpServicePointConnectionLimit"]; }
         }
 
-        [ConfigurationProperty("httpRequestTimeoutInSeconds", IsRequired = true)]
+        [ConfigurationProperty("httpRequestTimeoutInSeconds", IsRequired = false, DefaultValue = 15)]
         public int HttpRequestTimeoutInSeconds
         {
             get { return (int)this["httpRequestTimeoutInSeconds"]; }
         }
 
-        [ConfigurationProperty("httpRequestMaxAutoRedirects", IsRequired = true)]
+        [ConfigurationProperty("httpRequestMaxAutoRedirects", IsRequired = false, DefaultValue = 7)]
         public int HttpRequestMaxAutoRedirects
         {
             get { return (int)this["httpRequestMaxAutoRedirects"]; }
         }
 
-        [ConfigurationProperty("isHttpRequestAutoRedirectsEnabled", IsRequired = true)]
+        [ConfigurationProperty("isHttpRequestAutoRedirectsEnabled", IsRequired = false, DefaultValue = true)]
         public bool IsHttpRequestAutoRedirectsEnabled
         {
             get { return (bool)this["isHttpRequestAutoRedirectsEnabled"]; }
         }
 
-        [ConfigurationProperty("isHttpRequestAutomaticDecompressionEnabled", IsRequired = true)]
+        [ConfigurationProperty("isHttpRequestAutomaticDecompressionEnabled", IsRequired = false)]
         public bool IsHttpRequestAutomaticDecompressionEnabled
         {
             get { return (bool)this["isHttpRequestAutomaticDecompressionEnabled"]; }
         }
 
-        [ConfigurationProperty("isSendingCookiesEnabled", IsRequired = true)]
+        [ConfigurationProperty("isSendingCookiesEnabled", IsRequired = false)]
         public bool IsSendingCookiesEnabled
         {
             get { return (bool)this["isSendingCookiesEnabled"]; }
         }
 
-        [ConfigurationProperty("minAvailableMemoryRequiredInMb", IsRequired = true)]
+        [ConfigurationProperty("minAvailableMemoryRequiredInMb", IsRequired = false)]
         public int MinAvailableMemoryRequiredInMb
         {
             get { return (int)this["minAvailableMemoryRequiredInMb"]; }
         }
 
-        [ConfigurationProperty("maxMemoryUsageInMb", IsRequired = true)]
+        [ConfigurationProperty("maxMemoryUsageInMb", IsRequired = false)]
         public int MaxMemoryUsageInMb
         {
             get { return (int)this["maxMemoryUsageInMb"]; }
         }
 
-        [ConfigurationProperty("maxMemoryUsageCacheTimeInSeconds", IsRequired = true)]
+        [ConfigurationProperty("maxMemoryUsageCacheTimeInSeconds", IsRequired = false)]
         public int MaxMemoryUsageCacheTimeInSeconds
         {
             get { return (int)this["maxMemoryUsageCacheTimeInSeconds"]; }
         }
 
-        [ConfigurationProperty("maxCrawlDepth", IsRequired = true)]
+        [ConfigurationProperty("maxCrawlDepth", IsRequired = false, DefaultValue = 100)]
         public int MaxCrawlDepth
         {
             get { return (int)this["maxCrawlDepth"]; }
         }
 
-        [ConfigurationProperty("isForcedLinkParsingEnabled", IsRequired = true)]
+        [ConfigurationProperty("isForcedLinkParsingEnabled", IsRequired = false)]
         public bool IsForcedLinkParsingEnabled
         {
             get { return (bool)this["isForcedLinkParsingEnabled"]; }
@@ -221,13 +221,13 @@ namespace Abot.Core
 
     public class ExtensionValueElement : ConfigurationElement
     {
-        [ConfigurationProperty("key", IsRequired = true, IsKey = true)]
+        [ConfigurationProperty("key", IsRequired = false, IsKey = true)]
         public string Key
         {
             get { return (string)this["key"]; }
         }
 
-        [ConfigurationProperty("value", IsRequired = true, IsKey = false)]
+        [ConfigurationProperty("value", IsRequired = false, IsKey = false)]
         public string Value
         {
             get { return (string)this["value"]; }
