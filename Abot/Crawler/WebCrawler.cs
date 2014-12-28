@@ -760,6 +760,7 @@ namespace Abot.Crawler
 
         protected virtual bool ShouldRecrawlPage(CrawledPage crawledPage)
         {
+            //TODO No unit tests cover these lines
             CrawlDecision shouldRecrawlPageDecision = _crawlDecisionMaker.ShouldRecrawlPage(crawledPage, _crawlContext);
             if (shouldRecrawlPageDecision.Allow)
                 shouldRecrawlPageDecision = (_shouldCrawlPageDecisionMaker != null) ? _shouldRecrawlPageDecisionMaker.Invoke(crawledPage, _crawlContext) : new CrawlDecision { Allow = true };
@@ -913,6 +914,7 @@ namespace Abot.Crawler
 
         protected virtual void WaitMinimumRetryDelay(PageToCrawl pageToCrawl)
         {
+            //TODO No unit tests cover these lines
             if (pageToCrawl.LastRequest == null)
             {
                 _logger.WarnFormat("pageToCrawl.LastRequest value is null for Url:{0}. Cannot retry without this value.", pageToCrawl.Uri.AbsoluteUri);
