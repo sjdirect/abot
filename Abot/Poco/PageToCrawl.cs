@@ -40,6 +40,11 @@ namespace Abot.Poco
         public int RetryCount { get; set; }
 
         /// <summary>
+        /// The datetime that the last http request was made. Will be null unless retries are enabled.
+        /// </summary>
+        public DateTime? LastRequest { get; set; }
+
+        /// <summary>
         /// Whether the page is the root uri of the crawl
         /// </summary>
         public bool IsRoot { get; set; }

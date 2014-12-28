@@ -150,6 +150,16 @@ namespace Abot.Poco
         /// </summary>
         public bool IsForcedLinkParsingEnabled { get; set; }
 
+        /// <summary>
+        /// The max number of retries for a url if a web exception is encountered. If the value is 0, no retries will be made
+        /// </summary>
+        public int MaxRetryCount { get; set; }
+
+        /// <summary>
+        /// The minimum delay between a failed http request and the next retry
+        /// </summary>
+        public int MinRetryDelayInMilliseconds { get; set; }
+
         #endregion
 
         #region politeness

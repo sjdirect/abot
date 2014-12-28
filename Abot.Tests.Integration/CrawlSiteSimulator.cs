@@ -84,7 +84,7 @@ namespace Abot.Tests.Integration
         public void Crawl_CrawlTimeoutIs1Sec_TimesOut()
         {
             CrawlConfiguration configuration = new CrawlConfiguration();
-            configuration.CrawlTimeoutSeconds = 1;
+            configuration.CrawlTimeoutSeconds = 2;
 
             int pagesCrawledCount = 0;
 
@@ -95,7 +95,7 @@ namespace Abot.Tests.Integration
 
             Assert.IsFalse(result.ErrorOccurred);
             Assert.IsTrue(result.Elapsed.TotalSeconds < 5);
-            Assert.IsTrue(pagesCrawledCount > 0);
+            Assert.IsTrue(pagesCrawledCount < 2);
         }
 
         [Test]

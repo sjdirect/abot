@@ -217,6 +217,18 @@ namespace Abot.Core
         {
             get { return (bool)this["isForcedLinkParsingEnabled"]; }
         }
+
+        [ConfigurationProperty("maxRetryCount", IsRequired = false)]
+        public int MaxRetryCount
+        {
+            get { return (int)this["maxRetryCount"]; }
+        }
+
+        [ConfigurationProperty("minRetryDelayInMilliseconds", IsRequired = false)]
+        public int MinRetryDelayInMilliseconds
+        {
+            get { return (int)this["minRetryDelayInMilliseconds"]; }
+        }
     }
 
     public class ExtensionValueElement : ConfigurationElement

@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Concurrent;
+using System.Net;
 
 namespace Abot.Tests.Unit.Core
 {
@@ -653,6 +654,106 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual("", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+
+        [Test]
+        public void ShouldRecrawlPage_RetryablePage_ReturnsTrue()
+        {
+            _crawlContext.CrawlConfiguration.MaxRetryCount = 5;
+
+            CrawlDecision result = _unitUnderTest.ShouldRecrawlPage(
+                new CrawledPage(new Uri("http://a.com/"))
+                {
+                    WebException = new WebException("something bad"),
+                    RetryCount = 1
+                },
+                _crawlContext);
+
+            Assert.IsTrue(result.Allow);
+            Assert.AreEqual("", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+
+        }
+
+
+        [Test]
+        public void ShouldRecrawlPage_NullPageToCrawl_ReturnsFalse()
+        {
+            CrawlDecision result = _unitUnderTest.ShouldRecrawlPage(null, _crawlContext);
+
+            Assert.IsFalse(result.Allow);
+            Assert.AreEqual("Null crawled page", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+        [Test]
+        public void ShouldRecrawlPage_NullCrawlContext_ReturnsFalse()
+        {
+            CrawlDecision result = _unitUnderTest.ShouldRecrawlPage(new CrawledPage(new Uri("http://a.com/")), null);
+
+            Assert.IsFalse(result.Allow);
+            Assert.AreEqual("Null crawl context", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+        [Test]
+        public void ShouldRecrawlPage_NullWebException_ReturnsFalse()
+        {
+            CrawlDecision result = _unitUnderTest.ShouldRecrawlPage(
+                new CrawledPage(new Uri("http://a.com/"))
+                {
+                    WebException = null
+                },
+                _crawlContext);
+
+            Assert.IsFalse(result.Allow);
+            Assert.AreEqual("WebException did not occur", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+
+        }
+
+        [Test]
+        public void ShouldRecrawlPage_MaxRetryCountBelow1_ReturnsFalse()
+        {
+            _crawlContext.CrawlConfiguration.MaxRetryCount = 0;
+
+            CrawlDecision result = _unitUnderTest.ShouldRecrawlPage(
+                new CrawledPage(new Uri("http://a.com/"))
+                {
+                    WebException = new WebException("something bad")
+                },
+                _crawlContext);
+
+            Assert.IsFalse(result.Allow);
+            Assert.AreEqual("MaxRetryCount is less than 1", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+
+        }
+
+        [Test]
+        public void ShouldRecrawlPage_MaxRetryCountBelowAboveMax_ReturnsFalse()
+        {
+            _crawlContext.CrawlConfiguration.MaxRetryCount = 5;
+
+            CrawlDecision result = _unitUnderTest.ShouldRecrawlPage(
+                new CrawledPage(new Uri("http://a.com/"))
+                {
+                    WebException = new WebException("something bad"),
+                    RetryCount = 5
+                },
+                _crawlContext);
+
+            Assert.IsFalse(result.Allow);
+            Assert.AreEqual("MaxRetryCount has been reached", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+
         }
 
         private HtmlDocument GetHtmlDocument(string html)

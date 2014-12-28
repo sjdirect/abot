@@ -34,6 +34,8 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(27, _uut.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
             Assert.AreEqual(28, _uut.CrawlBehavior.MaxCrawlDepth);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsForcedLinkParsingEnabled);
+            Assert.AreEqual(4, _uut.CrawlBehavior.MaxRetryCount);
+            Assert.AreEqual(4444, _uut.CrawlBehavior.MinRetryDelayInMilliseconds);
 
             Assert.IsNotNull(_uut.Politeness);
             Assert.AreEqual(true, _uut.Politeness.IsRespectRobotsDotTextEnabled);
@@ -77,6 +79,8 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(result.MaxMemoryUsageCacheTimeInSeconds, _uut.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
             Assert.AreEqual(result.MaxCrawlDepth, _uut.CrawlBehavior.MaxCrawlDepth);
             Assert.AreEqual(result.IsForcedLinkParsingEnabled, _uut.CrawlBehavior.IsForcedLinkParsingEnabled);
+            Assert.AreEqual(result.MaxRetryCount, _uut.CrawlBehavior.MaxRetryCount);
+            Assert.AreEqual(result.MinRetryDelayInMilliseconds, _uut.CrawlBehavior.MinRetryDelayInMilliseconds);
             
             Assert.AreEqual(result.IsRespectRobotsDotTextEnabled, _uut.Politeness.IsRespectRobotsDotTextEnabled);
             Assert.AreEqual(result.RobotsDotTextUserAgentString, _uut.Politeness.RobotsDotTextUserAgentString);
@@ -122,6 +126,8 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(pocoDefaults.MinAvailableMemoryRequiredInMb, _uut.CrawlBehavior.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(pocoDefaults.MaxCrawlDepth, _uut.CrawlBehavior.MaxCrawlDepth);
             Assert.AreEqual(pocoDefaults.IsForcedLinkParsingEnabled, _uut.CrawlBehavior.IsForcedLinkParsingEnabled);
+            Assert.AreEqual(pocoDefaults.MaxRetryCount, _uut.CrawlBehavior.MaxRetryCount);
+            Assert.AreEqual(pocoDefaults.MinRetryDelayInMilliseconds, _uut.CrawlBehavior.MinRetryDelayInMilliseconds);
         }
     }
 }
