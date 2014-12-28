@@ -162,6 +162,18 @@ namespace Abot.Tests.Integration
             Assert.AreEqual(3, pagesCrawledCount);
         }
 
+        [Test]
+        public void Crawl_RetryEnabled_VerifyCrawlResultIsAsExpected()
+        {
+            new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/PageGenerator/ClearCounters"));
+
+            CrawlConfiguration configuration = AbotConfigurationSectionHandler.LoadFromXml().Convert();
+            configuration.MaxRetryCount = 3;
+            configuration.MinRetryDelayInMilliseconds = 2000;
+
+            base.CrawlAndAssert(new PoliteWebCrawler(configuration));
+        }
+
         protected override List<PageResult> GetExpectedCrawlResult()
         {
             List<PageResult> expectedCrawlResult = new List<PageResult>
