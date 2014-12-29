@@ -62,12 +62,21 @@ namespace Abot.Tests.Unit.Core
             Assert.IsNotNull(result.CsQueryDocument);
             Assert.AreEqual(200, (int)result.HttpWebResponse.StatusCode);
             Assert.IsTrue(result.Content.Bytes.Length > 900 && result.Content.Bytes.Length < 1300);
+
+            DateTime fiveSecsAgo = DateTime.Now.AddSeconds(-5);
+            Assert.IsTrue(fiveSecsAgo < result.RequestStarted);
+            Assert.IsTrue(fiveSecsAgo < result.RequestCompleted);
+            Assert.IsNotNull(result.DownloadContentStarted);
+            Assert.IsNotNull(result.DownloadContentCompleted);
+            Assert.IsTrue(fiveSecsAgo < result.DownloadContentStarted);
+            Assert.IsTrue(fiveSecsAgo < result.DownloadContentCompleted); 
         }
 
         [Test]
         public void MakeRequest_403_ReturnsValidResponse()
         {
             CrawledPage result = _unitUnderTest.MakeRequest(_403ErrorUri);
+
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.HttpWebRequest);
             Assert.IsNotNull(result.HttpWebResponse);
@@ -159,6 +168,14 @@ namespace Abot.Tests.Unit.Core
             Assert.IsNotNull(result.CsQueryDocument);
             Assert.AreEqual(200, (int)result.HttpWebResponse.StatusCode);
             Assert.IsTrue(result.Content.Bytes.Length > 0);
+
+            DateTime fiveSecsAgo = DateTime.Now.AddSeconds(-5);
+            Assert.IsTrue(fiveSecsAgo < result.RequestStarted);
+            Assert.IsTrue(fiveSecsAgo < result.RequestCompleted);
+            Assert.IsNotNull(result.DownloadContentStarted);
+            Assert.IsNotNull(result.DownloadContentCompleted);
+            Assert.IsTrue(fiveSecsAgo < result.DownloadContentStarted);
+            Assert.IsTrue(fiveSecsAgo < result.DownloadContentCompleted); 
         }
 
         [Test]
@@ -199,6 +216,12 @@ namespace Abot.Tests.Unit.Core
             Assert.IsNotNull(result.CsQueryDocument);
             Assert.AreEqual(200, (int)result.HttpWebResponse.StatusCode);
             Assert.IsNull(result.Content.Bytes);
+
+            DateTime fiveSecsAgo = DateTime.Now.AddSeconds(-5);
+            Assert.IsTrue(fiveSecsAgo < result.RequestStarted);
+            Assert.IsTrue(fiveSecsAgo < result.RequestCompleted);
+            Assert.IsNull(result.DownloadContentStarted);
+            Assert.IsNull(result.DownloadContentCompleted);
         }
     }
 
