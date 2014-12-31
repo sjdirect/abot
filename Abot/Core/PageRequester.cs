@@ -24,7 +24,6 @@ namespace Abot.Core
         static ILog _logger = LogManager.GetLogger("AbotLogger");
 
         protected CrawlConfiguration _config;
-        protected string _userAgentString;
         protected IWebContentExtractor _extractor;
         protected CookieContainer container = new CookieContainer();
 
@@ -39,7 +38,6 @@ namespace Abot.Core
             if (config == null)
                 throw new ArgumentNullException("config");
 
-            _userAgentString = config.UserAgentString.Replace("@ABOTASSEMBLYVERSION@", Assembly.GetAssembly(this.GetType()).GetName().Version.ToString());
             _config = config;
 
             if (_config.HttpServicePointConnectionLimit > 0)
@@ -120,7 +118,7 @@ namespace Abot.Core
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.AllowAutoRedirect = _config.IsHttpRequestAutoRedirectsEnabled;
-            request.UserAgent = _userAgentString;
+            request.UserAgent = _config.UserAgentString;
             request.Accept = "*/*";
 
             if(_config.HttpRequestMaxAutoRedirects > 0)

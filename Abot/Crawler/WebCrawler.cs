@@ -886,9 +886,7 @@ namespace Abot.Crawler
             _logger.InfoFormat("{0}Abot Version: {1}", indentString, abotVersion);
             foreach (PropertyInfo property in config.GetType().GetProperties())
             {
-                if(property.Name == "UserAgentString")
-                    _logger.InfoFormat("{0}{1}: {2}", indentString, property.Name, property.GetValue(config, null).ToString().Replace("@ABOTASSEMBLYVERSION@", abotVersion));
-                else if (property.Name != "ConfigurationExtensions")
+                if (property.Name != "ConfigurationExtensions")
                     _logger.InfoFormat("{0}{1}: {2}", indentString, property.Name, property.GetValue(config, null));
             }
 

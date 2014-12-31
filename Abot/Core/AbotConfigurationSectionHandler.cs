@@ -116,7 +116,7 @@ namespace Abot.Core
             get { return (int)this["maxPageSizeInBytes"]; }
         }
 
-        [ConfigurationProperty("userAgentString", IsRequired = false, DefaultValue = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; abot v@ABOTASSEMBLYVERSION@ http://code.google.com/p/abot)")]
+        [ConfigurationProperty("userAgentString", IsRequired = false, DefaultValue = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko")]
         public string UserAgentString
         {
             get { return (string)this["userAgentString"]; }

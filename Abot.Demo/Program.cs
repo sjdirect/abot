@@ -58,7 +58,6 @@ namespace Abot.Demo
             config.MaxPagesToCrawl = 10;
             config.MaxPagesToCrawlPerDomain = 0;
             config.MinCrawlDelayPerDomainMilliSeconds = 1000;
-            config.UserAgentString = "abot v@ABOTASSEMBLYVERSION@ http://code.google.com/p/abot";
 
             //Add you own values without modifying Abot's source code.
             //These are accessible in CrawlContext.CrawlConfuration.ConfigurationException object throughout the crawl

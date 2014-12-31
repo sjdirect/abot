@@ -1,9 +1,7 @@
-﻿using Abot.Core;
+﻿using System;
+using Abot.Core;
 using Abot.Poco;
 using NUnit.Framework;
-using System;
-using System.Reflection;
-
 
 namespace Abot.Tests.Unit.Core
 {
@@ -33,19 +31,6 @@ namespace Abot.Tests.Unit.Core
         public void Constructor_NullUserAgent()
         {
             new PageRequester(null);
-        }
-
-        [Test]
-        public void Constructor_SetsUserAgent()
-        {
-            Assert.AreEqual(_crawlConfig.UserAgentString, new PageRequesterWrapper(_crawlConfig).UserAgentWrapper);
-        }
-
-        [Test]
-        public void Constructor_SetsUserAgentWithAssemblyVersion()
-        {
-            _crawlConfig.UserAgentString = "ha @ABOTASSEMBLYVERSION@ ha";
-            Assert.AreEqual(string.Format("ha {0} ha", Assembly.GetAssembly(this.GetType()).GetName().Version.ToString()), new PageRequesterWrapper(_crawlConfig).UserAgentWrapper);
         }
 
         [Test]
@@ -223,15 +208,5 @@ namespace Abot.Tests.Unit.Core
             Assert.IsNull(result.DownloadContentStarted);
             Assert.IsNull(result.DownloadContentCompleted);
         }
-    }
-
-    public class PageRequesterWrapper : PageRequester
-    {
-        public string UserAgentWrapper { get{return base._userAgentString;} private set{} }
-        public PageRequesterWrapper(CrawlConfiguration config)
-            : base(config)
-        {
-        }
-
     }
 }

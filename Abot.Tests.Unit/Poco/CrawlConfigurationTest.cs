@@ -26,7 +26,7 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual(1000, unitUnderTest.MaxPagesToCrawl);
             Assert.AreEqual(0, unitUnderTest.MaxPagesToCrawlPerDomain);
             Assert.AreEqual(0, unitUnderTest.MinCrawlDelayPerDomainMilliSeconds);
-            Assert.AreEqual("Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; abot v@ABOTASSEMBLYVERSION@ http://code.google.com/p/abot)", unitUnderTest.UserAgentString);
+            Assert.AreEqual("Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko", unitUnderTest.UserAgentString);
             Assert.AreEqual("abot", unitUnderTest.RobotsDotTextUserAgentString);
             Assert.AreEqual(0, unitUnderTest.MaxPageSizeInBytes);
             Assert.AreEqual(200, unitUnderTest.HttpServicePointConnectionLimit);
