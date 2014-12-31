@@ -77,6 +77,27 @@ namespace Abot.Poco
         /// </summary>
         public PageContent Content { get; set; }
 
+                /// <summary>
+        /// A datetime of when the http request started
+        /// </summary>
+        public DateTime RequestStarted { get; set; }
+
+        /// <summary>
+        /// A datetime of when the http request completed
+        /// </summary>
+        public DateTime RequestCompleted { get; set; }
+
+        /// <summary>
+        /// A datetime of when the page content download started, this may be null if downloading the content was disallowed by the CrawlDecisionMaker or the inline delegate ShouldDownloadPageContent
+        /// </summary>
+        public DateTime? DownloadContentStarted { get; set; }
+
+        /// <summary>
+        /// A datetime of when the page content download completed, this may be null if downloading the content was disallowed by the CrawlDecisionMaker or the inline delegate ShouldDownloadPageContent
+        /// </summary>
+        public DateTime? DownloadContentCompleted { get; set; }
+
+
         private CQ InitializeCsQueryDocument()
         {
             CQ csQueryObject;

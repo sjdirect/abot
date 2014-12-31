@@ -71,6 +71,7 @@ namespace Abot.Core
             try
             {
                 request = BuildRequestObject(uri);
+                crawledPage.RequestStarted = DateTime.Now;
                 response = (HttpWebResponse)request.GetResponse();
                 ProcessResponseObject(response);
             }
@@ -92,15 +93,21 @@ namespace Abot.Core
             finally
             {
                 crawledPage.HttpWebRequest = request;
-
+                crawledPage.RequestCompleted = DateTime.Now;
                 if (response != null)
                 {
                     crawledPage.HttpWebResponse = response;
                     CrawlDecision shouldDownloadContentDecision = shouldDownloadContent(crawledPage);
                     if (shouldDownloadContentDecision.Allow)
+                    {
+                        crawledPage.DownloadContentStarted = DateTime.Now;
                         crawledPage.Content = _extractor.GetContent(response);
+                        crawledPage.DownloadContentCompleted = DateTime.Now;
+                    }
                     else
-                        _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
+                    {
+                        _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);    
+                    }
 
                     response.Close();//Should already be closed by _extractor but just being safe
                 }
