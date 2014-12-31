@@ -763,7 +763,7 @@ namespace Abot.Crawler
             //TODO No unit tests cover these lines
             CrawlDecision shouldRecrawlPageDecision = _crawlDecisionMaker.ShouldRecrawlPage(crawledPage, _crawlContext);
             if (shouldRecrawlPageDecision.Allow)
-                shouldRecrawlPageDecision = (_shouldCrawlPageDecisionMaker != null) ? _shouldRecrawlPageDecisionMaker.Invoke(crawledPage, _crawlContext) : new CrawlDecision { Allow = true };
+                shouldRecrawlPageDecision = (_shouldRecrawlPageDecisionMaker != null) ? _shouldRecrawlPageDecisionMaker.Invoke(crawledPage, _crawlContext) : new CrawlDecision { Allow = true };
 
             if (!shouldRecrawlPageDecision.Allow)
             {
