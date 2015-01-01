@@ -94,9 +94,6 @@
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\BloomFilterCrawledUrlRepositoryTest.cs" />
     <Compile Include="Util\CachedMemoryMonitorTest.cs" />
-    <Compile Include="Util\Murmur3HashGeneratorTest.cs" />
-    <Compile Include="Util\HashGeneratorTest.cs" />
-    <Compile Include="Util\Md5HashGeneratorTest.cs" />
     <Compile Include="Core\PagesToCrawlRepositoryTest.cs" />
     <Compile Include="Core\CrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\FifoPagesToCrawlRepositoryTest.cs" />
@@ -112,7 +109,6 @@
     <Compile Include="Core\CrawlDecisionMakerTest.cs" />
     <Compile Include="Core\CsQueryHyperLinkParserTest.cs" />
     <Compile Include="Core\DomainRateLimiterTest.cs" />
-    <Compile Include="Core\FifoSchedulerTest.cs" />
     <Compile Include="Core\HyperlinkParserTest.cs" />
     <Compile Include="Core\PageRequesterTest.cs" />
     <Compile Include="Util\RateLimiterTest.cs" />

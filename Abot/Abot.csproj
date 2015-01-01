@@ -67,8 +67,6 @@
     <Compile Include="Core\BloomFilterCrawledUrlRepository.cs" />
     <Compile Include="Util\BloomFilter.cs" />
     <Compile Include="Util\CachedMemoryMonitor.cs" />
-    <Compile Include="Util\Md5HashGenerator.cs" />
-    <Compile Include="Util\Murmur3HashGenerator.cs" />
     <Compile Include="Core\Scheduler.cs" />
     <Compile Include="Core\WebContentExtractor.cs" />
     <Compile Include="Util\GcMemoryMonitor.cs" />
@@ -96,7 +94,6 @@
     <Compile Include="Poco\CrawlDecision.cs" />
     <Compile Include="Poco\CrawledPage.cs" />
     <Compile Include="Poco\CrawlResult.cs" />
-    <Compile Include="Core\FifoScheduler.cs" />
     <Compile Include="Core\HyperLinkParser.cs" />
     <Compile Include="Core\PageRequester.cs" />
     <Compile Include="Crawler\WebCrawler.cs" />
