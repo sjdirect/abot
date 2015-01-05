@@ -1,8 +1,10 @@
 ﻿using Abot.Poco;
 using log4net;
 using System;
+using System.CodeDom;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Abot.Core
 {
@@ -17,6 +19,11 @@ namespace Abot.Core
         /// Make an http web request to the url and download its content based on the param func decision
         /// </summary>
         CrawledPage MakeRequest(Uri uri, Func<CrawledPage, CrawlDecision> shouldDownloadContent);
+
+        /// <summary>
+        /// Asynchronously make an http web request to the url and download its content based on the param func decision
+        /// </summary>
+        Task<CrawledPage> MakeRequestAsync(Uri uri, Func<CrawledPage, CrawlDecision> shouldDownloadContent);
     }
 
     public class PageRequester : IPageRequester
@@ -112,6 +119,69 @@ namespace Abot.Core
             }
 
             return crawledPage;
+        }
+
+        /// <summary>
+        /// Asynchronously make an http web request to the url and download its content based on the param func decision
+        /// </summary>
+        public Task<CrawledPage> MakeRequestAsync(Uri uri, Func<CrawledPage, CrawlDecision> shouldDownloadContent)
+        {
+            throw new NotImplementedException();
+            //if (uri == null)
+            //    throw new ArgumentNullException("uri");
+
+            //CrawledPage crawledPage = new CrawledPage(uri);
+            //crawledPage.RequestStarted = DateTime.Now;
+
+            //HttpWebRequest request = BuildRequestObject(uri);
+            //HttpWebResponse response = null;
+
+            //crawledPage.HttpWebRequest = request;
+            //crawledPage.RequestStarted = DateTime.Now;
+
+            //Task<WebResponse> task = Task.Factory.FromAsync(
+            //    request.BeginGetResponse,
+            //    asyncResult => request.EndGetResponse(asyncResult),
+            //    null);
+
+            //return task.ContinueWith(t =>
+            //{
+            //    crawledPage.RequestCompleted = DateTime.Now;
+
+            //    if (t.IsFaulted)
+            //    {
+            //        //handle error
+            //        Exception firstException = t.Exception.InnerExceptions.First();
+            //        crawledPage.WebException = firstException as WebException;
+            //    }
+            //    else
+            //    {
+            //        ProcessResponseObject(response);
+            //    }
+
+            //    response = (HttpWebResponse) t.Result;
+
+
+            //    if (response != null)
+            //    {
+            //        crawledPage.HttpWebResponse = response;
+            //        CrawlDecision shouldDownloadContentDecision = shouldDownloadContent(crawledPage);
+            //        if (shouldDownloadContentDecision.Allow)
+            //        {
+            //            crawledPage.DownloadContentStarted = DateTime.Now;
+            //            crawledPage.Content = _extractor.GetContent(response);
+            //            crawledPage.DownloadContentCompleted = DateTime.Now;
+            //        }
+            //        else
+            //        {
+            //            _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri,
+            //                shouldDownloadContentDecision.Reason);
+            //        }
+
+            //        response.Close(); //Should already be closed by _extractor but just being safe
+            //    }
+            //    return crawledPage;
+            //});
         }
 
         protected virtual HttpWebRequest BuildRequestObject(Uri uri)

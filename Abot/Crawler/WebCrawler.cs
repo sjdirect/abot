@@ -116,7 +116,7 @@ namespace Abot.Crawler
         protected CrawlContext _crawlContext;
         protected IThreadManager _threadManager;
         protected IScheduler _scheduler;
-        protected IPageRequester _httpRequester;
+        protected IPageRequester _pageRequester;
         protected IHyperLinkParser _hyperLinkParser;
         protected ICrawlDecisionMaker _crawlDecisionMaker;
         protected IMemoryManager _memoryManager;
@@ -189,7 +189,7 @@ namespace Abot.Crawler
 
             _threadManager = threadManager ?? new TaskThreadManager(_crawlContext.CrawlConfiguration.MaxConcurrentThreads > 0 ? _crawlContext.CrawlConfiguration.MaxConcurrentThreads : Environment.ProcessorCount);
             _scheduler = scheduler ?? new Scheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, null, null);
-            _httpRequester = pageRequester ?? new PageRequester(_crawlContext.CrawlConfiguration);
+            _pageRequester = pageRequester ?? new PageRequester(_crawlContext.CrawlConfiguration);
             _crawlDecisionMaker = crawlDecisionMaker ?? new CrawlDecisionMaker();
 
             if (_crawlContext.CrawlConfiguration.MaxMemoryUsageInMb > 0
@@ -784,7 +784,8 @@ namespace Abot.Crawler
             
             pageToCrawl.LastRequest = DateTime.Now;
 
-            CrawledPage crawledPage = _httpRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
+            CrawledPage crawledPage = _pageRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
+            //CrawledPage crawledPage = _pageRequester.MakeRequestAsync(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x)).Result;
             dynamic combinedPageBag = this.CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             Mapper.CreateMap<PageToCrawl, CrawledPage>();
             Mapper.Map(pageToCrawl, crawledPage);
