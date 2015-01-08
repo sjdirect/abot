@@ -210,6 +210,25 @@ Disallow: /";
             Assert.IsFalse(_unitUnderTest.IsUserAgentAllowed("badagent"));
         }
 
+        [Test]
+        public void IsUrlAllowed_WildCardAgentWithEmptyDisallow_ReturnsTrue()
+        {
+            string userAgentString = _userAgentString;
+            _unitUnderTest = new RobotsDotText(_rootUri, @"User-agent: *
+Disallow:");
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "aa.html", userAgentString));
+        }
+
+        [Test]
+        public void IsUrlAllowed_WildCardAgentWithWhiteSpaceDisallow_ReturnsTrue()
+        {
+            string userAgentString = _userAgentString;
+            _unitUnderTest = new RobotsDotText(_rootUri, @"User-agent: *
+Disallow: ");
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "aa.html", userAgentString));
+        }
 
         [Test]
         public void GetCrawlDelay_ValueExists_ReturnsValue()
