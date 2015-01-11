@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using Abot.Core;
 using Abot.Poco;
@@ -653,6 +654,7 @@ namespace Abot.Crawler
             _crawlContext.IsCrawlHardStopRequested = true;
         }
 
+        //protected virtual async Task ProcessPage(PageToCrawl pageToCrawl)
         protected virtual void ProcessPage(PageToCrawl pageToCrawl)
         {
             try
@@ -663,6 +665,8 @@ namespace Abot.Crawler
                 ThrowIfCancellationRequested();
 
                 AddPageToContext(pageToCrawl);
+
+                //CrawledPage crawledPage = await CrawlThePage(pageToCrawl);
                 CrawledPage crawledPage = CrawlThePage(pageToCrawl);
                 
                 if (PageSizeIsAboveMax(crawledPage))
@@ -774,6 +778,7 @@ namespace Abot.Crawler
             return shouldRecrawlPageDecision.Allow;
         }
 
+        //protected virtual async Task<CrawledPage> CrawlThePage(PageToCrawl pageToCrawl)
         protected virtual CrawledPage CrawlThePage(PageToCrawl pageToCrawl)
         {
             _logger.DebugFormat("About to crawl page [{0}]", pageToCrawl.Uri.AbsoluteUri);
@@ -785,7 +790,8 @@ namespace Abot.Crawler
             pageToCrawl.LastRequest = DateTime.Now;
 
             CrawledPage crawledPage = _pageRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
-            //CrawledPage crawledPage = _pageRequester.MakeRequestAsync(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x)).Result;
+            //CrawledPage crawledPage = await _pageRequester.MakeRequestAsync(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
+
             dynamic combinedPageBag = this.CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             Mapper.CreateMap<PageToCrawl, CrawledPage>();
             Mapper.Map(pageToCrawl, crawledPage);
