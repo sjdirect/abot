@@ -20,6 +20,7 @@ namespace Abot.Util
         bool IsSpaceAvailable(int sizeInMb);
     }
 
+    [Serializable]
     public class MemoryManager : IMemoryManager
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");

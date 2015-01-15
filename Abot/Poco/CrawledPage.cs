@@ -7,6 +7,7 @@ using System.Net;
 
 namespace Abot.Poco
 {
+    [Serializable]
     public class CrawledPage : PageToCrawl
     {
         ILog _logger = LogManager.GetLogger("AbotLogger");

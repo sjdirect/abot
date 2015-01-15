@@ -1,8 +1,10 @@
 ﻿using Abot.Poco;
+using System;
 using System.Configuration;
 
 namespace Abot.Core
 {
+    [Serializable]
     public class AbotConfigurationSectionHandler : ConfigurationSection
     {
         public AbotConfigurationSectionHandler()
@@ -51,6 +53,7 @@ namespace Abot.Core
         }
     }
 
+    [Serializable]
     public class PolitenessElement : ConfigurationElement
     {
         [ConfigurationProperty("isRespectRobotsDotTextEnabled", IsRequired = false)]
@@ -90,6 +93,7 @@ namespace Abot.Core
         }
     }
 
+    [Serializable]
     public class CrawlBehaviorElement : ConfigurationElement
     {
         [ConfigurationProperty("maxConcurrentThreads", IsRequired = false, DefaultValue = 10)]
@@ -231,6 +235,7 @@ namespace Abot.Core
         }
     }
 
+    [Serializable]
     public class ExtensionValueElement : ConfigurationElement
     {
         [ConfigurationProperty("key", IsRequired = false, IsKey = true)]
@@ -247,6 +252,7 @@ namespace Abot.Core
 
     }
 
+    [Serializable]
     public class ExtensionValueCollection : ConfigurationElementCollection
     {
         public ExtensionValueElement this[int index]

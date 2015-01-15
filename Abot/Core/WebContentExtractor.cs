@@ -12,6 +12,7 @@ namespace Abot.Core
         PageContent GetContent(WebResponse response);
     }
 
+    [Serializable]
     public class WebContentExtractor : IWebContentExtractor
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");

@@ -31,6 +31,7 @@ namespace Abot.Util
         void AbortAll();
     }
 
+    [Serializable]
     public abstract class ThreadManager : IThreadManager
     {
         protected static ILog _logger = LogManager.GetLogger("AbotLogger");

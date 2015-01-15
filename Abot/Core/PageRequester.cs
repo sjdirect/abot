@@ -27,6 +27,7 @@ namespace Abot.Core
         //Task<CrawledPage> MakeRequestAsync(Uri uri, Func<CrawledPage, CrawlDecision> shouldDownloadContent);
     }
 
+    [Serializable]
     public class PageRequester : IPageRequester
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");

@@ -1,4 +1,5 @@
-﻿using Abot.Poco;
+﻿using System;
+using Abot.Poco;
 using System.Net;
 
 namespace Abot.Core
@@ -29,6 +30,7 @@ namespace Abot.Core
         CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext);
     }
 
+    [Serializable]
     public class CrawlDecisionMaker : ICrawlDecisionMaker
     {
         public virtual CrawlDecision ShouldCrawlPage(PageToCrawl pageToCrawl, CrawlContext crawlContext)

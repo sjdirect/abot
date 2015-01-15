@@ -20,6 +20,7 @@ namespace Abot.Core
         IRobotsDotText Find(Uri rootUri);
     }
 
+    [Serializable]
     public class RobotsDotTextFinder : IRobotsDotTextFinder
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");

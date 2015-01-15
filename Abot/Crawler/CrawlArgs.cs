@@ -3,6 +3,7 @@ using System;
 
 namespace Abot.Crawler
 {
+    [Serializable]
     public class CrawlArgs : EventArgs
     {
         public CrawlContext CrawlContext { get; set; }

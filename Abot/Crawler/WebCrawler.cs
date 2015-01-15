@@ -106,6 +106,7 @@ namespace Abot.Crawler
         dynamic CrawlBag { get; set; }
     }
 
+    [Serializable]
     public abstract class WebCrawler : IWebCrawler
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");

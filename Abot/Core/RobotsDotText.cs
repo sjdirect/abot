@@ -22,6 +22,7 @@ namespace Abot.Core
         bool IsUserAgentAllowed(string userAgentString);
     }
 
+    [Serializable]
     public class RobotsDotText : IRobotsDotText
     {
         ILog _logger = LogManager.GetLogger("AbotLogger");
