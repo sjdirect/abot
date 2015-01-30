@@ -61,7 +61,7 @@ namespace Abot.Tests.Unit.Poco
         [Test]
         public void ToString_MessageHasUri()
         {
-            Assert.AreEqual("http://localhost:1111/", new PageToCrawl(new Uri("http://localhost:1111/")).ToString());
+            Assert.AreEqual("http://localhost.fiddler:1111/", new PageToCrawl(new Uri("http://localhost.fiddler:1111/")).ToString());
         }
     }
 }

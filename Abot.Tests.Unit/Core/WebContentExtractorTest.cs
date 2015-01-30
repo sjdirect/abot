@@ -11,7 +11,7 @@ namespace Abot.Tests.Unit.Core
     public class WebContentExtractorTest
     {
         WebContentExtractor _uut;
-        Uri _utf8 = new Uri("http://localhost:1111/");
+        Uri _utf8 = new Uri("http://localhost.fiddler:1111/");
         Uri _japan = new Uri("http://aaa.jp");
 
         [SetUp]

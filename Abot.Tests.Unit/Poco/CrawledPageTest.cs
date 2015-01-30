@@ -156,13 +156,13 @@ namespace Abot.Tests.Unit.Poco
         [Test]
         public void ToString_HttpResponseDoesNotExists_MessageHasUri()
         {
-            Assert.AreEqual("http://localhost:1111/", new CrawledPage(new Uri("http://localhost:1111/")).ToString());
+            Assert.AreEqual("http://localhost.fiddler:1111/", new CrawledPage(new Uri("http://localhost.fiddler:1111/")).ToString());
         }
 
         [Test]
         public void ToString_HttpResponseExists_MessageHasUriAndStatus()
         {
-            Assert.AreEqual("http://localhost:1111/[200]", new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/")).ToString());
+            Assert.AreEqual("http://localhost.fiddler:1111/[200]", new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost.fiddler:1111/")).ToString());
         }
 
         private string GetFileContent(string fileName)

@@ -539,7 +539,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldDownloadPageContent_DownloadablePage_ReturnsTrue()
         {
-            Uri valid200StatusUri = new Uri("http://localhost:1111/");
+            Uri valid200StatusUri = new Uri("http://localhost.fiddler:1111/");
 
             CrawlDecision result = _unitUnderTest.ShouldDownloadPageContent(new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" }).MakeRequest(valid200StatusUri), _crawlContext);
 
@@ -591,7 +591,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldDownloadPageContent_HttpStatusNon200_ReturnsFalse()
         {
-            Uri non200Uri = new Uri("http://localhost:1111/HttpResponse/Status403");
+            Uri non200Uri = new Uri("http://localhost.fiddler:1111/HttpResponse/Status403");
 
             CrawlDecision result = _unitUnderTest.ShouldDownloadPageContent(new PageRequester(_crawlContext.CrawlConfiguration).MakeRequest(non200Uri), new CrawlContext());
 
@@ -604,7 +604,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldDownloadPageContent_NonHtmlPage_ReturnsFalse()
         {
-            Uri imageUrl = new Uri("http://localhost:1111/Content/themes/base/images/ui-bg_flat_0_aaaaaa_40x100.png");
+            Uri imageUrl = new Uri("http://localhost.fiddler:1111/Content/themes/base/images/ui-bg_flat_0_aaaaaa_40x100.png");
 
             CrawlDecision result = _unitUnderTest.ShouldDownloadPageContent(new PageRequester(_crawlContext.CrawlConfiguration).MakeRequest(imageUrl), _crawlContext);
 
@@ -617,7 +617,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldDownloadPageContent_AboveMaxPageSize_ReturnsFalse()
         {
-            Uri valid200StatusUri = new Uri("http://localhost:1111/");
+            Uri valid200StatusUri = new Uri("http://localhost.fiddler:1111/");
 
             CrawlDecision result = _unitUnderTest.ShouldDownloadPageContent(new PageRequester(_crawlContext.CrawlConfiguration).MakeRequest(valid200StatusUri), 
                 new CrawlContext
@@ -639,7 +639,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void ShouldDownloadPageContent_MaxPageSizeInBytesZero_ReturnsTrue()
         {
-            Uri valid200StatusUri = new Uri("http://localhost:1111/");
+            Uri valid200StatusUri = new Uri("http://localhost.fiddler:1111/");
 
             CrawlDecision result = _unitUnderTest.ShouldDownloadPageContent(new PageRequester(_crawlContext.CrawlConfiguration).MakeRequest(valid200StatusUri),
                 new CrawlContext

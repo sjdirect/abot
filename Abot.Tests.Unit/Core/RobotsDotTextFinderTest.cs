@@ -18,8 +18,8 @@ namespace Abot.Tests.Unit.Core
         public void TestFixtureSetup()
         {
             PageRequester pageRequster = new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" });
-            _goodPageResult = pageRequster.MakeRequest(new Uri("http://localhost:1111/"));
-            _badPageResult = pageRequster.MakeRequest(new Uri("http://localhost:1111/HttpResponse/Status404"));
+            _goodPageResult = pageRequster.MakeRequest(new Uri("http://localhost.fiddler:1111/"));
+            _badPageResult = pageRequster.MakeRequest(new Uri("http://localhost.fiddler:1111/HttpResponse/Status404"));
         }
 
         [SetUp]
