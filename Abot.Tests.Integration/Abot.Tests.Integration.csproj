@@ -56,7 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblySetup.cs" />
-    <Compile Include="BeforeAfterTests.cs" />
     <Compile Include="CrawlSiteSimulator.cs" />
     <Compile Include="CrawlTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
