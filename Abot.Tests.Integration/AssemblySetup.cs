@@ -5,20 +5,7 @@ using NUnit.Framework;
 namespace Abot.Tests.Integration
 {
     [SetUpFixture]
-    public class AssemblySetup
+    public class AssemblySetup : Abot.Tests.Unit.AssemblySetup
     {
-        [SetUp]
-        public void Setup()
-        {
-            XmlConfigurator.Configure();
-
-            FiddlerProxyUtil.StartAutoRespond(@"..\..\..\TestResponses.saz");
-        }
-
-        [TearDown]
-        public void After()
-        {
-            FiddlerProxyUtil.StopAutoResponding();
-        }
     }
 }
