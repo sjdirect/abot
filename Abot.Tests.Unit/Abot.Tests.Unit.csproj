@@ -44,11 +44,20 @@
     <Reference Include="CsQuery">
       <HintPath>..\packages\CsQuery.1.3.4\lib\net40\CsQuery.dll</HintPath>
     </Reference>
+    <Reference Include="Elmah">
+      <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
+    </Reference>
+    <Reference Include="ElmahFiddler">
+      <HintPath>..\packages\ElmahFiddler.0.1.0\lib\NET40\ElmahFiddler.dll</HintPath>
+    </Reference>
     <Reference Include="FiddlerCore4">
       <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\FiddlerCore4.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\ExternalLib\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip.Reduced">
+      <HintPath>..\packages\DotNetZip.Reduced.1.9.1.8\lib\net20\Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -102,6 +111,8 @@
     <Compile Include="AssemblySetup.cs" />
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\BloomFilterCrawledUrlRepositoryTest.cs" />
+    <Compile Include="FiddlerProxyUtil.cs" />
+    <Compile Include="SazImporter.cs" />
     <Compile Include="Util\CachedMemoryMonitorTest.cs" />
     <Compile Include="Core\PagesToCrawlRepositoryTest.cs" />
     <Compile Include="Core\CrawledUrlRepositoryTest.cs" />
@@ -169,6 +180,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Readme\Elmah.txt" />
     <Content Include="HtmlAgilityPackStackOverflow1.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

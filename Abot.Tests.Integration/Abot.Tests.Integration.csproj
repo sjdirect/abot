@@ -35,15 +35,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BCMakeCert">
-      <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\BCMakeCert.dll</HintPath>
-    </Reference>
-    <Reference Include="CertMaker">
-      <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\CertMaker.dll</HintPath>
-    </Reference>
-    <Reference Include="FiddlerCore4">
-      <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\FiddlerCore4.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -67,6 +58,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Abot.Tests.Unit\Abot.Tests.Unit.csproj">
+      <Project>{61648674-8be9-4cc6-bffe-557c0ce54faf}</Project>
+      <Name>Abot.Tests.Unit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Abot\Abot.csproj">
       <Project>{0CDCD537-4B0E-4514-966F-F425CDC92BA4}</Project>
       <Name>Abot</Name>

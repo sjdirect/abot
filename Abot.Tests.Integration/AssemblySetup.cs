@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Abot.Tests.Unit;
+using log4net.Config;
+using NUnit.Framework;
 
 namespace Abot.Tests.Integration
 {
@@ -8,7 +10,15 @@ namespace Abot.Tests.Integration
         [SetUp]
         public void Setup()
         {
-            log4net.Config.XmlConfigurator.Configure();
+            XmlConfigurator.Configure();
+
+            FiddlerProxyUtil.StartAutoRespond(@"..\..\..\TestResponses.saz");
+        }
+
+        [TearDown]
+        public void After()
+        {
+            FiddlerProxyUtil.StopAutoResponding();
         }
     }
 }
