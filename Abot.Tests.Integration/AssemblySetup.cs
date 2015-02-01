@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Abot.Tests.Integration
 {
     [SetUpFixture]
-    public class AssemblySetup : Abot.Tests.Unit.AssemblySetup
+    public class AssemblySetup //: Abot.Tests.Unit.AssemblySetup
     {
     }
 }

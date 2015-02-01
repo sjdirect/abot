@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Abot.Tests.Integration
 {
-    [TestFixture]
+    [TestFixture, Ignore]
     public class CrawlSiteSimulator : CrawlTestBase
     {
         public CrawlSiteSimulator()
