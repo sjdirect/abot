@@ -13,14 +13,14 @@ namespace Abot.Tests.Unit
             XmlConfigurator.Configure();
 
             FiddlerProxyUtil.StartAutoRespond(@"..\..\..\TestResponses.saz");
-            Console.WriteLine("Started fiddler");
+            Console.WriteLine("Started FiddlerCore to autorespond with pre recorded http responses.");
         }
 
         [TearDown]
         public void After()
         {
             FiddlerProxyUtil.StopAutoResponding();
-            Console.WriteLine("Stopped fiddler");
+            Console.WriteLine("Stopped FiddlerCore");
         }
     }
 }

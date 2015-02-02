@@ -78,7 +78,7 @@ namespace Abot.Poco
         /// </summary>
         public PageContent Content { get; set; }
 
-                /// <summary>
+        /// <summary>
         /// A datetime of when the http request started
         /// </summary>
         public DateTime RequestStarted { get; set; }
