@@ -1,12 +1,12 @@
 ﻿using System;
-using Abot.Tests.Unit;
+using Commoner.Core.Testing;
 using log4net.Config;
 using NUnit.Framework;
 
 namespace Abot.Tests.Integration
 {
     [SetUpFixture]
-    public class AssemblySetup //: Abot.Tests.Unit.AssemblySetup
+    public class AssemblySetup
     {
         [SetUp]
         public void Setup()

@@ -1,4 +1,5 @@
 ﻿using System;
+using Commoner.Core.Testing;
 using log4net.Config;
 using NUnit.Framework;
 

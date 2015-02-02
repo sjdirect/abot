@@ -1,6 +1,0 @@
-[submodule "nrobots"]
-	path = nrobots
-	url = https://github.com/sjdirect/nrobots.git
-[submodule "commoner"]
-	path = commoner
-	url = https://github.com/sjdirect/commoner.git
