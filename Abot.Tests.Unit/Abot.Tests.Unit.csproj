@@ -41,8 +41,9 @@
     <Reference Include="CertMaker">
       <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\CertMaker.dll</HintPath>
     </Reference>
-    <Reference Include="Commoner.Core">
-      <HintPath>..\packages\Commoner.Core.1.0.0.0\lib\net40\Commoner.Core.dll</HintPath>
+    <Reference Include="Commoner.Core, Version=1.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Commoner.1.0.11.0\lib\net40\Commoner.Core.dll</HintPath>
     </Reference>
     <Reference Include="CsQuery">
       <HintPath>..\packages\CsQuery.1.3.4\lib\net40\CsQuery.dll</HintPath>
@@ -85,8 +86,9 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Robots">
-      <HintPath>..\packages\NRobotsPatched.1.0.0.0\lib\net40\Robots.dll</HintPath>
+    <Reference Include="Robots, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NRobotsPatched.1.0.5.0\lib\net40\Robots.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
