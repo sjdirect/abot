@@ -927,7 +927,7 @@ namespace Abot.Tests.Unit.Crawler
             _unitUnderTest.PageCrawlStarting += (e, a) =>
             {
                 a.CrawlContext.IsCrawlHardStopRequested = true;
-                System.Threading.Thread.Sleep(500);
+                System.Threading.Thread.Sleep(1000);
             };
 
             //Act
