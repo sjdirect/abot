@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
+
 namespace Abot.Core
 {
     public interface IWebContentExtractor
@@ -65,29 +67,40 @@ namespace Abot.Core
             MemoryStream ms = rawdata;
             ms.Seek(0, SeekOrigin.Begin);
 
-
-            //Do not wrapp in closing statement to prevent closing of the is stream
+            //Do not wrapp in closing statement to prevent closing of this stream
             StreamReader srr = new StreamReader(ms, Encoding.ASCII);
             String meta = srr.ReadToEnd();
 
             if (meta != null)
             {
-                int start_ind = meta.IndexOf("charset=");
-                int end_ind = -1;
-                if (start_ind != -1)
+                Match match = Regex.Match(meta, @"<meta.*charset=(.+)\/*>");
+                if (match.Success)
                 {
-                    end_ind = meta.IndexOf("\"", start_ind);
-                    if (end_ind != -1)
-                    {
-                        int start = start_ind + 8;
-                        charset = meta.Substring(start, end_ind - start + 1);
-                        charset = charset.TrimEnd(new Char[] { '>', '"' });
-                    }
+                    string matchStr = match.Groups[1].Value;
+
+                    int endInd = GetFirstOccurrenceAboveNeg1(matchStr.IndexOf('"'), matchStr.IndexOf('\''));
+                    if (endInd == -1)
+                        endInd = matchStr.IndexOf('\'');
+
+                    if (endInd != -1)
+                        charset = matchStr.Remove(endInd);
                 }
             }
 
             return charset;
         }
+
+        private int GetFirstOccurrenceAboveNeg1(int firstIndex, int secondIndex)
+        {
+            if (firstIndex > -1 && secondIndex > -1)
+                return Math.Min(firstIndex, secondIndex);
+
+            if (firstIndex < 0 && secondIndex < 0)
+                return -1;
+
+            return Math.Max(firstIndex, secondIndex);
+        }
+
 
         private Encoding GetEncoding(string charset)
         {
