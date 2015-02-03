@@ -9,6 +9,7 @@ namespace Abot.Core
     /// <summary>
     /// Parser that uses Html Agility Pack http://htmlagilitypack.codeplex.com/ to parse page links
     /// </summary>
+    [Serializable]
     public class HapHyperLinkParser : HyperLinkParser
     {
         Func<string, string> _cleanURLFunc;

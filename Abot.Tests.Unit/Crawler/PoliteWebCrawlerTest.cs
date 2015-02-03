@@ -112,6 +112,7 @@ namespace Abot.Tests.Unit.Crawler
             _fakeHyperLinkParser.Setup(f => f.GetLinks(It.Is<CrawledPage>(p => p.Uri == homePage.Uri))).Returns(links);
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false });
 
             _dummyConfiguration.MinCrawlDelayPerDomainMilliSeconds = 1;//BY HAVING A CRAWL DELAY ABOVE ZERO WE EXPECT THE IDOMAINRATELIMITER TO BE CALLED
             _unitUnderTest = new PoliteWebCrawler(_dummyConfiguration, _fakeCrawlDecisionMaker.Object, _dummyThreadManager, _dummyScheduler, _fakeHttpRequester.Object, _fakeHyperLinkParser.Object, _fakeMemoryManager.Object, _fakeDomainRateLimiter.Object, _fakeRobotsDotTextFinder.Object);
@@ -145,7 +146,8 @@ namespace Abot.Tests.Unit.Crawler
             _fakeHyperLinkParser.Setup(f => f.GetLinks(It.Is<CrawledPage>(p => p.Uri == homePage.Uri))).Returns(links);
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
-
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false });
+            
             _fakeRobotsDotText.Setup(f => f.GetCrawlDelay(It.IsAny<string>())).Returns(0);
             _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
             _fakeRobotsDotTextFinder.Setup(f => f.Find(It.IsAny<Uri>())).Returns(_fakeRobotsDotText.Object);
@@ -187,7 +189,8 @@ namespace Abot.Tests.Unit.Crawler
             _fakeHyperLinkParser.Setup(f => f.GetLinks(It.Is<CrawledPage>(p => p.Uri == homePage.Uri))).Returns(links);
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
-
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false });
+            
             _fakeRobotsDotText.Setup(f => f.GetCrawlDelay(It.IsAny<string>())).Returns(3);
             _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
             _fakeRobotsDotTextFinder.Setup(f => f.Find(It.IsAny<Uri>())).Returns(_fakeRobotsDotText.Object);
@@ -229,7 +232,8 @@ namespace Abot.Tests.Unit.Crawler
             _fakeHyperLinkParser.Setup(f => f.GetLinks(It.Is<CrawledPage>(p => p.Uri == homePage.Uri))).Returns(links);
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
             _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
-
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false });
+            
             _fakeRobotsDotText.Setup(f => f.GetCrawlDelay(It.IsAny<string>())).Returns(3);//this is more then the max configured crawl delay (should be ignored)
             _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
             _fakeRobotsDotTextFinder.Setup(f => f.Find(It.IsAny<Uri>())).Returns(_fakeRobotsDotText.Object);

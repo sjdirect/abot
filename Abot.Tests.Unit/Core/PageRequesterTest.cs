@@ -1,9 +1,7 @@
-﻿using Abot.Core;
+﻿using System;
+using Abot.Core;
 using Abot.Poco;
 using NUnit.Framework;
-using System;
-using System.Reflection;
-
 
 namespace Abot.Tests.Unit.Core
 {
@@ -11,14 +9,14 @@ namespace Abot.Tests.Unit.Core
     public class PageRequesterTest
     {
         PageRequester _unitUnderTest;
-        Uri _validUri = new Uri("http://localhost:1111/");
-        Uri _403ErrorUri = new Uri("http://localhost:1111/HttpResponse/Status403");
-        Uri _404ErrorUri = new Uri("http://localhost:1111/HttpResponse/Status404");
-        Uri _500ErrorUri = new Uri("http://localhost:1111/HttpResponse/Status500");
+        Uri _validUri = new Uri("http://localhost.fiddler:1111/");
+        Uri _403ErrorUri = new Uri("http://localhost.fiddler:1111/HttpResponse/Status403");
+        Uri _404ErrorUri = new Uri("http://localhost.fiddler:1111/HttpResponse/Status404");
+        Uri _500ErrorUri = new Uri("http://localhost.fiddler:1111/HttpResponse/Status500");
         Uri _502ErrorUri = new Uri("http://www.lakkjfkasdfjhqlkfj.com");//non resolvable
-        Uri _503ErrorUri = new Uri("http://localhost:1111/HttpResponse/Status503");
-        Uri _301To200Uri = new Uri("http://localhost:1111/HttpResponse/Redirect/?redirectHttpStatus=301&destinationHttpStatus=200");
-        Uri _301To404Uri = new Uri("http://localhost:1111/HttpResponse/Redirect/?redirectHttpStatus=301&destinationHttpStatus=404");
+        Uri _503ErrorUri = new Uri("http://localhost.fiddler:1111/HttpResponse/Status503");
+        Uri _301To200Uri = new Uri("http://localhost.fiddler:1111/HttpResponse/Redirect/?redirectHttpStatus=301&destinationHttpStatus=200");
+        Uri _301To404Uri = new Uri("http://localhost.fiddler:1111/HttpResponse/Redirect/?redirectHttpStatus=301&destinationHttpStatus=404");
 
         CrawlConfiguration _crawlConfig = new CrawlConfiguration { UserAgentString = "someuseragentstringhere" };
 
@@ -36,19 +34,6 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        public void Constructor_SetsUserAgent()
-        {
-            Assert.AreEqual(_crawlConfig.UserAgentString, new PageRequesterWrapper(_crawlConfig).UserAgentWrapper);
-        }
-
-        [Test]
-        public void Constructor_SetsUserAgentWithAssemblyVersion()
-        {
-            _crawlConfig.UserAgentString = "ha @ABOTASSEMBLYVERSION@ ha";
-            Assert.AreEqual(string.Format("ha {0} ha", Assembly.GetAssembly(this.GetType()).GetName().Version.ToString()), new PageRequesterWrapper(_crawlConfig).UserAgentWrapper);
-        }
-
-        [Test]
         public void MakeRequest_200_ReturnsValidResponse()
         {
             CrawledPage result = _unitUnderTest.MakeRequest(_validUri);
@@ -62,12 +47,21 @@ namespace Abot.Tests.Unit.Core
             Assert.IsNotNull(result.CsQueryDocument);
             Assert.AreEqual(200, (int)result.HttpWebResponse.StatusCode);
             Assert.IsTrue(result.Content.Bytes.Length > 900 && result.Content.Bytes.Length < 1300);
+
+            DateTime fiveSecsAgo = DateTime.Now.AddSeconds(-5);
+            Assert.IsTrue(fiveSecsAgo < result.RequestStarted);
+            Assert.IsTrue(fiveSecsAgo < result.RequestCompleted);
+            Assert.IsNotNull(result.DownloadContentStarted);
+            Assert.IsNotNull(result.DownloadContentCompleted);
+            Assert.IsTrue(fiveSecsAgo < result.DownloadContentStarted);
+            Assert.IsTrue(fiveSecsAgo < result.DownloadContentCompleted); 
         }
 
         [Test]
         public void MakeRequest_403_ReturnsValidResponse()
         {
             CrawledPage result = _unitUnderTest.MakeRequest(_403ErrorUri);
+
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.HttpWebRequest);
             Assert.IsNotNull(result.HttpWebResponse);
@@ -159,6 +153,14 @@ namespace Abot.Tests.Unit.Core
             Assert.IsNotNull(result.CsQueryDocument);
             Assert.AreEqual(200, (int)result.HttpWebResponse.StatusCode);
             Assert.IsTrue(result.Content.Bytes.Length > 0);
+
+            DateTime fiveSecsAgo = DateTime.Now.AddSeconds(-5);
+            Assert.IsTrue(fiveSecsAgo < result.RequestStarted);
+            Assert.IsTrue(fiveSecsAgo < result.RequestCompleted);
+            Assert.IsNotNull(result.DownloadContentStarted);
+            Assert.IsNotNull(result.DownloadContentCompleted);
+            Assert.IsTrue(fiveSecsAgo < result.DownloadContentStarted);
+            Assert.IsTrue(fiveSecsAgo < result.DownloadContentCompleted); 
         }
 
         [Test]
@@ -199,16 +201,12 @@ namespace Abot.Tests.Unit.Core
             Assert.IsNotNull(result.CsQueryDocument);
             Assert.AreEqual(200, (int)result.HttpWebResponse.StatusCode);
             Assert.IsNull(result.Content.Bytes);
-        }
-    }
 
-    public class PageRequesterWrapper : PageRequester
-    {
-        public string UserAgentWrapper { get{return base._userAgentString;} private set{} }
-        public PageRequesterWrapper(CrawlConfiguration config)
-            : base(config)
-        {
+            DateTime fiveSecsAgo = DateTime.Now.AddSeconds(-5);
+            Assert.IsTrue(fiveSecsAgo < result.RequestStarted);
+            Assert.IsTrue(fiveSecsAgo < result.RequestCompleted);
+            Assert.IsNull(result.DownloadContentStarted);
+            Assert.IsNull(result.DownloadContentCompleted);
         }
-
     }
 }

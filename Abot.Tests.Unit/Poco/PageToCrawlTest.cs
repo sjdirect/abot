@@ -19,6 +19,7 @@ namespace Abot.Tests.Unit.Poco
             Assert.IsNull(unitUnderTest.Uri);
             Assert.AreEqual(0, unitUnderTest.CrawlDepth);
             Assert.IsNull(unitUnderTest.PageBag);
+            Assert.IsNull(unitUnderTest.LastRequest);
         }        
 
         [Test]
@@ -32,6 +33,7 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual("http://a.com/", unitUnderTest.Uri.AbsoluteUri);
             Assert.AreEqual(0, unitUnderTest.CrawlDepth);
             Assert.IsNotNull(unitUnderTest.PageBag);
+            Assert.IsNull(unitUnderTest.LastRequest);
         }
 
         [Test]
@@ -59,7 +61,7 @@ namespace Abot.Tests.Unit.Poco
         [Test]
         public void ToString_MessageHasUri()
         {
-            Assert.AreEqual("http://localhost:1111/", new PageToCrawl(new Uri("http://localhost:1111/")).ToString());
+            Assert.AreEqual("http://localhost.fiddler:1111/", new PageToCrawl(new Uri("http://localhost.fiddler:1111/")).ToString());
         }
     }
 }

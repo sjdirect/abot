@@ -11,6 +11,7 @@ namespace Abot.Crawler
     /// <summary>
     /// Extends the WebCrawler class and added politeness features like crawl delays and respecting robots.txt files. 
     /// </summary>
+    [Serializable]
     public class PoliteWebCrawler : WebCrawler
     {
         private static ILog _logger = LogManager.GetLogger("AbotLogger");
@@ -23,17 +24,22 @@ namespace Abot.Crawler
         {
         }
 
+        public PoliteWebCrawler(CrawlConfiguration crawlConfiguration)
+            : this(crawlConfiguration, null, null, null, null, null, null, null, null)
+        {
+        }
+
         public PoliteWebCrawler(
             CrawlConfiguration crawlConfiguration,
             ICrawlDecisionMaker crawlDecisionMaker,
             IThreadManager threadManager,
             IScheduler scheduler,
-            IPageRequester httpRequester,
+            IPageRequester pageRequester,
             IHyperLinkParser hyperLinkParser,
             IMemoryManager memoryManager,
             IDomainRateLimiter domainRateLimiter,
             IRobotsDotTextFinder robotsDotTextFinder)
-            : base(crawlConfiguration, crawlDecisionMaker, threadManager, scheduler, httpRequester, hyperLinkParser, memoryManager)
+            : base(crawlConfiguration, crawlDecisionMaker, threadManager, scheduler, pageRequester, hyperLinkParser, memoryManager)
         {
             _domainRateLimiter = domainRateLimiter ?? new DomainRateLimiter(_crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds);
             _robotsDotTextFinder = robotsDotTextFinder ?? new RobotsDotTextFinder(new PageRequester(_crawlContext.CrawlConfiguration));

@@ -3,6 +3,7 @@ using System.Dynamic;
 
 namespace Abot.Poco
 {
+    [Serializable]
     public class PageToCrawl
     {
         //Needed for serialization
@@ -38,6 +39,11 @@ namespace Abot.Poco
         /// The number of times the http request was be retried.
         /// </summary>
         public int RetryCount { get; set; }
+
+        /// <summary>
+        /// The datetime that the last http request was made. Will be null unless retries are enabled.
+        /// </summary>
+        public DateTime? LastRequest { get; set; }
 
         /// <summary>
         /// Whether the page is the root uri of the crawl

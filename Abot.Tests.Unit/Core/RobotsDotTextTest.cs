@@ -11,7 +11,7 @@ namespace Abot.Tests.Unit.Core
     {
         private RobotsDotText _unitUnderTest;
         private Uri _rootUri = new Uri("http://www.spidertestsite1.com/");
-        CrawledPage _realPage;
+        
         private string _userAgentString = "Some User Agent...";
         private string _robotsContent = @"
 User-Agent: *
@@ -40,7 +40,6 @@ Sitemap: http://b.com/sitemap.xml
         public void SetUp()
         {
             _unitUnderTest = new RobotsDotText(_rootUri, _robotsContent);
-            _realPage = new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost:1111/"));
         }
 
         [Test]
@@ -210,6 +209,49 @@ Disallow: /";
             Assert.IsFalse(_unitUnderTest.IsUserAgentAllowed("badagent"));
         }
 
+        [Test]
+        public void IsUrlAllowed_WildCardAgentWithEmptyDisallow_ReturnsTrue()
+        {
+            string userAgentString = _userAgentString;
+            _unitUnderTest = new RobotsDotText(_rootUri, @"User-agent: *
+Disallow:");
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "aa.html", userAgentString));
+        }
+
+        [Test]
+        public void IsUrlAllowed_QuerystringOnRoot_ReturnsTrue()
+        {
+            string userAgentString = _userAgentString;
+            _unitUnderTest = new RobotsDotText(_rootUri, @"User-Agent: *
+Disallow: /?category=whatever
+Disallow: /?category=another&color=red");
+
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
+        }
+
+        [Test]
+        public void IsUrlAllowed_QuerystringMatch_NotSupported_ReturnsTrue()
+        {
+            //IF this test starts failing that is a good thing, it means the robots impl now supports querystrings
+            string userAgentString = _userAgentString;
+            _unitUnderTest = new RobotsDotText(_rootUri, @"User-Agent: *
+Disallow: /?category=whatever
+Disallow: /?category=another&color=red");
+
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "?category=whatever", userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "?category=another&blah=blah", userAgentString));
+        }
+
+        [Test]
+        public void IsUrlAllowed_WildCardAgentWithWhiteSpaceDisallow_ReturnsTrue()
+        {
+            string userAgentString = _userAgentString;
+            _unitUnderTest = new RobotsDotText(_rootUri, @"User-agent: *
+Disallow: ");
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "aa.html", userAgentString));
+        }
 
         [Test]
         public void GetCrawlDelay_ValueExists_ReturnsValue()

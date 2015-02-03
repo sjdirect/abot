@@ -9,6 +9,7 @@ namespace Abot.Util
         int GetCurrentUsageInMb();
     }
 
+    [Serializable]
     public class GcMemoryMonitor : IMemoryMonitor
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");

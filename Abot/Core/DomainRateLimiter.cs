@@ -22,6 +22,7 @@ namespace Abot.Core
         void AddDomain(Uri uri, long minCrawlDelayInMillisecs);
     }
 
+    [Serializable]
     public class DomainRateLimiter : IDomainRateLimiter
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");

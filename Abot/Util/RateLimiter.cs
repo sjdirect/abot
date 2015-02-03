@@ -26,6 +26,7 @@ namespace Abot.Util
     ///     threads.
     ///     </para>
     /// </remarks>
+    [Serializable]
     public class RateLimiter : IRateLimiter, IDisposable
     {
         // Semaphore used to count and limit the number of occurrences per

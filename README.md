@@ -1,4 +1,4 @@
-abot
+abot [![Build Status](https://ci.appveyor.com/api/projects/status/b1ukruawvu6uujn0?svg=true)](https://ci.appveyor.com/project/sjdirect/abot)
 ====
 
 C# web crawler build for speed and flexibility.
@@ -7,7 +7,6 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
 
 Abot targets .NET version 4.0.
 
-Latest documentation: http://code.google.com/p/abot/  
-Community Forum: http://groups.google.com/group/abot-web-crawler
-
-Please Donate: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ
+View latest documentation [here](http://code.google.com/p/abot/  )!<br />
+Ask questions and search for answers on the [Community Forum](http://groups.google.com/group/abot-web-crawler)!<br />
+Please Donate [here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ)

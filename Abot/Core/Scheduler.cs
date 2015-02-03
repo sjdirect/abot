@@ -35,6 +35,7 @@ namespace Abot.Core
         void Clear();
     }
 
+    [Serializable]
     public class Scheduler : IScheduler
     {
         ICrawledUrlRepository _crawledUrlRepo;

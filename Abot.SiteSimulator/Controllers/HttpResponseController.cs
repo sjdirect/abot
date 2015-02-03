@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 
@@ -14,6 +15,7 @@ namespace Abot.SiteSimulator.Controllers
 
         public ActionResult Status200()
         {
+            Thread.Sleep(100);
             ViewBag.Header = "Status 200";
             ViewBag.Description = "This is a status 200 page";
             return View("BlankPage");
@@ -21,16 +23,19 @@ namespace Abot.SiteSimulator.Controllers
 
         public ActionResult Status403()
         {
+            Thread.Sleep(200);
             throw new HttpException(Convert.ToInt32(HttpStatusCode.Forbidden), "");
         }
 
         public ActionResult Status404()
         {
+            Thread.Sleep(300);
             throw new HttpException(Convert.ToInt32(HttpStatusCode.NotFound), "");
         }
 
         public ActionResult Status500()
         {
+            Thread.Sleep(400);
             throw new HttpException(Convert.ToInt32(HttpStatusCode.InternalServerError), "");
         }
 

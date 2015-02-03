@@ -13,6 +13,7 @@ namespace Abot.Util
 	/// Bloom filter.
 	/// </summary>
 	/// <typeparam name="T">Item type </typeparam>
+    [Serializable]
 	public class BloomFilter<T> : IBloomFilter<T>
 	{
 		private readonly int _hashFunctionCount;

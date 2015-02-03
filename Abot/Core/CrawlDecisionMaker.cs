@@ -1,4 +1,5 @@
-﻿using Abot.Poco;
+﻿using System;
+using Abot.Poco;
 using System.Net;
 
 namespace Abot.Core
@@ -22,8 +23,14 @@ namespace Abot.Core
         /// Decides whether the page's content should be dowloaded
         /// </summary>
         CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage, CrawlContext crawlContext);
+
+        /// <summary>
+        /// Decides whether the page should be re-crawled on non-200 status
+        /// </summary>
+        CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext);
     }
 
+    [Serializable]
     public class CrawlDecisionMaker : ICrawlDecisionMaker
     {
         public virtual CrawlDecision ShouldCrawlPage(PageToCrawl pageToCrawl, CrawlContext crawlContext)
@@ -114,6 +121,26 @@ namespace Abot.Core
                 return new CrawlDecision { Allow = false, Reason = string.Format("Page size of [{0}] bytes is above the max allowable of [{1}] bytes", crawledPage.HttpWebResponse.ContentLength, crawlContext.CrawlConfiguration.MaxPageSizeInBytes) };
 
             return new CrawlDecision { Allow = true };            
+        }
+
+        public CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext)
+        {
+            if (crawledPage == null)
+                return new CrawlDecision { Allow = false, Reason = "Null crawled page" };
+
+            if (crawlContext == null)
+                return new CrawlDecision { Allow = false, Reason = "Null crawl context" };
+
+            if (crawledPage.WebException == null)
+                return new CrawlDecision { Allow = false, Reason = "WebException did not occur"};
+           
+            if (crawlContext.CrawlConfiguration.MaxRetryCount < 1)
+                return new CrawlDecision { Allow = false, Reason = "MaxRetryCount is less than 1"};
+
+            if (crawledPage.RetryCount >= crawlContext.CrawlConfiguration.MaxRetryCount)
+                return new CrawlDecision {Allow = false, Reason = "MaxRetryCount has been reached"};
+
+            return new CrawlDecision { Allow = true };
         }
     }
 }

@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Abot.Poco
 {
+    [Serializable]
     public class CrawlConfiguration
     {
         public CrawlConfiguration()
         {
             MaxConcurrentThreads = 10;
-            UserAgentString = "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; abot v@ABOTASSEMBLYVERSION@ http://code.google.com/p/abot)";
+            UserAgentString = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
             RobotsDotTextUserAgentString = "abot";
             MaxPagesToCrawl = 1000;
             DownloadableContentTypes = "text/html";
@@ -149,6 +151,16 @@ namespace Abot.Poco
         /// Gets or sets a value that indicates whether the crawler should parse the page's links even if a CrawlDecision (like CrawlDecisionMaker.ShouldCrawlPageLinks()) determines that those links will not be crawled.
         /// </summary>
         public bool IsForcedLinkParsingEnabled { get; set; }
+
+        /// <summary>
+        /// The max number of retries for a url if a web exception is encountered. If the value is 0, no retries will be made
+        /// </summary>
+        public int MaxRetryCount { get; set; }
+
+        /// <summary>
+        /// The minimum delay between a failed http request and the next retry
+        /// </summary>
+        public int MinRetryDelayInMilliseconds { get; set; }
 
         #endregion
 
