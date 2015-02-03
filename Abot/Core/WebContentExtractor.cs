@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 namespace Abot.Core
 {
     public interface IWebContentExtractor
@@ -72,17 +73,17 @@ namespace Abot.Core
 
             if (meta != null)
             {
-                int start_ind = meta.IndexOf("charset=");
-                int end_ind = -1;
-                if (start_ind != -1)
+                Match match = Regex.Match(meta, @"<meta.*charset=(.+)\/>");
+                if (match.Success)
                 {
-                    end_ind = meta.IndexOf("\"", start_ind);
+                    string match_str = match.Groups[1].Value;
+
+                    int end_ind = match_str.IndexOf('"');
+                    if (end_ind == -1)
+                        end_ind = match_str.IndexOf('\'');
+
                     if (end_ind != -1)
-                    {
-                        int start = start_ind + 8;
-                        charset = meta.Substring(start, end_ind - start + 1);
-                        charset = charset.TrimEnd(new Char[] { '>', '"' });
-                    }
+                        charset = match_str.Remove(end_ind);
                 }
             }
 
