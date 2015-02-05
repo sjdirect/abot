@@ -16,7 +16,7 @@ namespace Abot.Core
 
         public BloomFilterCrawledUrlRepository(IBloomFilter<string> bloomFilter)
         {
-            BloomFilter = bloomFilter ?? new BloomFilter<string>(100000, 0.01F);
+            BloomFilter = bloomFilter ?? new BloomFilter<string>(2000001, 0.001F);
         }
         
         public bool Contains(Uri uri)
@@ -42,6 +42,7 @@ namespace Abot.Core
 
         public void Dispose()
         {
+           
             //BloomFilter = null;
         }
     }
