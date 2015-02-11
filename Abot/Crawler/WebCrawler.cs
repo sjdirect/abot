@@ -669,6 +669,8 @@ namespace Abot.Crawler
 
                 //CrawledPage crawledPage = await CrawlThePage(pageToCrawl);
                 CrawledPage crawledPage = CrawlThePage(pageToCrawl);
+
+                ProcessRedirect(crawledPage);
                 
                 if (PageSizeIsAboveMax(crawledPage))
                     return;
@@ -710,6 +712,42 @@ namespace Abot.Crawler
             }
         }
 
+        private void ProcessRedirect(CrawledPage crawledPage)
+        {
+            if (!_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled &&
+                    crawledPage.HttpWebResponse != null &&
+                    ((int)crawledPage.HttpWebResponse.StatusCode >= 300 &&
+                    (int)crawledPage.HttpWebResponse.StatusCode <= 399))
+            {
+                try
+                {
+                    var location = crawledPage.HttpWebResponse.Headers["Location"];
+
+                    Uri locationUri;
+                    if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri))
+                    {
+                        var site = crawledPage.Uri.Scheme + "://" + crawledPage.Uri.Host;
+                        location = site + location;
+                    }
+
+                    var uri = new Uri(location);
+
+                    PageToCrawl page = new PageToCrawl(uri);
+                    page.ParentUri = crawledPage.ParentUri;
+                    page.CrawlDepth = crawledPage.CrawlDepth;
+                    page.IsInternal = _isInternalDecisionMaker(uri, _crawlContext.RootUri);
+                    page.IsRoot = false;
+                        
+                    if (ShouldSchedulePageLink(page))
+                    {
+                        _scheduler.Add(page);
+                    }
+                }
+                catch {}
+            
+            }
+        }
+        
         protected virtual void ThrowIfCancellationRequested()
         {
             if (_crawlContext.CancellationTokenSource != null && _crawlContext.CancellationTokenSource.IsCancellationRequested)
