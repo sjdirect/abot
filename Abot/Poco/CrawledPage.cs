@@ -98,6 +98,10 @@ namespace Abot.Poco
         /// </summary>
         public DateTime? DownloadContentCompleted { get; set; }
 
+        /// <summary>
+        /// The page that this pagee was redirected to
+        /// </summary>
+        public PageToCrawl RedirectedTo { get; set; }
 
         private CQ InitializeCsQueryDocument()
         {

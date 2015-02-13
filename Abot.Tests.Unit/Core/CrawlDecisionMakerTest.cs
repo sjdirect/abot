@@ -5,6 +5,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 
 namespace Abot.Tests.Unit.Core
@@ -314,6 +315,66 @@ namespace Abot.Tests.Unit.Core
                 {
                     IsInternal = true,
                     CrawlDepth = 2
+                },
+                _crawlContext);
+
+            Assert.IsTrue(result.Allow);
+            Assert.AreEqual("", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+        [Test]
+        public void ShouldCrawlPage_RedirectChainOverMax_ReturnsFalse()
+        {
+            _crawlContext.CrawlConfiguration.HttpRequestMaxAutoRedirects = 7;
+
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
+                new PageToCrawl(new Uri("http://a.com/"))
+                {
+                    IsInternal = true,
+                    RedirectedFrom = new CrawledPage(new Uri("http://Doesntmatter.com")),
+                    RedirectPosition = 8
+                },
+                _crawlContext);
+
+            Assert.IsFalse(result.Allow);
+            Assert.AreEqual("HttpRequestMaxAutoRedirects limit of [7] has been reached", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+        [Test]
+        public void ShouldCrawlPage_RedirectChainUnderMax_ReturnsTrue()
+        {
+            _crawlContext.CrawlConfiguration.HttpRequestMaxAutoRedirects = 7;
+
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
+                new PageToCrawl(new Uri("http://a.com/"))
+                {
+                    IsInternal = true,
+                    RedirectedFrom = new CrawledPage(new Uri("http://Doesntmatter.com")),
+                    RedirectPosition = 6
+                },
+                _crawlContext);
+
+            Assert.IsTrue(result.Allow);
+            Assert.AreEqual("", result.Reason);
+            Assert.IsFalse(result.ShouldHardStopCrawl);
+            Assert.IsFalse(result.ShouldStopCrawl);
+        }
+
+        [Test]
+        public void ShouldCrawlPage_RedirectChainEqualToMax_ReturnsTrue()
+        {
+            _crawlContext.CrawlConfiguration.HttpRequestMaxAutoRedirects = 7;
+
+            CrawlDecision result = _unitUnderTest.ShouldCrawlPage(
+                new PageToCrawl(new Uri("http://a.com/"))
+                {
+                    IsInternal = true,
+                    RedirectedFrom = new CrawledPage(new Uri("http://Doesntmatter.com")),
+                    RedirectPosition = 7
                 },
                 _crawlContext);
 

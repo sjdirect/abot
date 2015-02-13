@@ -670,7 +670,8 @@ namespace Abot.Crawler
                 //CrawledPage crawledPage = await CrawlThePage(pageToCrawl);
                 CrawledPage crawledPage = CrawlThePage(pageToCrawl);
 
-                ProcessRedirect(crawledPage);
+                if (IsRedirect(crawledPage))
+                    ProcessRedirect(crawledPage);
                 
                 if (PageSizeIsAboveMax(crawledPage))
                     return;
@@ -712,40 +713,50 @@ namespace Abot.Crawler
             }
         }
 
-        private void ProcessRedirect(CrawledPage crawledPage)
+        protected virtual void ProcessRedirect(CrawledPage crawledPage)
         {
-            if (!_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled &&
-                    crawledPage.HttpWebResponse != null &&
-                    ((int)crawledPage.HttpWebResponse.StatusCode >= 300 &&
-                    (int)crawledPage.HttpWebResponse.StatusCode <= 399))
+            if (crawledPage.RedirectPosition >= 20)
+                _logger.WarnFormat("Page [{0}] is part of a chain of 20 or more consecutive redirects, redirects for this chain will now be aborted.", crawledPage.Uri);
+                
+            try
             {
-                try
+                var location = crawledPage.HttpWebResponse.Headers["Location"];
+                
+                Uri locationUri;
+                if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri))
                 {
-                    var location = crawledPage.HttpWebResponse.Headers["Location"];
-
-                    Uri locationUri;
-                    if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri))
-                    {
-                        var site = crawledPage.Uri.Scheme + "://" + crawledPage.Uri.Host;
-                        location = site + location;
-                    }
-
-                    var uri = new Uri(location);
-
-                    PageToCrawl page = new PageToCrawl(uri);
-                    page.ParentUri = crawledPage.ParentUri;
-                    page.CrawlDepth = crawledPage.CrawlDepth;
-                    page.IsInternal = _isInternalDecisionMaker(uri, _crawlContext.RootUri);
-                    page.IsRoot = false;
-                        
-                    if (ShouldSchedulePageLink(page))
-                    {
-                        _scheduler.Add(page);
-                    }
+                    var site = crawledPage.Uri.Scheme + "://" + crawledPage.Uri.Host;
+                    location = site + location;
                 }
-                catch {}
-            
+
+                var uri = new Uri(location);
+
+                PageToCrawl page = new PageToCrawl(uri);
+                page.ParentUri = crawledPage.ParentUri;
+                page.CrawlDepth = crawledPage.CrawlDepth;
+                page.IsInternal = _isInternalDecisionMaker(uri, _crawlContext.RootUri);
+                page.IsRoot = false;
+                page.RedirectedFrom = crawledPage;
+                page.RedirectPosition = crawledPage.RedirectPosition + 1;
+
+                crawledPage.RedirectedTo = page;
+                _logger.DebugFormat("Page [{0}] is requesting that it be redirect to [{1}]", crawledPage.Uri, crawledPage.RedirectedTo.Uri);
+
+                if (ShouldSchedulePageLink(page))
+                {
+                    _logger.InfoFormat("Page [{0}] will be redirect to [{1}]", crawledPage.Uri, crawledPage.RedirectedTo.Uri);
+                    _scheduler.Add(page);
+                }
             }
+            catch {}
+        }
+
+        protected virtual bool IsRedirect(CrawledPage crawledPage)
+        {
+            return (!_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled &&
+                    crawledPage.HttpWebResponse != null &&
+                    ((int) crawledPage.HttpWebResponse.StatusCode >= 300 &&
+                     (int) crawledPage.HttpWebResponse.StatusCode <= 399));
         }
         
         protected virtual void ThrowIfCancellationRequested()

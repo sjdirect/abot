@@ -41,12 +41,16 @@ namespace Abot.Core
             if (crawlContext == null)
                 return new CrawlDecision { Allow = false, Reason = "Null crawl context" };
 
+            if (pageToCrawl.RedirectedFrom != null && pageToCrawl.RedirectPosition > crawlContext.CrawlConfiguration.HttpRequestMaxAutoRedirects)
+                return new CrawlDecision { Allow = false, Reason = string.Format("HttpRequestMaxAutoRedirects limit of [{0}] has been reached", crawlContext.CrawlConfiguration.HttpRequestMaxAutoRedirects) };
+
             if(pageToCrawl.CrawlDepth > crawlContext.CrawlConfiguration.MaxCrawlDepth)
                 return new CrawlDecision { Allow = false, Reason = "Crawl depth is above max" };
 
             if (!pageToCrawl.Uri.Scheme.StartsWith("http"))
                 return new CrawlDecision { Allow = false, Reason = "Scheme does not begin with http" };
 
+            //TODO Do we want to ignore redirect chains (ie.. do not treat them as seperate page crawls)?
             if (!pageToCrawl.IsRetry &&
                 crawlContext.CrawlConfiguration.MaxPagesToCrawl > 0 &&
                 crawlContext.CrawledCount + crawlContext.Scheduler.Count + 1 > crawlContext.CrawlConfiguration.MaxPagesToCrawl)

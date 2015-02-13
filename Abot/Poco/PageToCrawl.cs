@@ -65,6 +65,16 @@ namespace Abot.Poco
         /// </summary>
         public dynamic PageBag { get; set; }
 
+        /// <summary>
+        /// The uri that this page was redirected from. If null then it was not part of the redirect chain
+        /// </summary>
+        public CrawledPage RedirectedFrom { get; set; }
+
+        /// <summary>
+        /// The position in the redirect chain. The first redirect is position 1, the next one is 2 and so on.
+        /// </summary>
+        public int RedirectPosition { get; set; }
+
         public override string ToString()
         {
             return Uri.AbsoluteUri;
