@@ -19,6 +19,8 @@ namespace Abot.Crawler
         protected IRobotsDotTextFinder _robotsDotTextFinder;
         protected IRobotsDotText _robotsDotText;
 
+        public IRateLimiter RateLimiter { get; set; }
+
         public PoliteWebCrawler()
             : this(null, null, null, null, null, null, null, null, null)
         {
@@ -82,6 +84,9 @@ namespace Abot.Crawler
 
             if (robotsDotTextCrawlDelayInSecs > 0 || _crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds > 0)
                 PageCrawlStarting += (s, e) => _domainRateLimiter.RateLimit(e.PageToCrawl.Uri);
+
+            if (RateLimiter != null)
+                PageCrawlStarting += (s, e) => RateLimiter.WaitToProceed();
 
             return base.Crawl(uri, cancellationTokenSource);
         }
