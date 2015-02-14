@@ -51,7 +51,6 @@ namespace Abot.Crawler
             int robotsDotTextCrawlDelayInMillisecs = 0;
 
             int maxRobotsDotTextCrawlDelayInSeconds = _crawlContext.CrawlConfiguration.MaxRobotsDotTextCrawlDelayInSeconds;
-            int maxRobotsDotTextCrawlDelayInMilliSecs = maxRobotsDotTextCrawlDelayInSeconds * 1000;
 
             //Load robots.txt
             if (_crawlContext.CrawlConfiguration.IsRespectRobotsDotTextEnabled)
