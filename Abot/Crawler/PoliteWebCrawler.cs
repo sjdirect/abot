@@ -50,8 +50,6 @@ namespace Abot.Crawler
             int robotsDotTextCrawlDelayInSecs = 0;
             int robotsDotTextCrawlDelayInMillisecs = 0;
 
-            int maxRobotsDotTextCrawlDelayInSeconds = _crawlContext.CrawlConfiguration.MaxRobotsDotTextCrawlDelayInSeconds;
-
             //Load robots.txt
             if (_crawlContext.CrawlConfiguration.IsRespectRobotsDotTextEnabled)
             {
@@ -67,11 +65,11 @@ namespace Abot.Crawler
             //Use whichever value is greater between the actual crawl delay value found, the max allowed crawl delay value or the minimum crawl delay required for every domain
             if (robotsDotTextCrawlDelayInSecs > 0 && robotsDotTextCrawlDelayInMillisecs > _crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds)
             {
-                if (robotsDotTextCrawlDelayInSecs > maxRobotsDotTextCrawlDelayInSeconds)
+                if (robotsDotTextCrawlDelayInSecs > _crawlContext.CrawlConfiguration.MaxRobotsDotTextCrawlDelayInSeconds)
                 {
-                    _logger.WarnFormat("[{0}] robot.txt file directive [Crawl-delay: {1}] is above the value set in the config value MaxRobotsDotTextCrawlDelay, will use MaxRobotsDotTextCrawlDelay value instead.", uri, robotsDotTextCrawlDelayInSecs);
+                    _logger.WarnFormat("[{0}] robot.txt file directive [Crawl-delay: {1}] is above the value set in the config value MaxRobotsDotTextCrawlDelay, will use MaxRobotsDotTextCrawlDelay value instead.", uri, _crawlContext.CrawlConfiguration.MaxRobotsDotTextCrawlDelayInSeconds);
 
-                    robotsDotTextCrawlDelayInSecs = maxRobotsDotTextCrawlDelayInSeconds;
+                    robotsDotTextCrawlDelayInSecs = _crawlContext.CrawlConfiguration.MaxRobotsDotTextCrawlDelayInSeconds;
                     robotsDotTextCrawlDelayInMillisecs = robotsDotTextCrawlDelayInSecs * 1000;
                 }
 
