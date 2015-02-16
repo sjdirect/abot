@@ -424,5 +424,16 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(1, result.Count());
             Assert.AreEqual("http://www.gamespot.com/pc/rpg/numen/index.html?om_act=convert&om_clk=tabs&tag=tabs;summary", result.ElementAt(0).AbsoluteUri);
         }
+
+        [Test]
+        public void GetLinks_LinkRelConical_ReturnsLink()
+        {
+            _crawledPage.Content.Text = "<html><head><link rel=\"canonical\" href=\"http://a.com/page1\" /></head><body><a href=\"http://a.com/page2\"></a></body></html>";
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://a.com/page2", result.ElementAt(0).AbsoluteUri);
+            Assert.AreEqual("http://a.com/page1", result.ElementAt(1).AbsoluteUri);
+        }
     }
 }
