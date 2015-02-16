@@ -42,9 +42,11 @@ namespace Abot.Core
 
             HtmlNodeCollection aTags = crawledPage.HtmlDocument.DocumentNode.SelectNodes("//a[@href]");
             HtmlNodeCollection areaTags = crawledPage.HtmlDocument.DocumentNode.SelectNodes("//area[@href]");
+            HtmlNodeCollection canonicals = crawledPage.HtmlDocument.DocumentNode.SelectNodes("//link[@rel='canonical'][@href]");
 
             hrefValues.AddRange(GetLinks(aTags));
             hrefValues.AddRange(GetLinks(areaTags));
+            hrefValues.AddRange(GetLinks(canonicals));
 
             return hrefValues;
         }

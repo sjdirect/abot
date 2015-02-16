@@ -44,7 +44,20 @@ namespace Abot.Core
             .Select(y => _cleanURLFunc != null ? _cleanURLFunc(y.GetAttribute("href")) : y.GetAttribute("href"))
             .Where(a => !string.IsNullOrWhiteSpace(a));
 
-            return hrefValues;
+            IEnumerable<string> canonicalHref = crawledPage.CsQueryDocument.
+                Select("link").Elements.
+                Where(e => HasRelCanonicalPointingToDifferentUrl(e, crawledPage.Uri.ToString())).
+                Select(e => e.Attributes["href"]);
+
+            return hrefValues.Concat(canonicalHref);
+        }
+
+        protected bool HasRelCanonicalPointingToDifferentUrl(IDomElement e, string orginalUrl)
+        {
+            return  e.HasAttribute("rel") && !string.IsNullOrWhiteSpace(e.Attributes["rel"]) &&
+                    string.Equals(e.Attributes["rel"], "canonical", StringComparison.OrdinalIgnoreCase) && 
+                    e.HasAttribute("href") && !string.IsNullOrWhiteSpace(e.Attributes["href"]) &&
+                    !string.Equals(e.Attributes["href"], orginalUrl, StringComparison.OrdinalIgnoreCase);
         }
 
         protected override string GetBaseHrefValue(CrawledPage crawledPage)
