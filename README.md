@@ -617,6 +617,8 @@ This will tell Abot to use 10 threads, to crawl up to 10,000 pages and that it s
 4: Press enter<br />
 5: View the Abot.Demo/bin/debug/abotlog.txt file for all the output.<br />
 
+######How To Run Demo Against Abot.SiteSimulator
+
 If you would rather test your crawls on a test site then I would suggest you use the Abot.SiteSimulator mvc project. This site is hosted on your machine and will not generate any http traffic beyond your local network. This allows you to crawl as aggressively as you would like without of fear of isp issues. To use the Abot.SiteSimulator project do the following...
 
 1: Right click on the Abot.SiteSimulator project and set it as the "startup project".<br /> 
