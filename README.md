@@ -566,8 +566,8 @@ Abot: Main library for all crawling and utility code.<br />
 Abot.Demo: Simple console app that demonstrates how to use abot.<br />
 Abot.SiteSimulator: An asp.net mvc application that can simulate any number of pages and several http responses that are encountered during a crawl. This site is used to produce a predictable site crawl for abot.
 Both Abot.Tests.Unit and Abot.Tests.Integration make calls to this site. However a sample of those calls were saved in a fiddler session and are not automatically used by FiddlerCore everytime the unit or integration tests are run. <br />
-Abot.Tests.Unit: Unit tests for all Abot assemblies. Abot.!SiteSimulator site must be running for tests to pass since mocking http web requests is more trouble then its worth.<br />
-Abot.Tests.Integration: Tests the end to end crawl behavior. These are real crawls, no mocks/stubs/etc.. Abot.!SiteSimulator site must be running for tests to pass.<br />
+Abot.Tests.Unit: Unit tests for all Abot assemblies. Abot.SiteSimulator site must be running for tests to pass since mocking http web requests is more trouble then its worth.<br />
+Abot.Tests.Integration: Tests the end to end crawl behavior. These are real crawls, no mocks/stubs/etc.. Abot.SiteSimulator site must be running for tests to pass.<br />
 
 ######How to run Abot.Demo
 The demo project has a few config values set that greatly limit Abot's speed.  This is to make sure you don't get banned by your isp provider or get blocked by the sites you are crawling. These setting are..
@@ -628,9 +628,9 @@ If you want to get a real feel for Abot's speed you can safely set it up to craw
       />
   </abot>  
 ```
-1: Right click on the Abot.!SiteSimulator project and set it as the "startup project".<br /> 
+1: Right click on the Abot.SiteSimulator project and set it as the "startup project".<br /> 
 2: Then hit ctrl + F5 to run it, You should see a simple webpage with a few links on http://localhost:1111/<br />
-3: Right click on the Abot.!Demo project and set it as the "startup project". <br />
+3: Right click on the Abot.Demo project and set it as the "startup project". <br />
 4: Then hit ctrl + F5 to see the console app run.<br />
 5: When prompted for a url enter: http://localhost:1111/<br />
 6: Press enter<br />
@@ -641,7 +641,7 @@ If you want to get a real feel for Abot's speed you can safely set it up to craw
 1: Verify "External Tools" defined above are installed and working<br />
 2: Run Abot.Tests.Unit tests.<br />
 
-######How to run Abot.Tests.Integration
+#######How to run Abot.Tests.Integration
 1: Verify "External Tools" defined above are installed and working<br />
 2: Run Abot.Tests.Integration tests.<br />
 3: View the file output at Abot.Tests.Integration/bin/debug/abotlog.txt file for all the output.<br />
