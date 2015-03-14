@@ -191,13 +191,13 @@ crawler.PageCrawlStartingAsync += crawler_ProcessPageCrawlStarting;
 ```c#
 void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
 {
-        //Get your Foo instances from the CrawlContext object
+    //Get your Foo instances from the CrawlContext object
 	CrawlContext context = e.CrawlContext;
-        context.CrawlBag.MyFoo1.Bar();
-        context.CrawlBag.MyFoo2.Bar();
+    context.CrawlBag.MyFoo1.Bar();
+    context.CrawlBag.MyFoo2.Bar();
 
-        //Also add a dynamic value to the PageToCrawl or CrawledPage
-        e.PageToCrawl.PageBag.Bar = new Bar();
+    //Also add a dynamic value to the PageToCrawl or CrawledPage
+    e.PageToCrawl.PageBag.Bar = new Bar();
 }
 ```
 6: Run the crawl
