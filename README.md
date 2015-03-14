@@ -22,7 +22,7 @@ Abot targets .NET version 4.0.
   * Easy to customize (When to crawl a page, when not to crawl, when to crawl page's links, etc..)
   * Runs on Mono
 
-<br /><br /><br />
+<br /><br />
 <hr />
 ##Quick Start
 
