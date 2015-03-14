@@ -284,7 +284,7 @@ PoliteWebCrawler crawler = new PoliteWebCrawler();
 
 crawler.ShouldCrawlPage((pageToCrawl, crawlContext) => 
 {
-	CrawlDecision decision = new CrawlDecision();
+	CrawlDecision decision = new CrawlDecision{ Allow = true };
 	if(pageToCrawl.Uri.Authority == "google.com")
 		return new CrawlDecision{ Allow = false, Reason = "Dont want to crawl google pages" };
 	
@@ -293,7 +293,7 @@ crawler.ShouldCrawlPage((pageToCrawl, crawlContext) =>
 
 crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
 {
-	CrawlDecision decision = new CrawlDecision();
+	CrawlDecision decision = new CrawlDecision{ Allow = true };
 	if (!crawledPage.Uri.AbsoluteUri.Contains(".com"))
 		return new CrawlDecision { Allow = false, Reason = "Only download raw page content for .com tlds" };
 
@@ -302,7 +302,7 @@ crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
 
 crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
 {
-	CrawlDecision decision = new CrawlDecision();
+	CrawlDecision decision = new CrawlDecision{ Allow = true };
 	if (crawledPage.PageSizeInBytes < 100)
 		return new CrawlDecision { Allow = false, Reason = "Just crawl links in pages that have at least 100 bytes" };
 
