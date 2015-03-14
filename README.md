@@ -267,7 +267,7 @@ Abot was designed to be as pluggable as possible. This allows you to easily alte
 
 The easiest way to change Abot's behavior for common features is to change the config values that control them. See the [Quick Start](#quickstart) page for examples on the different ways Abot can be configured.
 
-######CrawlDecision Callbacks
+####CrawlDecision Callbacks
 Sometimes you don't want to create a class and go through the ceremony of extending a base class or implementing the interface directly. For all you lazy developers out there Abot provides a shorthand method to easily add your custom crawl decision logic. NOTE: The ICrawlDecisionMaker's corresponding method is called first and if it does not "allow" a decision, these callbacks will not be called.
 
 ```c#
@@ -302,7 +302,7 @@ crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
 ```
 
 
-######Custom Implementations
+####Custom Implementations
 PoliteWebCrawler is the master of orchestrating the crawl. It's job is to coordinate all the utility classes to "crawl" a site. PoliteWebCrawler accepts an alternate implementation for all its dependencies through it's constructor.
  
 ```c#
