@@ -28,13 +28,14 @@ Abot targets .NET version 4.0.
   * If you prefer to build from source yourself see the [Working With The Source Code section](#SourceCode) below
 
 ######Using Abot
-  1. Add the following using statements.. 
+1: Add the following using statements to the host class... 
 ```c#
 using Abot.Crawler;
 using Abot.Poco;
 ```
-  2. Configure Abot using *ONE* of the following methods. Look at the [code comments ](https://github.com/sjdirect/abot/blob/master/Abot/Poco/CrawlConfiguration.cs) to see what effect each config value has on the crawl.
-    1. Add the following to the app.config or web.config file of the assembly using the library. Nuget will NOT add this for you. *NOTE: The gcServer or gcConcurrent entry may help memory usage in your specific use of abot.*
+2: Configure Abot using any of the options below. You can see what effect each config value has on the crawl by looking at the [code comments ](https://github.com/sjdirect/abot/blob/master/Abot/Poco/CrawlConfiguration.cs).
+    
+**Option 1:** Add the following to the app.config or web.config file of the assembly using the library. Nuget will NOT add this for you. *NOTE: The gcServer or gcConcurrent entry may help memory usage in your specific use of abot.*
 ```xml
 <configuration>
   <configSections>
@@ -110,12 +111,7 @@ using Abot.Poco;
   </abot>  
 </configuration>    
 ```
-
-
-
-
-
-1111. Create an instance of Abot.Poco.CrawlConfiguration. This approach ignores the app.config values completely. Every app.config value has a property with the same name on the CrawlConfiguration object.
+Option 2: Create an instance of the Abot.Poco.CrawlConfiguration class manually. This approach ignores the app.config values completely. 
 ```c#
 CrawlConfiguration crawlConfig = new CrawlConfiguration();
 crawlConfig.CrawlTimeoutSeconds = 100;
@@ -126,18 +122,14 @@ crawlConfig.ConfigurationExtensions.Add("SomeCustomConfigValue1", "1111");
 crawlConfig.ConfigurationExtensions.Add("SomeCustomConfigValue2", "2222");
 etc...
 ```
-1111. Load from app.config then tweek   
+**Option 3:** Both!! Load from app.config then tweek   
 ```c#
 CrawlConfiguration crawlConfig = AbotConfigurationSectionHandler.LoadFromXml().Convert();
-crawlConfig.CrawlTimeoutSeconds = 100;
-crawlConfig.MaxConcurrentThreads = 10;
-crawlConfig.MaxPagesToCrawl = 1000;
-crawlConfig.UserAgentString = "abot v1.0 http://code.google.com/p/abot";
-crawlConfig.ConfigurationExtensions.Add("SomeCustomConfigValue1", "1111");
-crawlConfig.ConfigurationExtensions.Add("SomeCustomConfigValue2", "2222");
+crawlConfig.MaxConcurrentThreads = 5;//this overrides the config value
 etc...
 ```
-1111. Create an instance of Abot.Crawler.!PoliteWebCrawler
+
+3: Create an instance of Abot.Crawler.PoliteWebCrawler
 ```c#
 //Will use app.config for configuration
 PoliteWebCrawler crawler = new PoliteWebCrawler();
@@ -146,7 +138,7 @@ PoliteWebCrawler crawler = new PoliteWebCrawler();
 //Will use the manually created crawlConfig object created above
 PoliteWebCrawler crawler = new PoliteWebCrawler(crawlConfig, null, null, null, null, null, null, null, null);
 ```
-1111. Register for events and create processing methods (both synchronous and asynchronous versions available)
+4: Register for events and create processing methods (both synchronous and asynchronous versions available)
 ```c#
 crawler.PageCrawlStartingAsync += crawler_ProcessPageCrawlStarting;
 crawler.PageCrawlCompletedAsync += crawler_ProcessPageCrawlCompleted;
@@ -185,7 +177,7 @@ void crawler_PageCrawlDisallowed(object sender, PageCrawlDisallowedArgs e)
 	Console.WriteLine("Did not crawl page {0} due to {1}", pageToCrawl.Uri.AbsoluteUri, e.DisallowedReason);
 }
 ```
-1111. Add any number of custom objects to the dynamic crawl bag or page bag. These objects will be available in the CrawlContext.CrawlBag object, PageToCrawl.PageBag object or CrawledPage.PageBag object.
+5: (Optional) Add any number of custom objects to the dynamic crawl bag or page bag. These objects will be available in the CrawlContext.CrawlBag object, PageToCrawl.PageBag object or CrawledPage.PageBag object.
 ```c#
 PoliteWebCrawler crawler = new PoliteWebCrawler();
 crawler.CrawlBag.MyFoo1 = new Foo();
@@ -205,7 +197,7 @@ void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
         e.PageToCrawl.PageBag.Bar = new Bar();
 }
 ```
-1111. Run the crawl
+6: Run the crawl
 ```c#
 CrawlResult result = crawler.Crawl(new Uri("http://localhost:1111/"));
 
@@ -214,7 +206,7 @@ if (result.ErrorOccurred)
 else
 	Console.WriteLine("Crawl of {0} completed without error.", result.RootUri.AbsoluteUri);
 ```
-1111. OR run the crawl with a cancellation token to stop the crawl early
+OR run the crawl with a cancellation token to stop the crawl early
 ```c#
 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
@@ -224,17 +216,16 @@ CrawlResult result = crawler.Crawl(new Uri("addurihere"), cancellationTokenSourc
 
 
 ###Logging (Optional)
-
 Abot uses Log4Net to log messages. These log statements are a great way to see whats going on during a crawl. However, if you dont want to use log4net you can skip this section. 
 
-Below is an example log4net configuration. Read more abot log4net at http://logging.apache.org/log4net/release/manual/introduction.html.
+Below is an example log4net configuration. Read more abot log4net at [their website](http://logging.apache.org/log4net/release/manual/introduction.html)
 
 Add using statement for log4net.
 ```c#
 using log4net.Config;
 ```
 
-Be sure to call the following method to tell log4net to read in the config file. This call must happen before Abot's Crawl(Uri) method, otherwise you wont see any output.
+Be sure to call the following method to tell log4net to read in the config file. This call must happen before Abot's Crawl(Uri) method, otherwise you wont see any output. This is usually called in the beginning of a console app or service or the global.asax of a web app.
 ```c#
 XmlConfigurator.Configure();
 ```
