@@ -202,7 +202,7 @@ void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
 ```
 6: Run the crawl
 ```c#
-CrawlResult result = crawler.Crawl(new Uri("http://localhost:1111/"));
+CrawlResult result = crawler.Crawl(new Uri("http://localhost:1111/")); //This is synchronous, it will not go to the next line until the crawl has completed
 
 if (result.ErrorOccurred)
 	Console.WriteLine("Crawl of {0} completed with error: {1}", result.RootUri.AbsoluteUri, result.ErrorException.Message);
