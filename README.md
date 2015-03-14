@@ -23,7 +23,8 @@ Abot targets .NET version 4.0.
   * Runs on Mono
 
 <br /><br /><br />
-###Quick Start
+<hr />
+##Quick Start
 
 ######Installing Abot
   * Install Abot using [Nuget](https://www.nuget.org/packages/Abot/)
@@ -217,7 +218,8 @@ CrawlResult result = crawler.Crawl(new Uri("addurihere"), cancellationTokenSourc
 ```
 
 <br /><br /><br />
-###Logging (Optional)
+<hr />
+##Logging (Optional)
 Abot uses Log4Net to log messages. These log statements are a great way to see whats going on during a crawl. However, if you dont want to use log4net you can skip this section. 
 
 Below is an example log4net configuration. Read more abot log4net at [their website](http://logging.apache.org/log4net/release/manual/introduction.html)
@@ -265,13 +267,14 @@ The following configuration data should be added to the app.config file of the a
 ```
 
 <br /><br /><br />
-###Customizing Crawl Behavior
+<hr />
+##Customizing Crawl Behavior
 
 Abot was designed to be as pluggable as possible. This allows you to easily alter the way it works to suite your needs.
 
 The easiest way to change Abot's behavior for common features is to change the config values that control them. See the [Quick Start](#quickstart) page for examples on the different ways Abot can be configured.
 
-####CrawlDecision Callbacks
+####CrawlDecision Callbacks/Delegates
 Sometimes you don't want to create a class and go through the ceremony of extending a base class or implementing the interface directly. For all you lazy developers out there Abot provides a shorthand method to easily add your custom crawl decision logic. NOTE: The ICrawlDecisionMaker's corresponding method is called first and if it does not "allow" a decision, these callbacks will not be called.
 
 ```c#
@@ -339,7 +342,7 @@ PoliteWebCrawler crawler = new PoliteWebCrawler(
 The following are explanations of each interface that PoliteWebCrawler relies on to do the real work.
 
 ######ICrawlDecisionMaker
-The delegate shortcuts are great to add a small amount of logic but if you are doing anything more heavy you will want to pass in your custom implementation of ICrawlDecisionMaker. The crawler calls this implementation to see whether a page should be crawled, whether the page's content should be downloaded and whether a crawled page's links should be crawled.
+The callback/delegate shortcuts are great to add a small amount of logic but if you are doing anything more heavy you will want to pass in your custom implementation of ICrawlDecisionMaker. The crawler calls this implementation to see whether a page should be crawled, whether the page's content should be downloaded and whether a crawled page's links should be crawled.
 
 [CrawlDecisionMaker.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/CrawlDecisionMaker.cs) is the default ICrawlDecisionMaker used by Abot. This class takes care of common checks like making sure the config value MaxPagesToCrawl is not exceeded. Most users will only need to create a class that extends CrawlDecision maker and just add their custom logic. However, you are completely free to create a class that implements ICrawlDecisionMaker and pass it into PoliteWebCrawlers constructor.
 
@@ -546,15 +549,15 @@ public interface IRobotsDotTextFinder
 ```
 
 <br /><br /><br />
-###Working With The Source Code
+<hr />
+##Working With The Source Code
 The most common way to customize crawl behavior is by extending classes and overriding methods. You can also create a custom implementation of a core interface. All this can be done outside of Abot's source code. 
 
 However, if the changes that you are going to make are out of the ordinary or you want to contribute a bug fix or feature then you will want to work directly with Abot's source code. Below you will find what you need to get the solution building/running on your local machine.
 
 ######Your First Build
 1: Clone the latest using the following commands<br />
-  git clone git@github.com:sjdirect/abot.git<br />
-  cd abot<br />
+  *git clone git@github.com:sjdirect/abot.git<br />*
 2: Open the Abot.sln file in Visual Studio (all dev done in vs 2013 premium)<br />
 3: Build the solution normally<br />
 
@@ -562,12 +565,12 @@ However, if the changes that you are going to make are out of the ordinary or yo
 NUnit Test Runner: The unit tests for Abot are using NUnit which is not supported right out of the box in visual studio. You must either install a NUnit test adapter or a product like TestDriven or Resharper. Download the [NUnit test adapter](http://visualstudiogallery.msdn.microsoft.com/6ab922d0-21c0-4f06-ab5f-4ecd1fe7175d) or install it through visual studio extension manager.
 
 ######Solution Project/Assembly Overview
-Abot: Main library for all crawling and utility code.<br />
-Abot.Demo: Simple console app that demonstrates how to use abot.<br />
-Abot.SiteSimulator: An asp.net mvc application that can simulate any number of pages and several http responses that are encountered during a crawl. This site is used to produce a predictable site crawl for abot.
+* Abot: Main library for all crawling and utility code.<br />
+* Abot.Demo: Simple console app that demonstrates how to use abot.<br />
+*Abot.SiteSimulator: An asp.net mvc application that can simulate any number of pages and several http responses that are encountered during a crawl. This site is used to produce a predictable site crawl for abot.
 Both Abot.Tests.Unit and Abot.Tests.Integration make calls to this site. However a sample of those calls were saved in a fiddler session and are not automatically used by FiddlerCore everytime the unit or integration tests are run. <br />
-Abot.Tests.Unit: Unit tests for all Abot assemblies. Abot.SiteSimulator site must be running for tests to pass since mocking http web requests is more trouble then its worth.<br />
-Abot.Tests.Integration: Tests the end to end crawl behavior. These are real crawls, no mocks/stubs/etc.. Abot.SiteSimulator site must be running for tests to pass.<br />
+*Abot.Tests.Unit: Unit tests for all Abot assemblies. Abot.SiteSimulator site must be running for tests to pass since mocking http web requests is more trouble then its worth.<br />
+*Abot.Tests.Integration: Tests the end to end crawl behavior. These are real crawls, no mocks/stubs/etc.. Abot.SiteSimulator site must be running for tests to pass.<br />
 
 ######How to run Abot.Demo
 The demo project has a few config values set that greatly limit Abot's speed.  This is to make sure you don't get banned by your isp provider or get blocked by the sites you are crawling. These setting are..
