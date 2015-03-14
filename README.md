@@ -110,7 +110,7 @@ using Abot.Poco;
   </abot>  
 </configuration>    
 ```
-Option 2: Create an instance of the Abot.Poco.CrawlConfiguration class manually. This approach ignores the app.config values completely. 
+**Option 2:** Create an instance of the Abot.Poco.CrawlConfiguration class manually. This approach ignores the app.config values completely. 
 ```c#
 CrawlConfiguration crawlConfig = new CrawlConfiguration();
 crawlConfig.CrawlTimeoutSeconds = 100;
