@@ -567,10 +567,10 @@ NUnit Test Runner: The unit tests for Abot are using NUnit which is not supporte
 ######Solution Project/Assembly Overview
 * Abot: Main library for all crawling and utility code.<br />
 * Abot.Demo: Simple console app that demonstrates how to use abot.<br />
-*Abot.SiteSimulator: An asp.net mvc application that can simulate any number of pages and several http responses that are encountered during a crawl. This site is used to produce a predictable site crawl for abot.
+* Abot.SiteSimulator: An asp.net mvc application that can simulate any number of pages and several http responses that are encountered during a crawl. This site is used to produce a predictable site crawl for abot.
 Both Abot.Tests.Unit and Abot.Tests.Integration make calls to this site. However a sample of those calls were saved in a fiddler session and are not automatically used by FiddlerCore everytime the unit or integration tests are run. <br />
-*Abot.Tests.Unit: Unit tests for all Abot assemblies. Abot.SiteSimulator site must be running for tests to pass since mocking http web requests is more trouble then its worth.<br />
-*Abot.Tests.Integration: Tests the end to end crawl behavior. These are real crawls, no mocks/stubs/etc.. Abot.SiteSimulator site must be running for tests to pass.<br />
+* Abot.Tests.Unit: Unit tests for all Abot assemblies. Abot.SiteSimulator site must be running for tests to pass since mocking http web requests is more trouble then its worth.<br />
+* Abot.Tests.Integration: Tests the end to end crawl behavior. These are real crawls, no mocks/stubs/etc.. Abot.SiteSimulator site must be running for tests to pass.<br />
 
 ######How to run Abot.Demo
 The demo project has a few config values set that greatly limit Abot's speed.  This is to make sure you don't get banned by your isp provider or get blocked by the sites you are crawling. These setting are..
