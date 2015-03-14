@@ -637,11 +637,11 @@ If you want to get a real feel for Abot's speed you can safely set it up to craw
 7: View the Abot.Demo/bin/debug/abotlog.txt file for all the output.<br />
 
 
-#######How to run Abot.Tests.Unit
+######How to run Abot.Tests.Unit
 1: Verify "External Tools" defined above are installed and working<br />
 2: Run Abot.Tests.Unit tests.<br />
 
-#######How to run Abot.Tests.Integration
+######How to run Abot.Tests.Integration
 1: Verify "External Tools" defined above are installed and working<br />
 2: Run Abot.Tests.Integration tests.<br />
 3: View the file output at Abot.Tests.Integration/bin/debug/abotlog.txt file for all the output.<br />
