@@ -406,7 +406,7 @@ public interface IThreadManager : IDisposable
 ######IScheduler
 The IScheduler interface deals with managing what pages need to be crawled. The crawler gives the links it finds to and gets the pages to crawl from the IScheduler implementation. A common use cases for writing your own implementation might be to distribute crawls across multiple machines which could be managed by a DistributedScheduler.
 
-[Scheduler.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/Scheduler.cs] is the default IScheduler used by the crawler and by default is constructed with in memory collection to determine what pages have been crawled and which need to be crawled. 
+[Scheduler.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/Scheduler.cs) is the default IScheduler used by the crawler and by default is constructed with in memory collection to determine what pages have been crawled and which need to be crawled. 
 
 ```c#
 /// <summary>
@@ -606,28 +606,16 @@ This will tell Abot to use 1 thread, to only crawl 10 pages and that it must wai
   </abot>  
 ```
 
+This will tell Abot to use 10 threads, to crawl up to 10,000 pages and that it should NOT wait in between requests. Abot will be requesting and processing up to 10 pages at a time concurrently. 
+
 1: Right click on the Abot.Demo project and set it as the "startup project"<br />
 2: Then hit ctrl + F5 to see the console app run.<br />
 3: When prompted for a url enter whatever site you want to crawl (must begin with "http://" or "https://")<br />
 4: Press enter<br />
 5: View the Abot.Demo/bin/debug/abotlog.txt file for all the output.<br />
 
-If you want to get a real feel for Abot's speed you can safely set it up to crawl the SiteSimulator test site. This site is hosted on your machine and will not generate any http traffic beyond your local network.  To do so change the config values to...
+If you would rather test your crawls on a test site then I would suggest you use the Abot.SiteSimulator mvc project. This site is hosted on your machine and will not generate any http traffic beyond your local network. This allows you to crawl as aggressively as you would like without of fear of isp issues. To use the Abot.SiteSimulator project do the following...
 
-```xml
-<abot>
-    <crawlBehavior 
-      ...(excluded)
-      maxPagesToCrawl="1000" 
-      ...(excluded)
-      />
-    <politeness 
-      ...(excluded)
-      minCrawlDelayPerDomainMilliSeconds="0"
-      ...(excluded)
-      />
-  </abot>  
-```
 1: Right click on the Abot.SiteSimulator project and set it as the "startup project".<br /> 
 2: Then hit ctrl + F5 to run it, You should see a simple webpage with a few links on http://localhost:1111/<br />
 3: Right click on the Abot.Demo project and set it as the "startup project". <br />
@@ -636,12 +624,16 @@ If you want to get a real feel for Abot's speed you can safely set it up to craw
 6: Press enter<br />
 7: View the Abot.Demo/bin/debug/abotlog.txt file for all the output.<br />
 
+Now the Abot.Demo console application will be crawling the Abot.SiteSimulator test site that is running locally on your machine. This is the best way to develop Abot without being banned by your ip.
 
 ######How to run Abot.Tests.Unit
 1: Verify "External Tools" defined above are installed and working<br />
-2: Run Abot.Tests.Unit tests.<br />
+2: Run Abot.Tests.Unit tests using whatever test runner you like (Visual Studio test runner, Testdriven.net or Resharper).<br />
 
 ######How to run Abot.Tests.Integration
 1: Verify "External Tools" defined above are installed and working<br />
-2: Run Abot.Tests.Integration tests.<br />
+2: Run Abot.Tests.Integration using whatever test runner you like (Visual Studio test runner, Testdriven.net or Resharper).<br />
 3: View the file output at Abot.Tests.Integration/bin/debug/abotlog.txt file for all the output.<br />
+
+######Fiddler Core
+Just a note that Fiddler.Core is started and stopped during unit and integration tests. This allows replaying predictable http requests. Read more about [Fiddler Core here](http://www.telerik.com/fiddler/fiddlercore)
