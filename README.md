@@ -20,6 +20,7 @@ Abot targets .NET version 4.0.
   * Easy to customize (When to crawl a page, when not to crawl, when to crawl page's links, etc..)
   * Runs on Mono
 
+<br /><br /><br />
 ###Quick Start
 
 ######Installing Abot
@@ -213,7 +214,7 @@ PoliteWebCrawler crawler = new PoliteWebCrawler();
 CrawlResult result = crawler.Crawl(new Uri("addurihere"), cancellationTokenSource);
 ```
 
-
+<br /><br /><br />
 ###Logging (Optional)
 Abot uses Log4Net to log messages. These log statements are a great way to see whats going on during a crawl. However, if you dont want to use log4net you can skip this section. 
 
@@ -261,6 +262,7 @@ The following configuration data should be added to the app.config file of the a
   </log4net>
 ```
 
+<br /><br /><br />
 ###Customizing Crawl Behavior
 
 Abot was designed to be as pluggable as possible. This allows you to easily alter the way it works to suite your needs.
@@ -300,7 +302,6 @@ crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
 	return decision;
 });
 ```
-
 
 ####Custom Implementations
 PoliteWebCrawler is the master of orchestrating the crawl. It's job is to coordinate all the utility classes to "crawl" a site. PoliteWebCrawler accepts an alternate implementation for all its dependencies through it's constructor.
@@ -542,7 +543,7 @@ public interface IRobotsDotTextFinder
 }
 ```
 
-
+<br /><br /><br />
 ###Working With The Source Code
 The most common way to customize crawl behavior is by extending classes and overriding methods. You can also create a custom implementation of a core interface. All this can be done outside of Abot's source code. 
 
