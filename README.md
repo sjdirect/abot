@@ -556,8 +556,8 @@ The most common way to customize crawl behavior is by extending classes and over
 However, if the changes that you are going to make are out of the ordinary or you want to contribute a bug fix or feature then you will want to work directly with Abot's source code. Below you will find what you need to get the solution building/running on your local machine.
 
 ######Your First Build
-1: Clone the latest using the following commands<br />
-  *git clone git@github.com:sjdirect/abot.git<br />*
+1: Clone the latest using the following commands<br /><br />
+  *git clone git@github.com:sjdirect/abot.git*<br /><br />
 2: Open the Abot.sln file in Visual Studio (all dev done in vs 2013 premium)<br />
 3: Build the solution normally<br />
 
