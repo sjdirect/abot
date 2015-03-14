@@ -28,7 +28,7 @@ Abot targets .NET version 4.0.
 
 ######Installing Abot
   * Install Abot using [Nuget](https://www.nuget.org/packages/Abot/)
-  * If you prefer to build from source yourself see the [Working With The Source Code section](#SourceCode) below
+  * If you prefer to build from source yourself see the [Working With The Source Code section](#working-with-the-source-code) below
 
 ######Using Abot
 1: Add the following using statements to the host class... 
