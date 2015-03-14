@@ -2,16 +2,7 @@
 
 ######C# web crawler built for speed and flexibility.
 
-Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process.
-
-Abot targets .NET version 4.0.
-
-  * [Ask questions and search for answers on the Community Forum](http://groups.google.com/group/abot-web-crawler)
-  * [Report Bugs or Suggest Features](https://github.com/sjdirect/abot/issues)
-  * [Learn how you can contribute](https://github.com/sjdirect/abot/wiki/Contribute)
-  * [Get custom Abot development](https://github.com/sjdirect/abot/wiki/Custom-Development)
-  * [Take the usage survey](https://www.surveymonkey.com/s/JS5826F) to help prioritize features/improvements
-  * [Consider making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ)
+Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process. Abot targets .NET version 4.0. **Please star us!!**
 
 ######What's So Great About It?
   * Open Source (Free for commercial and personal use)
@@ -19,8 +10,17 @@ Abot targets .NET version 4.0.
   * Easily customizable (Pluggable architecture allows you to decide what gets crawled and how)
   * Heavily unit tested (High code coverage)
   * Very lightweight (not over engineered)
-  * No database required
+  * No out of process dependencies (database, installed services, etc...)
   * Runs on Mono
+
+######Links of Interest
+
+  * [Ask questions and search for answers on the Community Forum](http://groups.google.com/group/abot-web-crawler)
+  * [Report Bugs or Suggest Features](https://github.com/sjdirect/abot/issues)
+  * [Learn how you can contribute](https://github.com/sjdirect/abot/wiki/Contribute)
+  * [Get custom Abot development](https://github.com/sjdirect/abot/wiki/Custom-Development)
+  * [Take the usage survey](https://www.surveymonkey.com/s/JS5826F) to help prioritize features/improvements
+  * [Consider making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ)
 
 <br /><br />
 <hr />
