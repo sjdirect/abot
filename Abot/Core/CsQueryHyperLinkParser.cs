@@ -52,14 +52,6 @@ namespace Abot.Core
             return hrefValues.Concat(canonicalHref);
         }
 
-        protected bool HasRelCanonicalPointingToDifferentUrl(IDomElement e, string orginalUrl)
-        {
-            return  e.HasAttribute("rel") && !string.IsNullOrWhiteSpace(e.Attributes["rel"]) &&
-                    string.Equals(e.Attributes["rel"], "canonical", StringComparison.OrdinalIgnoreCase) && 
-                    e.HasAttribute("href") && !string.IsNullOrWhiteSpace(e.Attributes["href"]) &&
-                    !string.Equals(e.Attributes["href"], orginalUrl, StringComparison.OrdinalIgnoreCase);
-        }
-
         protected override string GetBaseHrefValue(CrawledPage crawledPage)
         {
             string baseTagValue = crawledPage.CsQueryDocument.Select("base").Attr("href") ?? "";
@@ -71,7 +63,15 @@ namespace Abot.Core
             return crawledPage.CsQueryDocument["meta[name]"].Filter(d => d.Name.ToLowerInvariant() == "robots").Attr("content");
         }
 
-        private bool HasRelNoFollow(IDomElement e)
+        protected virtual bool HasRelCanonicalPointingToDifferentUrl(IDomElement e, string orginalUrl)
+        {
+            return e.HasAttribute("rel") && !string.IsNullOrWhiteSpace(e.Attributes["rel"]) &&
+                    string.Equals(e.Attributes["rel"], "canonical", StringComparison.OrdinalIgnoreCase) &&
+                    e.HasAttribute("href") && !string.IsNullOrWhiteSpace(e.Attributes["href"]) &&
+                    !string.Equals(e.Attributes["href"], orginalUrl, StringComparison.OrdinalIgnoreCase);
+        }
+
+        protected virtual bool HasRelNoFollow(IDomElement e)
         {
             return _isRespectAnchorRelNoFollowEnabled && (e.HasAttribute("rel") && e.GetAttribute("rel").ToLower().Trim() == "nofollow");
         }
