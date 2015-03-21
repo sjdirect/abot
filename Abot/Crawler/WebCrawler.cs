@@ -918,7 +918,7 @@ namespace Abot.Crawler
 
         protected virtual bool ShouldSchedulePageLink(PageToCrawl page)
         {
-            if ((page.IsInternal == true || _crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled == true) && (ShouldCrawlPage(page)))
+            if ((page.IsInternal || _crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled) && (ShouldCrawlPage(page)))
                 return true;
 
             return false;   
