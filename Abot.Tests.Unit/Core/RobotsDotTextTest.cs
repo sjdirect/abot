@@ -230,6 +230,17 @@ Disallow: /?category=another&color=red");
             Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
         }
 
+        [Test, Ignore]//This is a bug and needs to be fixed
+        public void IsUrlAllowed_QuerystringOnRoot2_ReturnsTrue()
+        {
+            string userAgentString = _userAgentString;
+            _unitUnderTest = new RobotsDotText(_rootUri, @"User-Agent: *
+Disallow: /?/
+Disallow: /category/");
+
+            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
+        }
+
         [Test]
         public void IsUrlAllowed_QuerystringMatch_NotSupported_ReturnsTrue()
         {
