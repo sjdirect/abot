@@ -20,7 +20,7 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
   * [Ask questions and search for answers on the Community Forum](http://groups.google.com/group/abot-web-crawler)
   * [Report Bugs or Suggest Features](https://github.com/sjdirect/abot/issues)
   * [Learn how you can contribute](https://github.com/sjdirect/abot/wiki/Contribute)
-  * [Get custom Abot development](https://github.com/sjdirect/abot/wiki/Custom-Development)
+  * [Need expert Abot customization?](https://github.com/sjdirect/abot/wiki/Custom-Development)
   * [Take the usage survey](https://www.surveymonkey.com/s/JS5826F) to help prioritize features/improvements
   * [Consider making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ)
 
@@ -284,7 +284,7 @@ PoliteWebCrawler crawler = new PoliteWebCrawler();
 
 crawler.ShouldCrawlPage((pageToCrawl, crawlContext) => 
 {
-	CrawlDecision decision = new CrawlDecision();
+	CrawlDecision decision = new CrawlDecision{ Allow = true };
 	if(pageToCrawl.Uri.Authority == "google.com")
 		return new CrawlDecision{ Allow = false, Reason = "Dont want to crawl google pages" };
 	
@@ -293,7 +293,7 @@ crawler.ShouldCrawlPage((pageToCrawl, crawlContext) =>
 
 crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
 {
-	CrawlDecision decision = new CrawlDecision();
+	CrawlDecision decision = new CrawlDecision{ Allow = true };
 	if (!crawledPage.Uri.AbsoluteUri.Contains(".com"))
 		return new CrawlDecision { Allow = false, Reason = "Only download raw page content for .com tlds" };
 
@@ -302,7 +302,7 @@ crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
 
 crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
 {
-	CrawlDecision decision = new CrawlDecision();
+	CrawlDecision decision = new CrawlDecision{ Allow = true };
 	if (crawledPage.PageSizeInBytes < 100)
 		return new CrawlDecision { Allow = false, Reason = "Just crawl links in pages that have at least 100 bytes" };
 

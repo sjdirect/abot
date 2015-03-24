@@ -63,7 +63,17 @@ namespace Abot.Core
             return hrefValue;
         }
 
-        private List<string> GetLinks(HtmlNodeCollection nodes)
+        protected override string GetMetaRobotsValue(CrawledPage crawledPage)
+        {
+            string robotsMeta = null;
+            HtmlNode robotsNode = crawledPage.HtmlDocument.DocumentNode.SelectSingleNode("//meta[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='robots']");
+            if (robotsNode != null)
+                robotsMeta = robotsNode.GetAttributeValue("content", "");
+
+            return robotsMeta;
+        }
+
+        protected virtual List<string> GetLinks(HtmlNodeCollection nodes)
         {
             List<string> hrefs = new List<string>();
 
@@ -81,13 +91,13 @@ namespace Abot.Core
                 {
                     hrefValue = DeEntitize(hrefValue);
                     hrefs.Add(hrefValue);
-                }	
+                }
             }
 
             return hrefs;
         }
 
-        private string DeEntitize(string hrefValue)
+        protected virtual string DeEntitize(string hrefValue)
         {
             string dentitizedHref = hrefValue;
             
@@ -103,17 +113,7 @@ namespace Abot.Core
             return dentitizedHref;
         }
 
-        protected override string GetMetaRobotsValue(CrawledPage crawledPage)
-        {
-            string robotsMeta = null;
-            HtmlNode robotsNode = crawledPage.HtmlDocument.DocumentNode.SelectSingleNode("//meta[translate(@name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='robots']");
-            if (robotsNode != null)
-                robotsMeta = robotsNode.GetAttributeValue("content", "");
-
-            return robotsMeta;
-        }
-
-        private bool HasRelNoFollow(HtmlNode node)
+        protected virtual bool HasRelNoFollow(HtmlNode node)
         {
             HtmlAttribute attr = node.Attributes["rel"];
             return _isRespectAnchorRelNoFollowEnabled && (attr != null && attr.Value.ToLower().Trim() == "nofollow");
