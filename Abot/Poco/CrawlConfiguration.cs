@@ -182,6 +182,11 @@ namespace Abot.Poco
         public bool IsRespectAnchorRelNoFollowEnabled { get; set; }
 
         /// <summary>
+        /// If true, will ignore the robots.txt file if it disallows crawling the root uri.
+        /// </summary>
+        public bool IsIgnoreRobotsDotTextIfRootDisallowedEnabled { get; set; }
+
+        /// <summary>
         /// The user agent string to use when checking robots.txt file for specific directives.  Some examples of other crawler's user agent values are "googlebot", "slurp" etc...
         /// </summary>
         public string RobotsDotTextUserAgentString { get; set; }
@@ -190,7 +195,7 @@ namespace Abot.Poco
         /// The number of milliseconds to wait in between http requests to the same domain.
         /// </summary>
         public int MinCrawlDelayPerDomainMilliSeconds { get; set; }
-        
+
         #endregion
     }
 }

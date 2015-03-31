@@ -41,6 +41,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(true, _uut.Politeness.IsRespectRobotsDotTextEnabled);
             Assert.AreEqual(true, _uut.Politeness.IsRespectMetaRobotsNoFollowEnabled);
             Assert.AreEqual(true, _uut.Politeness.IsRespectAnchorRelNoFollowEnabled);
+            Assert.AreEqual(true, _uut.Politeness.IsIgnoreRobotsDotTextIfRootDisallowedEnabled);
             Assert.AreEqual("zzzz", _uut.Politeness.RobotsDotTextUserAgentString);
             Assert.AreEqual(55, _uut.Politeness.MinCrawlDelayPerDomainMilliSeconds);
             Assert.AreEqual(5, _uut.Politeness.MaxRobotsDotTextCrawlDelayInSeconds); 
@@ -83,6 +84,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(result.MinRetryDelayInMilliseconds, _uut.CrawlBehavior.MinRetryDelayInMilliseconds);
             
             Assert.AreEqual(result.IsRespectRobotsDotTextEnabled, _uut.Politeness.IsRespectRobotsDotTextEnabled);
+            Assert.AreEqual(result.IsIgnoreRobotsDotTextIfRootDisallowedEnabled, _uut.Politeness.IsIgnoreRobotsDotTextIfRootDisallowedEnabled);
             Assert.AreEqual(result.RobotsDotTextUserAgentString, _uut.Politeness.RobotsDotTextUserAgentString);
             Assert.AreEqual(result.MinCrawlDelayPerDomainMilliSeconds, _uut.Politeness.MinCrawlDelayPerDomainMilliSeconds);
             Assert.AreEqual(result.MaxRobotsDotTextCrawlDelayInSeconds, _uut.Politeness.MaxRobotsDotTextCrawlDelayInSeconds);
@@ -106,6 +108,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(pocoDefaults.IsRespectRobotsDotTextEnabled, _uut.Politeness.IsRespectRobotsDotTextEnabled);
             Assert.AreEqual(pocoDefaults.IsRespectMetaRobotsNoFollowEnabled, _uut.Politeness.IsRespectMetaRobotsNoFollowEnabled);
             Assert.AreEqual(pocoDefaults.IsRespectAnchorRelNoFollowEnabled, _uut.Politeness.IsRespectAnchorRelNoFollowEnabled);
+            Assert.AreEqual(pocoDefaults.IsIgnoreRobotsDotTextIfRootDisallowedEnabled, _uut.Politeness.IsIgnoreRobotsDotTextIfRootDisallowedEnabled);
             Assert.AreEqual(pocoDefaults.IsUriRecrawlingEnabled, _uut.CrawlBehavior.IsUriRecrawlingEnabled);
             Assert.AreEqual(pocoDefaults.MaxConcurrentThreads, _uut.CrawlBehavior.MaxConcurrentThreads);
             Assert.AreEqual(pocoDefaults.MaxRobotsDotTextCrawlDelayInSeconds, _uut.Politeness.MaxRobotsDotTextCrawlDelayInSeconds);

@@ -89,7 +89,14 @@ namespace Abot.Crawler
             if (_robotsDotText != null)
                 allowedByRobots = _robotsDotText.IsUrlAllowed(pageToCrawl.Uri.AbsoluteUri, _crawlContext.CrawlConfiguration.RobotsDotTextUserAgentString);
 
-            if (!allowedByRobots)
+            if (!allowedByRobots && pageToCrawl.IsRoot && _crawlContext.CrawlConfiguration.IsIgnoreRobotsDotTextIfRootDisallowedEnabled)
+            {
+                string message = string.Format("Page [{0}] [Disallowed by robots.txt file], however since IsIgnoreRobotsDotTextIfRootDisallowedEnabled is set to true the robots.txt file will be ignored for this site.", pageToCrawl.Uri.AbsoluteUri);
+                _logger.DebugFormat(message);
+                allowedByRobots = true;
+                _robotsDotText = null;
+            }
+            else if (!allowedByRobots)
             {
                 string message = string.Format("Page [{0}] not crawled, [Disallowed by robots.txt file], set IsRespectRobotsDotText=false in config file if you would like to ignore robots.txt files.", pageToCrawl.Uri.AbsoluteUri);
                 _logger.DebugFormat(message);
