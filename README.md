@@ -106,7 +106,7 @@ using Abot.Poco;
       isRespectRobotsDotTextEnabled="false"
       isRespectMetaRobotsNoFollowEnabled="false"
       isRespectAnchorRelNoFollowEnabled="false"
-	  isIgnoreRobotsDotTextIfRootDisallowedEnabled="true"
+      isIgnoreRobotsDotTextIfRootDisallowedEnabled="false"
       robotsDotTextUserAgentString="abot"
       maxRobotsDotTextCrawlDelayInSeconds="5" 
       minCrawlDelayPerDomainMilliSeconds="0"/>
