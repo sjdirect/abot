@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using log4net;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Net;
 
 namespace Abot.Poco
@@ -47,7 +48,7 @@ namespace Abot.Poco
         /// <summary>
         /// Web response from the server. NOTE: The Close() method has been called before setting this property.
         /// </summary>
-        public HttpWebResponse HttpWebResponse { get; set; }
+        public HttpWebResponseWrapper HttpWebResponse { get; set; }
 
         /// <summary>
         /// The web exception that occurred during the crawl
