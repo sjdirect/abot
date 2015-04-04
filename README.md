@@ -571,7 +571,7 @@ NUnit Test Runner: The unit tests for Abot are using NUnit which is not supporte
 * **Abot:** Main library for all crawling and utility code.<br />
 * **Abot.Demo:** Simple console app that demonstrates how to use abot.<br />
 * **Abot.SiteSimulator:** An asp.net mvc application that can simulate any number of pages and several http responses that are encountered during a crawl. This site is used to produce a predictable site crawl for abot.
-Both Abot.Tests.Unit and Abot.Tests.Integration make calls to this site. However a sample of those calls were saved in a fiddler session and are not automatically used by FiddlerCore everytime the unit or integration tests are run. <br />
+Both Abot.Tests.Unit and Abot.Tests.Integration make calls to this site. However a sample of those calls were saved/stored in a fiddler session and are automatically replayed by FiddlerCore everytime the unit or integration tests are run. <br />
 * **Abot.Tests.Unit:** Unit tests for all Abot assemblies. Abot.SiteSimulator site must be running for tests to pass since mocking http web requests is more trouble then its worth.<br />
 * **Abot.Tests.Integration:** Tests the end to end crawl behavior. These are real crawls, no mocks/stubs/etc.. Abot.SiteSimulator site must be running for tests to pass.<br />
 
