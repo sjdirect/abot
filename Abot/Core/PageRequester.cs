@@ -103,7 +103,7 @@ namespace Abot.Core
                 crawledPage.RequestCompleted = DateTime.Now;
                 if (response != null)
                 {
-                    crawledPage.HttpWebResponse = response;
+                    crawledPage.HttpWebResponse = new HttpWebResponseWrapper(response);
                     CrawlDecision shouldDownloadContentDecision = shouldDownloadContent(crawledPage);
                     if (shouldDownloadContentDecision.Allow)
                     {
