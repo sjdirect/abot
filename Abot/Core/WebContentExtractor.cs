@@ -73,15 +73,32 @@ namespace Abot.Core
 
             if (meta != null)
             {
-                //find expression from : http://stackoverflow.com/questions/3458217/how-to-use-regular-expression-to-match-the-charset-string-in-html
-                Match match = Regex.Match(meta, @"<meta(?!\s*(?:name|value)\s*=)(?:[^>]*?content\s*=[\s""']*)?([^>]*?)[\s""';]*charset\s*=[\s""']*([^\s""'/>]*)", RegexOptions.IgnoreCase);
+                Match match = Regex.Match(meta, @"<meta.*charset=(.+)\/*>");
                 if (match.Success)
                 {
-                    charset = string.IsNullOrWhiteSpace(match.Groups[2].Value) ? null : match.Groups[2].Value;
+                    string matchStr = match.Groups[1].Value;
+
+                    int endInd = GetFirstOccurrenceAboveNeg1(matchStr.IndexOf('"'), matchStr.IndexOf('\''));
+                    if (endInd == -1)
+                        endInd = matchStr.IndexOf('\'');
+
+                    if (endInd != -1)
+                        charset = matchStr.Remove(endInd);
                 }
             }
 
             return charset;
+        }
+
+        private int GetFirstOccurrenceAboveNeg1(int firstIndex, int secondIndex)
+        {
+            if (firstIndex > -1 && secondIndex > -1)
+                return Math.Min(firstIndex, secondIndex);
+
+            if (firstIndex < 0 && secondIndex < 0)
+                return -1;
+
+            return Math.Max(firstIndex, secondIndex);
         }
 
 
