@@ -63,38 +63,6 @@ namespace Abot.Tests.Unit.Poco
         }
 
         [Test]
-        public void HtmlDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
-        {
-            //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
-            {
-                Content = new PageContent
-                {
-                    Text = GetFileContent("HtmlAgilityPackStackOverflow1.html")
-                }
-            };
-
-            Assert.IsNotNull(unitUnderTest.HtmlDocument);
-            Assert.AreEqual("", unitUnderTest.HtmlDocument.DocumentNode.InnerText);
-        }
-
-        [Test]
-        public void HtmlDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
-        {
-            //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-            { 
-                Content = new PageContent
-                {
-                    Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
-                }
-            };
-
-            Assert.IsNotNull(unitUnderTest.HtmlDocument);
-            Assert.AreEqual("", unitUnderTest.HtmlDocument.DocumentNode.InnerText);
-        }
-
-        [Test]
         public void CsQueryDocument_RawContentIsNull_CsQueryDocumentIsNotNull()
         {
             CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
@@ -106,36 +74,6 @@ namespace Abot.Tests.Unit.Poco
             };
 
             Assert.IsNotNull(unitUnderTest.CsQueryDocument);
-        }
-
-        [Test]
-        public void CsQueryDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
-        {
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-            { 
-                Content = new PageContent
-                {
-                    Text = GetFileContent("HtmlAgilityPackStackOverflow1.html")
-                }
-            };
-
-            Assert.IsNotNull(unitUnderTest.CsQueryDocument);
-            Assert.IsTrue(unitUnderTest.CsQueryDocument.ToString().Length > 1);
-        }
-
-        [Test, Ignore("This test passes but takes 28 seconds to run")]
-        public void CsQueryDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
-        {
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-            { 
-                Content = new PageContent
-                {
-                    Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
-                }
-            };
-
-            Assert.IsNotNull(unitUnderTest.CsQueryDocument);
-            Assert.IsTrue(unitUnderTest.CsQueryDocument.ToString().Length > 1);
         }
 
         [Test]
