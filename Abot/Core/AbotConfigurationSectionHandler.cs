@@ -162,6 +162,12 @@ namespace Abot.Core
             get { return (bool)this["isExternalPageLinksCrawlingEnabled"]; }
         }
 
+        [ConfigurationProperty("isSslCertificateValidationEnabled", IsRequired = false, DefaultValue = true)]
+        public bool IsSslCertificateValidationEnabled
+        {
+            get { return (bool)this["isSslCertificateValidationEnabled"]; }
+        }
+
         [ConfigurationProperty("httpServicePointConnectionLimit", IsRequired = false, DefaultValue = 200)]
         public int HttpServicePointConnectionLimit
         {
