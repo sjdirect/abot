@@ -29,6 +29,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(true, _uut.CrawlBehavior.IsHttpRequestAutoRedirectsEnabled);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsHttpRequestAutomaticDecompressionEnabled);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsSendingCookiesEnabled);
+            Assert.AreEqual(false, _uut.CrawlBehavior.IsSslCertificateValidationEnabled);
             Assert.AreEqual(25, _uut.CrawlBehavior.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(26, _uut.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(27, _uut.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
@@ -75,6 +76,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(true, _uut.CrawlBehavior.IsHttpRequestAutoRedirectsEnabled);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsHttpRequestAutomaticDecompressionEnabled);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsSendingCookiesEnabled);
+            Assert.AreEqual(false, _uut.CrawlBehavior.IsSslCertificateValidationEnabled);
             Assert.AreEqual(result.MinAvailableMemoryRequiredInMb, _uut.CrawlBehavior.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(result.MaxMemoryUsageInMb, _uut.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(result.MaxMemoryUsageCacheTimeInSeconds, _uut.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
@@ -119,6 +121,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(pocoDefaults.RobotsDotTextUserAgentString, _uut.Politeness.RobotsDotTextUserAgentString);
             Assert.AreEqual(pocoDefaults.MaxPageSizeInBytes, _uut.CrawlBehavior.MaxPageSizeInBytes);
             Assert.AreEqual(pocoDefaults.HttpServicePointConnectionLimit, _uut.CrawlBehavior.HttpServicePointConnectionLimit);
+            Assert.AreEqual(pocoDefaults.IsSslCertificateValidationEnabled, _uut.CrawlBehavior.IsSslCertificateValidationEnabled);
             Assert.AreEqual(pocoDefaults.HttpRequestTimeoutInSeconds, _uut.CrawlBehavior.HttpRequestTimeoutInSeconds);
             Assert.AreEqual(pocoDefaults.HttpRequestMaxAutoRedirects, _uut.CrawlBehavior.HttpRequestMaxAutoRedirects);
             Assert.AreEqual(pocoDefaults.IsHttpRequestAutoRedirectsEnabled, _uut.CrawlBehavior.IsHttpRequestAutoRedirectsEnabled);
