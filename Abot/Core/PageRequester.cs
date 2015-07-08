@@ -52,6 +52,10 @@ namespace Abot.Core
             if (_config.HttpServicePointConnectionLimit > 0)
                 ServicePointManager.DefaultConnectionLimit = _config.HttpServicePointConnectionLimit;
 
+            if (!_config.IsSslCertificateValidationEnabled)
+                ServicePointManager.ServerCertificateValidationCallback +=
+                    (sender, certificate, chain, sslPolicyErrors) => true;
+
             _extractor = contentExtractor ?? new WebContentExtractor();
         }
 
