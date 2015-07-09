@@ -36,6 +36,11 @@ namespace Abot.Poco
         public bool IsRetry { get; set; }
 
         /// <summary>
+        /// The time in seconds that the server sent to wait before retrying.
+        /// </summary>
+        public double? RetryAfter { get; set; }
+
+        /// <summary>
         /// The number of times the http request was be retried.
         /// </summary>
         public int RetryCount { get; set; }
