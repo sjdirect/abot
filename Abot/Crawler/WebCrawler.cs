@@ -823,6 +823,30 @@ namespace Abot.Crawler
             {
                 _logger.DebugFormat("Page [{0}] not recrawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldRecrawlPageDecision.Reason);
             }
+            else
+            {
+                // Look for the Retry-After header in the response.
+                crawledPage.RetryAfter = null;
+                if (crawledPage.HttpWebResponse != null &&
+                    crawledPage.HttpWebResponse.Headers != null)
+                {
+                    string value = crawledPage.HttpWebResponse.GetResponseHeader("Retry-After");
+                    if (!String.IsNullOrEmpty(value))
+                    {
+                        // Try to convert to DateTime first, then in double.
+                        DateTime date;
+                        double seconds;
+                        if (crawledPage.LastRequest.HasValue && DateTime.TryParse(value, out date))
+                        {
+                            crawledPage.RetryAfter = (date - crawledPage.LastRequest.Value).TotalSeconds;
+                        } 
+                        else if (double.TryParse(value, out seconds))
+                        {
+                            crawledPage.RetryAfter = seconds;
+                        }
+                    }
+                }
+            }
 
             SignalCrawlStopIfNeeded(shouldRecrawlPageDecision);
             return shouldRecrawlPageDecision.Allow;
@@ -977,13 +1001,27 @@ namespace Abot.Crawler
             }
 
             double milliSinceLastRequest = (DateTime.Now - pageToCrawl.LastRequest.Value).TotalMilliseconds;
-            if (!(milliSinceLastRequest < _crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds)) return;
-            
-            double milliToWait = _crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds - milliSinceLastRequest;
-            _logger.InfoFormat("Waiting [{0}] milliseconds before retrying Url:[{1}] LastRequest:[{2}] SoonestNextRequest:[{3}]", milliToWait, pageToCrawl.Uri.AbsoluteUri, pageToCrawl.LastRequest, pageToCrawl.LastRequest.Value.AddMilliseconds(_crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds));
+            double milliToWait;
+            if (pageToCrawl.RetryAfter.HasValue)
+            {
+                // Use the time to wait provided by the server instead of the config, if any.
+                milliToWait = pageToCrawl.RetryAfter.Value*1000 - milliSinceLastRequest;
+            }
+            else
+            {
+                if (!(milliSinceLastRequest < _crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds)) return;
+                milliToWait = _crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds - milliSinceLastRequest;
+            }
+
+            _logger.InfoFormat("Waiting [{0}] milliseconds before retrying Url:[{1}] LastRequest:[{2}] SoonestNextRequest:[{3}]",
+                milliToWait,
+                pageToCrawl.Uri.AbsoluteUri,
+                pageToCrawl.LastRequest,
+                pageToCrawl.LastRequest.Value.AddMilliseconds(_crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds));
 
             //TODO Cannot use RateLimiter since it currently cannot handle dynamic sleep times so using Thread.Sleep in the meantime
-            Thread.Sleep(TimeSpan.FromMilliseconds(milliToWait));
+            if (milliToWait > 0)
+                Thread.Sleep(TimeSpan.FromMilliseconds(milliToWait));
         }
     }
 }
