@@ -94,6 +94,7 @@ using Abot.Poco;
       isHttpRequestAutoRedirectsEnabled="true" 
       isHttpRequestAutomaticDecompressionEnabled="false"
       isSendingCookiesEnabled="false"
+	  isSslCertificateValidationEnabled="false"
       minAvailableMemoryRequiredInMb="0"
       maxMemoryUsageInMb="0"
       maxMemoryUsageCacheTimeInSeconds="0"
