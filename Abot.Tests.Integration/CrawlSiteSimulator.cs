@@ -94,8 +94,8 @@ namespace Abot.Tests.Integration
             CrawlResult result = crawler.Crawl(new Uri("http://localhost.fiddler:1111/"));
 
             Assert.IsFalse(result.ErrorOccurred);
-            Assert.IsTrue(result.Elapsed.TotalSeconds < 5);
-            Assert.IsTrue(pagesCrawledCount < 2);
+            Assert.IsTrue(result.Elapsed.TotalSeconds < 8, "Took more than 8 seconds");
+            Assert.IsTrue(pagesCrawledCount < 2, "Crawled more than 2 pages");
         }
 
         [Test]
