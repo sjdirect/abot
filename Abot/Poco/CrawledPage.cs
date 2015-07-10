@@ -124,8 +124,7 @@ namespace Abot.Poco
         private HtmlDocument InitializeHtmlAgilityPackDocument()
         {
             HtmlDocument hapDoc = new HtmlDocument();
-            hapDoc.OptionFixNestedTags = true;
-
+            hapDoc.OptionMaxNestedChildNodes = 5000;//did not make this an externally configurable property since it is really an internal issue to hap
             try
             {
                 hapDoc.LoadHtml(Content.Text);
