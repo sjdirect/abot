@@ -8,6 +8,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Threading;
 
 namespace Abot.Tests.Unit.Crawler
@@ -1089,7 +1090,65 @@ namespace Abot.Tests.Unit.Crawler
             Assert.IsTrue(result.CrawlContext.IsCrawlHardStopRequested);
         }
 
+        [Test]
+        public void Crawl_CanExtractRetryAfterTimeFromHeaders()
+        {
+            _unitUnderTest = new PoliteWebCrawler(_dummyConfiguration, _fakeCrawlDecisionMaker.Object, _dummyThreadManager, _dummyScheduler, _fakeHttpRequester.Object, _fakeHyperLinkParser.Object, _fakeMemoryManager.Object, _fakeDomainRateLimiter.Object, _fakeRobotsDotTextFinder.Object);
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false });
+            _fakeCrawlDecisionMaker.SetupSequence(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>()))
+                .Returns(new CrawlDecision { Allow = true })
+                .Returns(new CrawlDecision { Allow = false });
+            _fakeHyperLinkParser.Setup(f => f.GetLinks(It.IsAny<CrawledPage>())).Returns(new List<Uri>());
 
+            CrawledPage page = new CrawledPage(_rootUri) {
+                WebException = new WebException(),
+                HttpWebResponse = new HttpWebResponseWrapper(HttpStatusCode.ServiceUnavailable,
+                    "",
+                    null,
+                    new WebHeaderCollection{ {"Retry-After", "1"} })
+            };
+            _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page);
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            CrawlResult result = _unitUnderTest.Crawl(_rootUri);
+            watch.Start();
+
+            Assert.That(watch.ElapsedMilliseconds, Is.GreaterThan(2000));
+            Assert.That(page.RetryAfter, Is.EqualTo(1.0));
+            _fakeCrawlDecisionMaker.Verify(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>()), Times.Exactly(2));
+        }
+        
+        [Test]
+        public void Crawl_CanExtractRetryAfterDateFromHeaders()
+        {
+            _unitUnderTest = new PoliteWebCrawler(_dummyConfiguration, _fakeCrawlDecisionMaker.Object, _dummyThreadManager, _dummyScheduler, _fakeHttpRequester.Object, _fakeHyperLinkParser.Object, _fakeMemoryManager.Object, _fakeDomainRateLimiter.Object, _fakeRobotsDotTextFinder.Object);
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = false });
+            _fakeCrawlDecisionMaker.SetupSequence(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>()))
+                .Returns(new CrawlDecision { Allow = true })
+                .Returns(new CrawlDecision { Allow = false });
+            _fakeHyperLinkParser.Setup(f => f.GetLinks(It.IsAny<CrawledPage>())).Returns(new List<Uri>());
+
+            CrawledPage page = new CrawledPage(_rootUri) {
+                WebException = new WebException(),
+                HttpWebResponse = new HttpWebResponseWrapper(HttpStatusCode.ServiceUnavailable,
+                    "",
+                    null,
+                    new WebHeaderCollection{ {"Retry-After", DateTime.Now.AddSeconds(1).ToString() } })
+            };
+            _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page);
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            CrawlResult result = _unitUnderTest.Crawl(_rootUri);
+            watch.Start();
+
+            Assert.That(watch.ElapsedMilliseconds, Is.GreaterThan(2000));
+            Assert.That(page.RetryAfter, Is.GreaterThan(0));
+            _fakeCrawlDecisionMaker.Verify(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>()), Times.Exactly(2));
+        }
 
         private void ThrowExceptionWhen_PageCrawlStarting(object sender, PageCrawlStartingArgs e)
         {

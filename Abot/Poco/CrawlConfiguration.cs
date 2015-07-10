@@ -20,6 +20,7 @@ namespace Abot.Poco
             MaxCrawlDepth = 100;
             HttpServicePointConnectionLimit = 200;
             HttpRequestTimeoutInSeconds = 15;
+            IsSslCertificateValidationEnabled = true;
         }
 
         #region crawlBehavior
@@ -122,6 +123,13 @@ namespace Abot.Poco
         /// Whether the cookies should be set and resent with every request
         /// </summary>
         public bool IsSendingCookiesEnabled { get; set; }
+
+        /// <summary>
+        /// Whether or not to validate the server SSL certificate. If true, the default validation will be made.
+        /// If false, the certificate validation is bypassed. This setting is useful to crawl sites with an
+        /// invalid or expired SSL certificate.
+        /// </summary>
+        public bool IsSslCertificateValidationEnabled { get; set; }
 
         /// <summary>
         /// Uses closest mulitple of 16 to the value set. If there is not at least this much memory available before starting a crawl, throws InsufficientMemoryException.
