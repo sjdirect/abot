@@ -17,7 +17,6 @@
     <tags>crawler robot spider</tags>
   </metadata>
   <files>
-    <file src="bin\release\HtmlAgilityPack.dll" target="lib\net40\" />
     <file src="bin\release\Abot.XML" target="lib\net40\" />
   </files>
 </package>

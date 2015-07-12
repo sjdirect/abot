@@ -75,7 +75,7 @@ namespace Abot.Tests.Unit.Poco
             };
 
             Assert.IsNotNull(unitUnderTest.HtmlDocument);
-            Assert.AreEqual("", unitUnderTest.HtmlDocument.DocumentNode.InnerText);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(unitUnderTest.HtmlDocument.DocumentNode.InnerText));
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace Abot.Tests.Unit.Poco
             };
 
             Assert.IsNotNull(unitUnderTest.HtmlDocument);
-            Assert.AreEqual("", unitUnderTest.HtmlDocument.DocumentNode.InnerText);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(unitUnderTest.HtmlDocument.DocumentNode.InnerText));
         }
 
         [Test]
