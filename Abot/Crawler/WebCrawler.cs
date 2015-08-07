@@ -291,22 +291,22 @@ namespace Abot.Crawler
         #region Synchronous Events
 
         /// <summary>
-        /// hronous event that is fired before a page is crawled.
+        /// Synchronous event that is fired before a page is crawled.
         /// </summary>
         public event EventHandler<PageCrawlStartingArgs> PageCrawlStarting;
 
         /// <summary>
-        /// hronous event that is fired when an individual page has been crawled.
+        /// Synchronous event that is fired when an individual page has been crawled.
         /// </summary>
         public event EventHandler<PageCrawlCompletedArgs> PageCrawlCompleted;
 
         /// <summary>
-        /// hronous event that is fired when the ICrawlDecisionMaker.ShouldCrawl impl returned false. This means the page or its links were not crawled.
+        /// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawl impl returned false. This means the page or its links were not crawled.
         /// </summary>
         public event EventHandler<PageCrawlDisallowedArgs> PageCrawlDisallowed;
 
         /// <summary>
-        /// hronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlLinks impl returned false. This means the page's links were not crawled.
+        /// Synchronous event that is fired when the ICrawlDecisionMaker.ShouldCrawlLinks impl returned false. This means the page's links were not crawled.
         /// </summary>
         public event EventHandler<PageLinksCrawlDisallowedArgs> PageLinksCrawlDisallowed;
 
