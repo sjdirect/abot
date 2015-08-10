@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Abot.Core
 {
-    public interface IWebContentExtractor
+    public interface IWebContentExtractor : IDisposable
     {
         PageContent GetContent(WebResponse response);
     }
@@ -124,6 +124,11 @@ namespace Abot.Core
             }
 
             return rawData;
+        }
+
+        public void Dispose()
+        {
+            // Nothing to do
         }
     }
 

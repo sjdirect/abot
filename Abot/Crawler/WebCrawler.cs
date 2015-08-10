@@ -15,7 +15,7 @@ using Timer = System.Timers.Timer;
 
 namespace Abot.Crawler
 {
-    public interface IWebCrawler
+    public interface IWebCrawler : IDisposable
     {
         /// <summary>
         /// Synchronous event that is fired before a page is crawled.
@@ -1022,6 +1022,26 @@ namespace Abot.Crawler
             //TODO Cannot use RateLimiter since it currently cannot handle dynamic sleep times so using Thread.Sleep in the meantime
             if (milliToWait > 0)
                 Thread.Sleep(TimeSpan.FromMilliseconds(milliToWait));
+        }
+
+        public virtual void Dispose()
+        {
+            if (_threadManager != null)
+            {
+                _threadManager.Dispose();
+            }
+            if (_scheduler != null)
+            {
+                _scheduler.Dispose();
+            }
+            if (_pageRequester != null)
+            {
+                _pageRequester.Dispose();
+            }
+            if (_memoryManager != null)
+            {
+                _memoryManager.Dispose();
+            }
         }
     }
 }

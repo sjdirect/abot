@@ -135,7 +135,7 @@ namespace Abot.Core
             return new CrawlDecision { Allow = true };            
         }
 
-        public CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext)
+        public virtual CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext)
         {
             if (crawledPage == null)
                 return new CrawlDecision { Allow = false, Reason = "Null crawled page" };
