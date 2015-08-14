@@ -44,37 +44,14 @@ using Abot.Poco;
 ```xml
 <configuration>
   <configSections>
-    <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net"/>
     <section name="abot" type="Abot.Core.AbotConfigurationSectionHandler, Abot"/>
   </configSections>
+  
   <runtime>
     <!-- Experiment with these to see if it helps your memory usage, USE ONLY ONE OF THE FOLLOWING -->
     <!--<gcServer enabled="true"/>-->
     <!--<gcConcurrent enabled="true"/>-->
   </runtime>
-  <log4net>
-    <appender name="ConsoleAppender" type="log4net.Appender.ConsoleAppender">
-      <layout type="log4net.Layout.PatternLayout">
-        <conversionPattern value="[%date] [%thread] [%-5level] - %message%newline"/>
-      </layout>
-    </appender>
-    <appender name="RollingFileAppender" type="log4net.Appender.RollingFileAppender">
-      <file value="abotlog.txt"/>
-      <appendToFile value="true"/>
-      <rollingStyle value="Size"/>
-      <maxSizeRollBackups value="10"/>
-      <maximumFileSize value="10240KB"/>
-      <staticLogFileName value="true"/>
-      <layout type="log4net.Layout.PatternLayout">
-        <conversionPattern value="[%date] [%-3thread] [%-5level] - %message%newline"/>
-      </layout>
-    </appender>
-    <root>
-      <level value="INFO"/>
-      <appender-ref ref="ConsoleAppender"/>
-      <appender-ref ref="RollingFileAppender"/>
-    </root>
-  </log4net>
 
   <abot>
     <crawlBehavior 
