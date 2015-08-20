@@ -13,7 +13,6 @@ namespace Abot.Core
     public class HapHyperLinkParser : HyperLinkParser
     {
         Func<string, string> _cleanURLFunc;
-        bool _isRespectMetaRobotsNoFollowEnabled;
         bool _isRespectAnchorRelNoFollowEnabled;
 
         protected override string ParserType
@@ -26,10 +25,12 @@ namespace Abot.Core
         {
         }
 
-        public HapHyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanURLFunc = null)
-            :base(isRespectMetaRobotsNoFollowEnabled)
+        public HapHyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled,
+                                  bool isRespectAnchorRelNoFollowEnabled,
+                                  Func<string, string> cleanURLFunc = null,
+                                  bool removeUrlFragment = true)
+            :base(isRespectMetaRobotsNoFollowEnabled, removeUrlFragment)
         {
-            _isRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
             _isRespectAnchorRelNoFollowEnabled = isRespectAnchorRelNoFollowEnabled;
             _cleanURLFunc = cleanURLFunc;
         }

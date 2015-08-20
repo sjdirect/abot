@@ -22,17 +22,19 @@ namespace Abot.Core
     public abstract class HyperLinkParser : IHyperLinkParser
     {
         protected ILog _logger = LogManager.GetLogger("AbotLogger");
-        protected bool IsRespectMetaRobotsNoFollowEnabled { get; set; }
+        protected bool _isRespectMetaRobotsNoFollowEnabled;
+        protected bool _removeUrlFragment;
 
         public HyperLinkParser()
-            :this(false)
+            :this(false, true)
         {
 
         }
 
-        public HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled)
+        public HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool removeUrlFragment = true)
         {
-            IsRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
+            _isRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
+            _removeUrlFragment = removeUrlFragment;
         }
 
         /// <summary>
@@ -96,10 +98,14 @@ namespace Abot.Core
             {
                 try
                 {
-                    href = hrefValue.Split('#')[0];
+                    // Remove the url fragment part of the url if needed.
+                    // This is the part after the # and is often not useful.
+                    href = _removeUrlFragment
+                        ? hrefValue.Split('#')[0]
+                        : hrefValue;
                     Uri newUri = new Uri(uriToUse, href);
 
-                    if (!uris.Contains(newUri))
+                    if (!uris.Exists(u => u.AbsoluteUri == newUri.AbsoluteUri))
                         uris.Add(newUri);
                 }
                 catch (Exception e)
@@ -114,7 +120,7 @@ namespace Abot.Core
 
         protected virtual bool HasRobotsNoFollow(CrawledPage crawledPage)
         {
-            if (!IsRespectMetaRobotsNoFollowEnabled)
+            if (!_isRespectMetaRobotsNoFollowEnabled)
                 return false;
 
             string robotsMeta = robotsMeta = GetMetaRobotsValue(crawledPage);

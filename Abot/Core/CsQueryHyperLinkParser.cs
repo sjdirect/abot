@@ -13,7 +13,6 @@ namespace Abot.Core
     public class CSQueryHyperlinkParser : HyperLinkParser
     {
         Func<string, string> _cleanURLFunc;
-        bool _isRespectMetaRobotsNoFollowEnabled;
         bool _isRespectAnchorRelNoFollowEnabled;
         
         public CSQueryHyperlinkParser()
@@ -23,7 +22,6 @@ namespace Abot.Core
         public CSQueryHyperlinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanURLFunc = null)
             : base(isRespectMetaRobotsNoFollowEnabled)
         {
-            _isRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
             _isRespectAnchorRelNoFollowEnabled = isRespectAnchorRelNoFollowEnabled;
             _cleanURLFunc = cleanURLFunc;
         }

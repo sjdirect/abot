@@ -19,15 +19,20 @@ namespace Abot.Core
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");
 
-        public PageContent GetContent(WebResponse response)
+        public virtual PageContent GetContent(WebResponse response)
         {
             using (MemoryStream memoryStream = GetRawData(response))
             {
                 String charset = GetCharsetFromHeaders(response);
 
-                if (charset == null)
-                    charset = GetCharsetFromBody(memoryStream);
+                if (charset == null) {
+                    memoryStream.Seek(0, SeekOrigin.Begin);
 
+                    // Do not wrap in closing statement to prevent closing of this stream.
+                    StreamReader srr = new StreamReader(memoryStream, Encoding.ASCII);
+                    String body = srr.ReadToEnd();
+                    charset = GetCharsetFromBody(body);
+                }
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
                 Encoding e = GetEncoding(charset);
@@ -47,7 +52,7 @@ namespace Abot.Core
             }
         }
 
-        private string GetCharsetFromHeaders(WebResponse webResponse)
+        protected string GetCharsetFromHeaders(WebResponse webResponse)
         {
             string charset = null;
             String ctype = webResponse.Headers["content-type"];
@@ -60,21 +65,14 @@ namespace Abot.Core
             return charset;
         }
 
-        private string GetCharsetFromBody(MemoryStream rawdata)
+        protected string GetCharsetFromBody(string body)
         {
             String charset = null;
-
-            MemoryStream ms = rawdata;
-            ms.Seek(0, SeekOrigin.Begin);
-
-            //Do not wrapp in closing statement to prevent closing of this stream
-            StreamReader srr = new StreamReader(ms, Encoding.ASCII);
-            String meta = srr.ReadToEnd();
-
-            if (meta != null)
+            
+            if (body != null)
             {
                 //find expression from : http://stackoverflow.com/questions/3458217/how-to-use-regular-expression-to-match-the-charset-string-in-html
-                Match match = Regex.Match(meta, @"<meta(?!\s*(?:name|value)\s*=)(?:[^>]*?content\s*=[\s""']*)?([^>]*?)[\s""';]*charset\s*=[\s""']*([^\s""'/>]*)", RegexOptions.IgnoreCase);
+                Match match = Regex.Match(body, @"<meta(?!\s*(?:name|value)\s*=)(?:[^>]*?content\s*=[\s""']*)?([^>]*?)[\s""';]*charset\s*=[\s""']*([^\s""'/>]*)", RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
                     charset = string.IsNullOrWhiteSpace(match.Groups[2].Value) ? null : match.Groups[2].Value;
@@ -83,9 +81,8 @@ namespace Abot.Core
 
             return charset;
         }
-
-
-        private Encoding GetEncoding(string charset)
+        
+        protected Encoding GetEncoding(string charset)
         {
             Encoding e = Encoding.UTF8;
             if (charset != null)
@@ -126,10 +123,9 @@ namespace Abot.Core
             return rawData;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             // Nothing to do
         }
     }
-
 }
