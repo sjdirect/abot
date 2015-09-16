@@ -724,7 +724,7 @@ namespace Abot.Crawler
                 
             try
             {
-                var uri = GetRedirectUri(crawledPage);
+                var uri = ExtractRedirectUri(crawledPage);
 
                 PageToCrawl page = new PageToCrawl(uri);
                 page.ParentUri = crawledPage.ParentUri;
@@ -1042,7 +1042,7 @@ namespace Abot.Crawler
             }
 
             if (IsRedirect(crawledRootPage)) {
-                _crawlContext.RootUri = GetRedirectUri(crawledRootPage);
+                _crawlContext.RootUri = ExtractRedirectUri(crawledRootPage);
                 _logger.InfoFormat("The root URI [{0}] was redirected to [{1}]. Pages from domains [{2}] and [{3}] will be considered internal.",
                     _crawlContext.OriginalRootUri,
                     _crawlContext.RootUri,
@@ -1058,7 +1058,7 @@ namespace Abot.Crawler
         /// If HTTP auto redirections is disabled, this value is stored in the 'Location' header of the response.
         /// If auto redirections is enabled, this value is stored in the response's ResponseUri property.
         /// </remarks>
-        protected virtual Uri GetRedirectUri(CrawledPage crawledPage)
+        protected virtual Uri ExtractRedirectUri(CrawledPage crawledPage)
         {
             Uri locationUri;
             if (_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled) {
@@ -1067,12 +1067,12 @@ namespace Abot.Crawler
             } else {
                 // For manual redirects, we need to look for the location header.
                 var location = crawledPage.HttpWebResponse.Headers["Location"];
-                
+
+                // Check if the location is absolute. If not, create an absolute uri.
                 if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri))
                 {
-                    var site = crawledPage.Uri.Scheme + "://" + crawledPage.Uri.Host;
-                    location = site + location;
-                    locationUri = new Uri(location);
+                    Uri baseUri = new Uri(crawledPage.Uri.GetLeftPart(UriPartial.Authority));
+                    locationUri = new Uri(baseUri, location);
                 }
             }
             return locationUri;
