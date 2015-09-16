@@ -24,6 +24,12 @@ namespace Abot.Core
             get { return (PolitenessElement)this["politeness"]; }
         }
 
+        [ConfigurationProperty("authorization")]
+        public AuthorizationElement Authorization
+        {
+            get { return (AuthorizationElement)this["authorization"]; }
+        }
+
         [ConfigurationProperty("extensionValues")]
         [ConfigurationCollection(typeof(ExtensionValueCollection), AddItemName = "add")]
         public ExtensionValueCollection ExtensionValues
@@ -35,11 +41,13 @@ namespace Abot.Core
         {
             AutoMapper.Mapper.CreateMap<CrawlBehaviorElement, CrawlConfiguration>();
             AutoMapper.Mapper.CreateMap<PolitenessElement, CrawlConfiguration>();
+            AutoMapper.Mapper.CreateMap<AuthorizationElement, CrawlConfiguration>();
 
 
             CrawlConfiguration config = new CrawlConfiguration();
             AutoMapper.Mapper.Map<CrawlBehaviorElement, CrawlConfiguration>(CrawlBehavior, config);
             AutoMapper.Mapper.Map<PolitenessElement, CrawlConfiguration>(Politeness, config);
+            AutoMapper.Mapper.Map<AuthorizationElement, CrawlConfiguration>(Authorization, config);
 
             foreach (ExtensionValueElement element in ExtensionValues)
                 config.ConfigurationExtensions.Add(element.Key, element.Value);
@@ -53,6 +61,36 @@ namespace Abot.Core
         }
     }
 
+
+    [Serializable]
+    public class AuthorizationElement : ConfigurationElement
+    {
+        /// <summary>
+        /// Defines whatewer each request shold be autorized via login 
+        /// </summary>
+        [ConfigurationProperty("isAlwaysLogin", IsRequired = false)]
+        public bool IsAlwaysLogin
+        {
+            get { return (bool)this["isAlwaysLogin"]; }
+        }
+
+        /// <summary>
+        /// The user name to be used for autorization 
+        /// </summary>
+        [ConfigurationProperty("loginUser", IsRequired = false)]
+        public string LoginUser
+        {
+            get { return (string)this["loginUser"]; }
+        }
+        /// <summary>
+        /// The password to be used for autorization 
+        /// </summary>
+        [ConfigurationProperty("loginPassword", IsRequired = false)]
+        public string LoginPassword
+        {
+            get { return (string)this["loginPassword"]; }
+        }
+    }
     [Serializable]
     public class PolitenessElement : ConfigurationElement
     {

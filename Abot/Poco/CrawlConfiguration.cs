@@ -89,7 +89,7 @@ namespace Abot.Poco
         /// <summary>
         /// A comma seperated string that has content types that should have their page content downloaded. For each page, the content type is checked to see if it contains any of the values defined here.
         /// </summary>
-        public string DownloadableContentTypes { get; set; } 
+        public string DownloadableContentTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum number of concurrent connections allowed by a System.Net.ServicePoint. The system default is 2. This means that only 2 concurrent http connections can be open to the same host.
@@ -203,6 +203,23 @@ namespace Abot.Poco
         /// The number of milliseconds to wait in between http requests to the same domain.
         /// </summary>
         public int MinCrawlDelayPerDomainMilliSeconds { get; set; }
+
+        #endregion
+
+        #region Authorization
+
+        /// <summary>
+        /// Defines whatewer each request shold be autorized via login 
+        /// </summary>
+        public bool IsAlwaysLogin { get; set; }
+        /// <summary>
+        /// The user name to be used for autorization 
+        /// </summary>
+        public string LoginUser { get; set; }
+        /// <summary>
+        /// The password to be used for autorization 
+        /// </summary>
+        public string LoginPassword { get; set; }
 
         #endregion
     }

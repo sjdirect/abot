@@ -88,8 +88,13 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(result.IsRespectRobotsDotTextEnabled, _uut.Politeness.IsRespectRobotsDotTextEnabled);
             Assert.AreEqual(result.IsIgnoreRobotsDotTextIfRootDisallowedEnabled, _uut.Politeness.IsIgnoreRobotsDotTextIfRootDisallowedEnabled);
             Assert.AreEqual(result.RobotsDotTextUserAgentString, _uut.Politeness.RobotsDotTextUserAgentString);
+
             Assert.AreEqual(result.MinCrawlDelayPerDomainMilliSeconds, _uut.Politeness.MinCrawlDelayPerDomainMilliSeconds);
             Assert.AreEqual(result.MaxRobotsDotTextCrawlDelayInSeconds, _uut.Politeness.MaxRobotsDotTextCrawlDelayInSeconds);
+
+            Assert.AreEqual(result.IsAlwaysLogin, _uut.Authorization.IsAlwaysLogin);
+            Assert.AreEqual(result.LoginPassword, _uut.Authorization.LoginPassword);
+            Assert.AreEqual(result.LoginUser, _uut.Authorization.LoginUser);
 
             Assert.IsNotNull(result.ConfigurationExtensions);
             Assert.AreEqual(result.ConfigurationExtensions["key1"], _uut.ExtensionValues[0].Value);
