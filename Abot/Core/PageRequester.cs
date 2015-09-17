@@ -117,7 +117,7 @@ namespace Abot.Core
                     }
                     else
                     {
-                        _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);    
+                        _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
                     }
 
                     response.Close();//Should already be closed by _extractor but just being safe
@@ -161,7 +161,7 @@ namespace Abot.Core
 
         //            if (crawledPage.WebException != null && crawledPage.WebException.Response != null)
         //                response = (HttpWebResponse)crawledPage.WebException.Response;
-                    
+
         //            _logger.DebugFormat("Error occurred requesting url [{0}]", uri.AbsoluteUri);
         //            _logger.Debug(crawledPage.WebException);
         //        }
@@ -201,17 +201,23 @@ namespace Abot.Core
             request.UserAgent = _config.UserAgentString;
             request.Accept = "*/*";
 
-            if(_config.HttpRequestMaxAutoRedirects > 0)
+            if (_config.HttpRequestMaxAutoRedirects > 0)
                 request.MaximumAutomaticRedirections = _config.HttpRequestMaxAutoRedirects;
 
             if (_config.IsHttpRequestAutomaticDecompressionEnabled)
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 
-            if(_config.HttpRequestTimeoutInSeconds > 0)
+            if (_config.HttpRequestTimeoutInSeconds > 0)
                 request.Timeout = _config.HttpRequestTimeoutInSeconds * 1000;
 
             if (_config.IsSendingCookiesEnabled)
                 request.CookieContainer = container;
+
+            if (_config.IsAlwaysLogin)
+            {
+                request.Credentials = new NetworkCredential(_config.LoginUser, _config.LoginPassword);
+                request.UseDefaultCredentials = false;
+            }
 
             return request;
         }

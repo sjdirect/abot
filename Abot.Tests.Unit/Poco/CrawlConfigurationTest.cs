@@ -43,6 +43,11 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual(false, unitUnderTest.IsForcedLinkParsingEnabled);
             Assert.AreEqual(0, unitUnderTest.MaxRetryCount);
             Assert.AreEqual(0, unitUnderTest.MinRetryDelayInMilliseconds);
+            Assert.AreEqual(null, unitUnderTest.LoginUser);
+            Assert.AreEqual(null, unitUnderTest.LoginPassword);
+            Assert.AreEqual(false, unitUnderTest.IsAlwaysLogin);
         }
+
+
     }
 }
