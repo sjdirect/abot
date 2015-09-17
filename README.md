@@ -80,6 +80,10 @@ using Abot.Poco;
       maxRetryCount="0"
       minRetryDelayInMilliseconds="0"
       />
+    <authorization
+      isAlwaysLogin="false"
+      loginUser=""
+      loginPassword="" />	  
     <politeness 
       isRespectRobotsDotTextEnabled="false"
       isRespectMetaRobotsNoFollowEnabled="false"
