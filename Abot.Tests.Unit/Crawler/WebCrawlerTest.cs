@@ -1151,6 +1151,50 @@ namespace Abot.Tests.Unit.Crawler
             _fakeCrawlDecisionMaker.Verify(f => f.ShouldRecrawlPage(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>()), Times.Exactly(2));
         }
 
+        [Test]
+        public void Crawl_ChangeRootUriIfRedirected()
+        {
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
+            _dummyConfiguration.IsHttpRequestAutoRedirectsEnabled = false;
+
+            // Setup a root page that was redirected.
+            Uri redirectedUri = new Uri("http://www.domain.com/");
+            CrawledPage page = new CrawledPage(_rootUri) {
+                WebException = new WebException(),
+                HttpWebResponse = new HttpWebResponseWrapper {
+                    StatusCode = HttpStatusCode.Redirect,
+                    Headers = new WebHeaderCollection { { "Location", redirectedUri.AbsoluteUri } }
+                }
+            };
+            _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page);
+
+            CrawlResult result = _unitUnderTest.Crawl(_rootUri);
+            Assert.That(result.CrawlContext.RootUri.AbsoluteUri, Is.EqualTo(redirectedUri));
+            Assert.That(result.CrawlContext.OriginalRootUri, Is.EqualTo(_rootUri));
+        }
+
+        [Test]
+        public void Crawl_ChangeRootUriIfRedirectedAutomatically()
+        {
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
+            _dummyConfiguration.IsHttpRequestAutoRedirectsEnabled = true;
+
+            // Setup a root page that was redirected.
+            Uri redirectedUri = new Uri("http://www.domain.com/");
+            CrawledPage page = new CrawledPage(_rootUri) {
+                WebException = new WebException(),
+                HttpWebResponse = new HttpWebResponseWrapper {
+                    StatusCode = HttpStatusCode.OK,
+                    ResponseUri = redirectedUri
+                }
+            };
+            _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page);
+
+            CrawlResult result = _unitUnderTest.Crawl(_rootUri);
+            Assert.That(result.CrawlContext.RootUri.AbsoluteUri, Is.EqualTo(redirectedUri));
+            Assert.That(result.CrawlContext.OriginalRootUri, Is.EqualTo(_rootUri));
+        }
+
         private void ThrowExceptionWhen_PageCrawlStarting(object sender, PageCrawlStartingArgs e)
         {
             throw new Exception("no!!!");

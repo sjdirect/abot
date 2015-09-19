@@ -22,6 +22,12 @@ namespace Abot.Poco
         public Uri RootUri { get; set; }
 
         /// <summary>
+        /// The root of the crawl specified in the configuration. If the root URI was redirected to another URI,
+        /// it will be set in RootUri.
+        /// </summary>
+        public Uri OriginalRootUri { get; set; }
+
+        /// <summary>
         /// total number of pages that have been crawled
         /// </summary>
         public int CrawledCount = 0;

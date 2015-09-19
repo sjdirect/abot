@@ -15,7 +15,7 @@ using Timer = System.Timers.Timer;
 
 namespace Abot.Crawler
 {
-    public interface IWebCrawler
+    public interface IWebCrawler : IDisposable
     {
         /// <summary>
         /// Synchronous event that is fired before a page is crawled.
@@ -221,7 +221,7 @@ namespace Abot.Crawler
             if (uri == null)
                 throw new ArgumentNullException("uri");
 
-            _crawlContext.RootUri = uri;
+            _crawlContext.RootUri = _crawlContext.OriginalRootUri = uri;
 
             if (cancellationTokenSource != null)
                 _crawlContext.CancellationTokenSource = cancellationTokenSource;
@@ -670,7 +670,11 @@ namespace Abot.Crawler
                 //CrawledPage crawledPage = await CrawlThePage(pageToCrawl);
                 CrawledPage crawledPage = CrawlThePage(pageToCrawl);
 
-                if (IsRedirect(crawledPage))
+                // Validate the root uri in case of a redirection.
+                if (crawledPage.IsRoot)
+                    ValidateRootUriForRedirection(crawledPage);
+
+                if (IsRedirect(crawledPage) && !_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled)
                     ProcessRedirect(crawledPage);
                 
                 if (PageSizeIsAboveMax(crawledPage))
@@ -720,21 +724,12 @@ namespace Abot.Crawler
                 
             try
             {
-                var location = crawledPage.HttpWebResponse.Headers["Location"];
-                
-                Uri locationUri;
-                if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri))
-                {
-                    var site = crawledPage.Uri.Scheme + "://" + crawledPage.Uri.Host;
-                    location = site + location;
-                }
-
-                var uri = new Uri(location);
+                var uri = ExtractRedirectUri(crawledPage);
 
                 PageToCrawl page = new PageToCrawl(uri);
                 page.ParentUri = crawledPage.ParentUri;
                 page.CrawlDepth = crawledPage.CrawlDepth;
-                page.IsInternal = _isInternalDecisionMaker(uri, _crawlContext.RootUri);
+                page.IsInternal = IsInternalUri(uri);
                 page.IsRoot = false;
                 page.RedirectedFrom = crawledPage;
                 page.RedirectPosition = crawledPage.RedirectPosition + 1;
@@ -751,14 +746,26 @@ namespace Abot.Crawler
             catch {}
         }
 
+        protected virtual bool IsInternalUri(Uri uri)
+        {
+            return  _isInternalDecisionMaker(uri, _crawlContext.RootUri) ||
+                _isInternalDecisionMaker(uri, _crawlContext.OriginalRootUri);
+        }
+
         protected virtual bool IsRedirect(CrawledPage crawledPage)
         {
-            return (!_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled &&
-                    crawledPage.HttpWebResponse != null &&
-                    ((int) crawledPage.HttpWebResponse.StatusCode >= 300 &&
-                     (int) crawledPage.HttpWebResponse.StatusCode <= 399));
+            bool isRedirect = false;
+            if (crawledPage.HttpWebResponse != null) {
+                isRedirect = (_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled &&
+                    crawledPage.HttpWebResponse.ResponseUri != null &&
+                    crawledPage.HttpWebResponse.ResponseUri.AbsoluteUri != crawledPage.Uri.AbsoluteUri) ||
+                    (!_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled &&
+                    (int) crawledPage.HttpWebResponse.StatusCode >= 300 &&
+                    (int) crawledPage.HttpWebResponse.StatusCode <= 399);
+            }
+            return isRedirect;
         }
-        
+
         protected virtual void ThrowIfCancellationRequested()
         {
             if (_crawlContext.CancellationTokenSource != null && _crawlContext.CancellationTokenSource.IsCancellationRequested)
@@ -927,7 +934,7 @@ namespace Abot.Crawler
                         PageToCrawl page = new PageToCrawl(uri);
                         page.ParentUri = crawledPage.Uri;
                         page.CrawlDepth = crawledPage.CrawlDepth + 1;
-                        page.IsInternal = _isInternalDecisionMaker(uri, _crawlContext.RootUri);
+                        page.IsInternal = IsInternalUri(uri);
                         page.IsRoot = false;
 
                         if (ShouldSchedulePageLink(page))
@@ -1022,6 +1029,73 @@ namespace Abot.Crawler
             //TODO Cannot use RateLimiter since it currently cannot handle dynamic sleep times so using Thread.Sleep in the meantime
             if (milliToWait > 0)
                 Thread.Sleep(TimeSpan.FromMilliseconds(milliToWait));
+        }
+
+        /// <summary>
+        /// Validate that the Root page was not redirected. If the root page is redirected, we assume that the root uri
+        /// should be changed to the uri where it was redirected.
+        /// </summary>
+        protected virtual void ValidateRootUriForRedirection(CrawledPage crawledRootPage)
+        {
+            if (!crawledRootPage.IsRoot) {
+                throw new ArgumentException("The crawled page must be the root page to be validated for redirection.");
+            }
+
+            if (IsRedirect(crawledRootPage)) {
+                _crawlContext.RootUri = ExtractRedirectUri(crawledRootPage);
+                _logger.InfoFormat("The root URI [{0}] was redirected to [{1}]. Pages from domains [{2}] and [{3}] will be considered internal.",
+                    _crawlContext.OriginalRootUri,
+                    _crawlContext.RootUri,
+                    _crawlContext.RootUri.Authority,
+                    _crawlContext.OriginalRootUri.Authority);
+            }
+        }
+
+        /// <summary>
+        /// Retrieve the URI where the specified crawled page was redirected.
+        /// </summary>
+        /// <remarks>
+        /// If HTTP auto redirections is disabled, this value is stored in the 'Location' header of the response.
+        /// If auto redirections is enabled, this value is stored in the response's ResponseUri property.
+        /// </remarks>
+        protected virtual Uri ExtractRedirectUri(CrawledPage crawledPage)
+        {
+            Uri locationUri;
+            if (_crawlContext.CrawlConfiguration.IsHttpRequestAutoRedirectsEnabled) {
+                // For auto redirects, look for the response uri.
+                locationUri = crawledPage.HttpWebResponse.ResponseUri;
+            } else {
+                // For manual redirects, we need to look for the location header.
+                var location = crawledPage.HttpWebResponse.Headers["Location"];
+
+                // Check if the location is absolute. If not, create an absolute uri.
+                if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri))
+                {
+                    Uri baseUri = new Uri(crawledPage.Uri.GetLeftPart(UriPartial.Authority));
+                    locationUri = new Uri(baseUri, location);
+                }
+            }
+            return locationUri;
+        }
+
+        public virtual void Dispose()
+        {
+            if (_threadManager != null)
+            {
+                _threadManager.Dispose();
+            }
+            if (_scheduler != null)
+            {
+                _scheduler.Dispose();
+            }
+            if (_pageRequester != null)
+            {
+                _pageRequester.Dispose();
+            }
+            if (_memoryManager != null)
+            {
+                _memoryManager.Dispose();
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Abot.Core
     /// <summary>
     /// Handles managing the priority of what pages need to be crawled
     /// </summary>
-    public interface IScheduler
+    public interface IScheduler : IDisposable
     {
         /// <summary>
         /// Count of remaining items that are currently scheduled
@@ -92,6 +92,18 @@ namespace Abot.Core
         public void Clear()
         {
             _pagesToCrawlRepo.Clear();
+        }
+
+        public void Dispose()
+        {
+            if (_crawledUrlRepo != null)
+            {
+                _crawledUrlRepo.Dispose();
+            }
+            if (_pagesToCrawlRepo != null)
+            {
+                _pagesToCrawlRepo.Dispose();
+            }
         }
     }
 }

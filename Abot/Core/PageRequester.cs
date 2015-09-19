@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Abot.Core
 {
-    public interface IPageRequester
+    public interface IPageRequester : IDisposable
     {
         /// <summary>
         /// Make an http web request to the url and download its content
@@ -34,7 +34,7 @@ namespace Abot.Core
 
         protected CrawlConfiguration _config;
         protected IWebContentExtractor _extractor;
-        protected CookieContainer container = new CookieContainer();
+        protected CookieContainer _cookieContainer = new CookieContainer();
 
         public PageRequester(CrawlConfiguration config)
             : this(config, null)
@@ -211,7 +211,7 @@ namespace Abot.Core
                 request.Timeout = _config.HttpRequestTimeoutInSeconds * 1000;
 
             if (_config.IsSendingCookiesEnabled)
-                request.CookieContainer = container;
+                request.CookieContainer = _cookieContainer;
 
             if (_config.IsAlwaysLogin)
             {
@@ -227,8 +227,18 @@ namespace Abot.Core
             if (response != null && _config.IsSendingCookiesEnabled)
             {
                 CookieCollection cookies = response.Cookies;
-                container.Add(cookies);
+                _cookieContainer.Add(cookies);
             }
+        }
+
+        public void Dispose()
+        {
+            if (_extractor != null)
+            {
+                _extractor.Dispose();
+            }
+            _cookieContainer = null;
+            _config = null;
         }
     }
 }
