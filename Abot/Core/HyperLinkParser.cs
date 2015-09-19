@@ -23,7 +23,7 @@ namespace Abot.Core
     {
         protected ILog _logger = LogManager.GetLogger("AbotLogger");
         protected bool _isRespectMetaRobotsNoFollowEnabled;
-        protected bool _removeUrlFragment;
+        protected bool _isRespectUrlNamedAnchorOrHashbangEnabled; 
 
         public HyperLinkParser()
             :this(false, true)
@@ -31,10 +31,10 @@ namespace Abot.Core
 
         }
 
-        public HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool removeUrlFragment = true)
+        public HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectUrlNamedAnchorOrHashbangEnabled = false)
         {
             _isRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
-            _removeUrlFragment = removeUrlFragment;
+            _isRespectUrlNamedAnchorOrHashbangEnabled = isRespectUrlNamedAnchorOrHashbangEnabled;
         }
 
         /// <summary>
@@ -100,9 +100,9 @@ namespace Abot.Core
                 {
                     // Remove the url fragment part of the url if needed.
                     // This is the part after the # and is often not useful.
-                    href = _removeUrlFragment
-                        ? hrefValue.Split('#')[0]
-                        : hrefValue;
+                    href = _isRespectUrlNamedAnchorOrHashbangEnabled
+                        ? hrefValue
+                        : hrefValue.Split('#')[0];
                     Uri newUri = new Uri(uriToUse, href);
 
                     if (!uris.Exists(u => u.AbsoluteUri == newUri.AbsoluteUri))

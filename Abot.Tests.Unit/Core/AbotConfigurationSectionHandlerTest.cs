@@ -30,6 +30,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(true, _uut.CrawlBehavior.IsHttpRequestAutomaticDecompressionEnabled);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsSendingCookiesEnabled);
             Assert.AreEqual(false, _uut.CrawlBehavior.IsSslCertificateValidationEnabled);
+            Assert.AreEqual(true, _uut.CrawlBehavior.IsRespectUrlNamedAnchorOrHashbangEnabled);
             Assert.AreEqual(25, _uut.CrawlBehavior.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(26, _uut.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(27, _uut.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
@@ -77,6 +78,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(true, _uut.CrawlBehavior.IsHttpRequestAutomaticDecompressionEnabled);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsSendingCookiesEnabled);
             Assert.AreEqual(false, _uut.CrawlBehavior.IsSslCertificateValidationEnabled);
+            Assert.AreEqual(true, _uut.CrawlBehavior.IsRespectUrlNamedAnchorOrHashbangEnabled);
             Assert.AreEqual(result.MinAvailableMemoryRequiredInMb, _uut.CrawlBehavior.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(result.MaxMemoryUsageInMb, _uut.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(result.MaxMemoryUsageCacheTimeInSeconds, _uut.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);

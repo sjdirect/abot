@@ -7,9 +7,9 @@ namespace Abot.Tests.Unit.Core
     [TestFixture]
     public class HapHyperLinkParserTest : HyperLinkParserTest
     {
-        protected override HyperLinkParser GetInstance(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanUrlDelegate = null)
+        protected override HyperLinkParser GetInstance(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanUrlDelegate = null, bool isRespectUrlNamedAnchorOrHashbangEnabled = false)
         {
-            return new HapHyperLinkParser(isRespectMetaRobotsNoFollowEnabled, isRespectAnchorRelNoFollowEnabled, cleanUrlDelegate);
+            return new HapHyperLinkParser(isRespectMetaRobotsNoFollowEnabled, isRespectAnchorRelNoFollowEnabled, cleanUrlDelegate, isRespectUrlNamedAnchorOrHashbangEnabled);
         }
 
         [Test]

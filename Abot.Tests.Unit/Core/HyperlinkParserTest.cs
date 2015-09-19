@@ -16,13 +16,13 @@ namespace Abot.Tests.Unit.Core
         Uri _uri = new Uri("http://a.com/");
         CrawledPage _crawledPage;
 
-        protected abstract HyperLinkParser GetInstance(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanUrlDelegate = null);
+        protected abstract HyperLinkParser GetInstance(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanUrlDelegate = null, bool isRespectUrlNamedAnchorOrHashbangEnabled = false);
 
         [SetUp]
         public void Setup()
         {
             _crawledPage = new CrawledPage(_uri){ HttpWebRequest = (HttpWebRequest)WebRequest.Create(_uri) };
-            _unitUnderTest = GetInstance(false, false);
+            _unitUnderTest = GetInstance(false, false, null, false);
         }
 
         [Test]
@@ -189,14 +189,30 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        public void GetLinks_NamedAnchors_Ignores()
+        public void GetLinks_NamedAnchorsOrHashbangs_Ignores()
         {
-            _crawledPage.Content.Text =  "<a href=\"/aaa/a.html\" ></a><a href=\"/aaa/a.html#top\" ></a><a href=\"/aaa/a.html#bottom\" /></a>";
+            _crawledPage.Content.Text = "<a href=\"/aaa/a.html\" ></a><a href=\"/aaa/a.html#top\" ></a><a href=\"/aaa/a.html#bottom\" /></a><a href=\"/aaa/a.html/#someaction/someid\" /></a>";
 
             IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
 
-            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(2, result.Count());
             Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(0).AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html/", result.ElementAt(1).AbsoluteUri);
+        }
+
+        [Test]
+        public void GetLinks_NamedAnchorsOrHashbangs_Enabled_ReturnsLinks()
+        {
+            _unitUnderTest = GetInstance(false, false, null, true);
+            _crawledPage.Content.Text = "<a href=\"/aaa/a.html\" ></a><a href=\"/aaa/a.html#top\" ></a><a href=\"/aaa/a.html#bottom\" /></a><a href=\"/aaa/a.html/#someaction/someid\" /></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(4, result.Count());
+            Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(0).AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html#top", result.ElementAt(1).AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html#bottom", result.ElementAt(2).AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html/#someaction/someid", result.ElementAt(3).AbsoluteUri);
         }
 
         [Test]

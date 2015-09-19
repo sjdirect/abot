@@ -87,6 +87,11 @@ namespace Abot.Poco
         public bool IsExternalPageLinksCrawlingEnabled { get; set; }
 
         /// <summary>
+        /// Whether or not url named anchors or hashbangs are considered part of the url. If false, they will be ignored. If true, they will be considered part of the url.
+        /// </summary>
+        public bool IsRespectUrlNamedAnchorOrHashbangEnabled { get; set; }
+
+        /// <summary>
         /// A comma seperated string that has content types that should have their page content downloaded. For each page, the content type is checked to see if it contains any of the values defined here.
         /// </summary>
         public string DownloadableContentTypes { get; set; }

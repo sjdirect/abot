@@ -242,6 +242,12 @@ namespace Abot.Core
             get { return (bool)this["isSendingCookiesEnabled"]; }
         }
 
+        [ConfigurationProperty("isRespectUrlNamedAnchorOrHashbangEnabled", IsRequired = false)]
+        public bool IsRespectUrlNamedAnchorOrHashbangEnabled
+        {
+            get { return (bool)this["isRespectUrlNamedAnchorOrHashbangEnabled"]; }
+        }
+
         [ConfigurationProperty("minAvailableMemoryRequiredInMb", IsRequired = false)]
         public int MinAvailableMemoryRequiredInMb
         {
