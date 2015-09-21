@@ -168,24 +168,22 @@ namespace Abot.Util
             // While there are exit times that are passed due still in the queue,
             // exit the semaphore and dequeue the exit time.
             int exitTime;
-            while (_exitTimes.TryPeek(out exitTime)
-                    && unchecked(exitTime - Environment.TickCount) <= 0)
+            bool exitTimeValid = _exitTimes.TryPeek(out exitTime);
+            while (exitTimeValid)
             {
+                if (unchecked(exitTime - Environment.TickCount) > 0)
+                {
+                    break;
+                }
                 _semaphore.Release();
                 _exitTimes.TryDequeue(out exitTime);
+                exitTimeValid = _exitTimes.TryPeek(out exitTime);
             }
 
-            // Try to get the next exit time from the queue and compute
-            // the time until the next check should take place. If the 
-            // queue is empty, then no exit times will occur until at least
-            // one time unit has passed.
-            int timeUntilNextCheck;
-            if (_exitTimes.TryPeek(out exitTime))
-                timeUntilNextCheck = unchecked(exitTime - Environment.TickCount);
-            else
-                timeUntilNextCheck = TimeUnitMilliseconds;
+            // we are already holding the next item from the queue, do not peek again
+            // although this exit time may have already pass by this stmt.
+            var timeUntilNextCheck = exitTimeValid ? Math.Min(TimeUnitMilliseconds, Math.Max(0, exitTime - Environment.TickCount)) : TimeUnitMilliseconds;
 
-            // Set the timer.
             _exitTimer.Change(timeUntilNextCheck, -1);
         }
 
