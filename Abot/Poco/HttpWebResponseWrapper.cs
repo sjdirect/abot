@@ -39,12 +39,24 @@ namespace Abot.Poco
             this.Cookies = response.Cookies;
             this.IsFromCache = response.IsFromCache;
             this.IsMutuallyAuthenticated = response.IsMutuallyAuthenticated;
-            this.LastModified = response.LastModified;
+            this.LastModified = GetLastModified(response);
             this.Method = response.Method;
             this.ProtocolVersion = response.ProtocolVersion;
             this.ResponseUri = response.ResponseUri;
             this.Server = response.Server;
             this.StatusDescription = response.StatusDescription;
+        }
+
+        private static DateTime GetLastModified(HttpWebResponse response)
+        {
+            try
+            {
+                return response.LastModified;
+            }
+            catch (ProtocolViolationException)
+            {
+                return DateTime.MinValue;
+            }
         }
 
         /// <summary>Constructs a response based on custom parameters.</summary>

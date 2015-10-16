@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using log4net.Core;
 
 namespace Abot.Core
 {
@@ -103,24 +104,32 @@ namespace Abot.Core
             }
             finally
             {
-                crawledPage.HttpWebRequest = request;
-                crawledPage.RequestCompleted = DateTime.Now;
-                if (response != null)
+                try
                 {
-                    crawledPage.HttpWebResponse = new HttpWebResponseWrapper(response);
-                    CrawlDecision shouldDownloadContentDecision = shouldDownloadContent(crawledPage);
-                    if (shouldDownloadContentDecision.Allow)
+                    crawledPage.HttpWebRequest = request;
+                    crawledPage.RequestCompleted = DateTime.Now;
+                    if (response != null)
                     {
-                        crawledPage.DownloadContentStarted = DateTime.Now;
-                        crawledPage.Content = _extractor.GetContent(response);
-                        crawledPage.DownloadContentCompleted = DateTime.Now;
-                    }
-                    else
-                    {
-                        _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
-                    }
+                        crawledPage.HttpWebResponse = new HttpWebResponseWrapper(response);
+                        CrawlDecision shouldDownloadContentDecision = shouldDownloadContent(crawledPage);
+                        if (shouldDownloadContentDecision.Allow)
+                        {
+                            crawledPage.DownloadContentStarted = DateTime.Now;
+                            crawledPage.Content = _extractor.GetContent(response);
+                            crawledPage.DownloadContentCompleted = DateTime.Now;
+                        }
+                        else
+                        {
+                            _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
+                        }
 
-                    response.Close();//Should already be closed by _extractor but just being safe
+                        response.Close();//Should already be closed by _extractor but just being safe
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.DebugFormat("Error occurred finalizing requesting url [{0}]", uri.AbsoluteUri);
+                    _logger.Debug(e);
                 }
             }
 
