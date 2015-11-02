@@ -118,6 +118,7 @@ namespace Abot.Crawler
         protected CrawlContext _crawlContext;
         protected IThreadManager _threadManager;
         protected IScheduler _scheduler;
+        protected ICrawledUrlRepository _crawledUrlRepository;
         protected IPageRequester _pageRequester;
         protected IHyperLinkParser _hyperLinkParser;
         protected ICrawlDecisionMaker _crawlDecisionMaker;
@@ -190,7 +191,8 @@ namespace Abot.Crawler
             CrawlBag = _crawlContext.CrawlBag;
 
             _threadManager = threadManager ?? new TaskThreadManager(_crawlContext.CrawlConfiguration.MaxConcurrentThreads > 0 ? _crawlContext.CrawlConfiguration.MaxConcurrentThreads : Environment.ProcessorCount);
-            _scheduler = scheduler ?? new Scheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, null, null);
+            _crawledUrlRepository = new InMemoryCrawledUrlRepository();
+            _scheduler = scheduler ?? new Scheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, _crawledUrlRepository, null);
             _pageRequester = pageRequester ?? new PageRequester(_crawlContext.CrawlConfiguration);
             _crawlDecisionMaker = crawlDecisionMaker ?? new CrawlDecisionMaker();
 
@@ -905,7 +907,6 @@ namespace Abot.Crawler
                 pageToCrawl.RetryCount++;
                 return;
             }
-                
 
             int domainCount = 0;
             Interlocked.Increment(ref _crawlContext.CrawledCount);
@@ -927,8 +928,10 @@ namespace Abot.Crawler
         {
             foreach (Uri uri in crawledPage.ParsedLinks)
             {
-                if (_shouldScheduleLinkDecisionMaker == null || _shouldScheduleLinkDecisionMaker.Invoke(uri, crawledPage, _crawlContext))
-                {
+                // First validate that the link was not already visited or added to the list of pages to visit, so we don't
+                // make the same validation and fire the same events twice.
+                if (!_crawledUrlRepository.Contains(uri) &&
+                    (_shouldScheduleLinkDecisionMaker == null || _shouldScheduleLinkDecisionMaker.Invoke(uri, crawledPage, _crawlContext))) {
                     try //Added due to a bug in the Uri class related to this (http://stackoverflow.com/questions/2814951/system-uriformatexception-invalid-uri-the-hostname-could-not-be-parsed)
                     {
                         PageToCrawl page = new PageToCrawl(uri);
@@ -944,6 +947,9 @@ namespace Abot.Crawler
                     }
                     catch { }
                 }
+
+                // Add this link to the list of visited Urls so validations are not duplicated in the future.
+                _crawledUrlRepository.AddIfNew(uri);
             }
         }
 
