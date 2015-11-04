@@ -315,6 +315,35 @@ namespace Abot.Tests.Unit.Crawler
         }
 
         [Test]
+        public void Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_RootPageIsAllowed_AllPagesBelowDisallowed_IsIgnoreRobotsDotTextIfRootDisallowedEnabledTrue_CallsHttpRequester()
+        {
+            CrawledPage homePage = new CrawledPage(_rootUri)
+            {
+                Content = new PageContent
+                {
+                    Text = "content here"
+                }
+            };
+            CrawledPage page1 = new CrawledPage(_rootUri);
+
+            _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(_rootUri.AbsoluteUri, It.IsAny<string>())).Returns(true);
+            _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(_rootUri.AbsoluteUri + "aaaaa", It.IsAny<string>())).Returns(false);
+            _fakeRobotsDotTextFinder.Setup(f => f.Find(It.IsAny<Uri>())).Returns(_fakeRobotsDotText.Object);
+            _fakeHttpRequester.Setup(f => f.MakeRequest(_rootUri, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page1);
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
+            _dummyConfiguration.IsRespectRobotsDotTextEnabled = true;
+            _dummyConfiguration.IsIgnoreRobotsDotTextIfRootDisallowedEnabled = true;
+            _unitUnderTest = new PoliteWebCrawler(_dummyConfiguration, _fakeCrawlDecisionMaker.Object, _dummyThreadManager, _dummyScheduler, _fakeHttpRequester.Object, _fakeHyperLinkParser.Object, _fakeMemoryManager.Object, _fakeDomainRateLimiter.Object, _fakeRobotsDotTextFinder.Object);
+
+            _unitUnderTest.Crawl(_rootUri);
+
+            _fakeCrawlDecisionMaker.VerifyAll();
+            _fakeRobotsDotText.VerifyAll();
+            _fakeRobotsDotTextFinder.VerifyAll();
+            _fakeHttpRequester.VerifyAll();
+        }
+
+        [Test]
         public void Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_UsesCorrectUserAgentString()
         {
             Uri uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");

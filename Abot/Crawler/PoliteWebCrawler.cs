@@ -89,12 +89,32 @@ namespace Abot.Crawler
             if (_robotsDotText != null)
                 allowedByRobots = _robotsDotText.IsUrlAllowed(pageToCrawl.Uri.AbsoluteUri, _crawlContext.CrawlConfiguration.RobotsDotTextUserAgentString);
 
-            if (!allowedByRobots && pageToCrawl.IsRoot && _crawlContext.CrawlConfiguration.IsIgnoreRobotsDotTextIfRootDisallowedEnabled)
+
+            //https://github.com/sjdirect/abot/issues/96 Handle scenario where the root is allowed but all the paths below are disallowed like "disallow: /*"
+            var allPathsBelowRootAllowedByRobots = false;
+            if (_robotsDotText != null && pageToCrawl.IsRoot && allowedByRobots)
             {
-                string message = string.Format("Page [{0}] [Disallowed by robots.txt file], however since IsIgnoreRobotsDotTextIfRootDisallowedEnabled is set to true the robots.txt file will be ignored for this site.", pageToCrawl.Uri.AbsoluteUri);
-                _logger.DebugFormat(message);
-                allowedByRobots = true;
-                _robotsDotText = null;
+                var anyPathOffRoot = pageToCrawl.Uri.AbsoluteUri.EndsWith("/") ? pageToCrawl.Uri.AbsoluteUri + "aaaaa": pageToCrawl.Uri.AbsoluteUri + "/aaaaa";
+                allPathsBelowRootAllowedByRobots = _robotsDotText.IsUrlAllowed(anyPathOffRoot, _crawlContext.CrawlConfiguration.RobotsDotTextUserAgentString);
+            }
+
+            if (_crawlContext.CrawlConfiguration.IsIgnoreRobotsDotTextIfRootDisallowedEnabled && pageToCrawl.IsRoot)    
+            {
+                if (!allowedByRobots)
+                {
+                    string message = string.Format("Page [{0}] [Disallowed by robots.txt file], however since IsIgnoreRobotsDotTextIfRootDisallowedEnabled is set to true the robots.txt file will be ignored for this site.", pageToCrawl.Uri.AbsoluteUri);
+                    _logger.DebugFormat(message);
+                    allowedByRobots = true;
+                    _robotsDotText = null;
+                }
+                else if (!allPathsBelowRootAllowedByRobots)
+                {
+                    string message = string.Format("All Pages below [{0}] [Disallowed by robots.txt file], however since IsIgnoreRobotsDotTextIfRootDisallowedEnabled is set to true the robots.txt file will be ignored for this site.", pageToCrawl.Uri.AbsoluteUri);
+                    _logger.DebugFormat(message);
+                    allowedByRobots = true;
+                    _robotsDotText = null;
+                }
+
             }
             else if (!allowedByRobots)
             {
