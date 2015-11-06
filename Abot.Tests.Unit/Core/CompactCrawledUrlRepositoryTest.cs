@@ -5,11 +5,11 @@ using NUnit.Framework;
 namespace Abot.Tests.Unit.Core
 {
     [TestFixture]
-    public class HashedCrawledUrlRepositoryTest : CrawledUrlRepositoryTest
+    public class CompactCrawledUrlRepositoryTest : CrawledUrlRepositoryTest
     {
         public override ICrawledUrlRepository GetInstance()
         {
-            return new HashedCrawledUrlRepository();
+            return new CompactCrawledUrlRepository();
         }
 
     }

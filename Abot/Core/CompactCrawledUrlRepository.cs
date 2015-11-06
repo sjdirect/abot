@@ -10,7 +10,7 @@ namespace Abot.Core
     /// <summary>
     /// Implementation that stores a numeric hash of the url instead of the url itself to use for lookups. This should save space when the crawled url list gets very long. 
     /// </summary>
-    public class HashedCrawledUrlRepository : ICrawledUrlRepository
+    public class CompactCrawledUrlRepository : ICrawledUrlRepository
     {
         private ConcurrentDictionary<long, byte> m_UrlRepository = new ConcurrentDictionary<long, byte>();
 
