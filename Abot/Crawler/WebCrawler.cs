@@ -905,7 +905,6 @@ namespace Abot.Crawler
                 pageToCrawl.RetryCount++;
                 return;
             }
-                
 
             int domainCount = 0;
             Interlocked.Increment(ref _crawlContext.CrawledCount);
@@ -927,8 +926,10 @@ namespace Abot.Crawler
         {
             foreach (Uri uri in crawledPage.ParsedLinks)
             {
-                if (_shouldScheduleLinkDecisionMaker == null || _shouldScheduleLinkDecisionMaker.Invoke(uri, crawledPage, _crawlContext))
-                {
+                // First validate that the link was not already visited or added to the list of pages to visit, so we don't
+                // make the same validation and fire the same events twice.
+                if (!_scheduler.IsUriKnown(uri) &&
+                    (_shouldScheduleLinkDecisionMaker == null || _shouldScheduleLinkDecisionMaker.Invoke(uri, crawledPage, _crawlContext))) {
                     try //Added due to a bug in the Uri class related to this (http://stackoverflow.com/questions/2814951/system-uriformatexception-invalid-uri-the-hostname-could-not-be-parsed)
                     {
                         PageToCrawl page = new PageToCrawl(uri);
@@ -944,6 +945,9 @@ namespace Abot.Crawler
                     }
                     catch { }
                 }
+
+                // Add this link to the list of known Urls so validations are not duplicated in the future.
+                _scheduler.AddKnownUri(uri);
             }
         }
 

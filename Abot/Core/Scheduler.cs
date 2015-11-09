@@ -33,6 +33,18 @@ namespace Abot.Core
         /// Clear all currently scheduled pages
         /// </summary>
         void Clear();
+
+        /// <summary>
+        /// Add the Url to the list of crawled Url without scheduling it to be crawled.
+        /// </summary>
+        /// <param name="uri"></param>
+        void AddKnownUri(Uri uri);
+
+        /// <summary>
+        /// Returns whether or not the specified Uri was already scheduled to be crawled or simply added to the
+        /// list of known Uris.
+        /// </summary>
+        bool IsUriKnown(Uri uri);
     }
 
     [Serializable]
@@ -92,6 +104,16 @@ namespace Abot.Core
         public void Clear()
         {
             _pagesToCrawlRepo.Clear();
+        }
+
+        public void AddKnownUri(Uri uri)
+        {
+            _crawledUrlRepo.AddIfNew(uri);
+        }
+
+        public bool IsUriKnown(Uri uri)
+        {
+            return _crawledUrlRepo.Contains(uri);
         }
 
         public void Dispose()

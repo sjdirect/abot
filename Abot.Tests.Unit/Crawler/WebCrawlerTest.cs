@@ -1,5 +1,4 @@
 ﻿using Abot.Core;
-using Abot.Core;
 using Abot.Crawler;
 using Abot.Poco;
 using Abot.Util;
@@ -1089,6 +1088,35 @@ namespace Abot.Tests.Unit.Crawler
             Assert.AreEqual("Process is using [2mb] of memory which is above the max configured of [1mb] for site [http://a.com/]. This is configurable through the maxMemoryUsageInMb in app.conf or CrawlConfiguration.MaxMemoryUsageInMb.", result.ErrorException.Message);
             Assert.IsFalse(result.CrawlContext.IsCrawlStopRequested);
             Assert.IsTrue(result.CrawlContext.IsCrawlHardStopRequested);
+        }
+
+        [Test]
+        public void Crawl_ExtractedLinksAreNotCheckedTwice()
+        {
+            Uri fakeLink1 = new Uri("http://a.com/someUri");
+            Uri fakeLink2 = new Uri("http://a.com/someOtherUri");
+            Uri fakeLink3 = new Uri("http://a.com/anotherOne");
+            CrawledPage homePage = new CrawledPage(_rootUri);
+            CrawledPage page1 = new CrawledPage(fakeLink1);
+            CrawledPage page2 = new CrawledPage(fakeLink2);
+
+            // All links are found in each pages.
+            _fakeHyperLinkParser.Setup(parser => parser.GetLinks(It.IsAny<CrawledPage>())).Returns(new [] { fakeLink1, fakeLink2, fakeLink3 });
+            
+            _fakeHttpRequester.Setup(f => f.MakeRequest(_rootUri, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(homePage);
+            _fakeHttpRequester.Setup(f => f.MakeRequest(fakeLink1, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page1);
+            _fakeHttpRequester.Setup(f => f.MakeRequest(fakeLink2, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page2);
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision{Allow = true});
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPage(It.Is<PageToCrawl>(p => p.Uri == fakeLink3), It.IsAny<CrawlContext>())).Returns(new CrawlDecision{Allow = false});
+            _fakeCrawlDecisionMaker.Setup(f => f.ShouldCrawlPageLinks(It.IsAny<CrawledPage>(), It.IsAny<CrawlContext>())).Returns(new CrawlDecision { Allow = true });
+
+            _unitUnderTest = new PoliteWebCrawler(_dummyConfiguration, _fakeCrawlDecisionMaker.Object, _dummyThreadManager, _dummyScheduler, _fakeHttpRequester.Object, _fakeHyperLinkParser.Object, _fakeMemoryManager.Object, _fakeDomainRateLimiter.Object, _fakeRobotsDotTextFinder.Object);
+            _unitUnderTest.Crawl(_rootUri);
+
+            // The links should be checked only one time, so ShouldCrawlPage should be called only 4 times.
+            _fakeCrawlDecisionMaker.Verify(f => f.ShouldCrawlPage(It.IsAny<PageToCrawl>(), It.IsAny<CrawlContext>()), Times.Exactly(4));
+            _fakeHyperLinkParser.VerifyAll();
+            _fakeCrawlDecisionMaker.VerifyAll();
         }
 
         [Test]
