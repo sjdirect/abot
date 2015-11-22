@@ -7,13 +7,13 @@
     <authors>Steven Jones</authors>
     <owners>Steven Jones</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-    <projectUrl>https://code.google.com/p/abot/</projectUrl>
-    <iconUrl>https://code.google.com/p/abot/logo?cct=1364531651</iconUrl>
+    <projectUrl>https://github.com/sjdirect/abot</projectUrl>
+    <iconUrl>http://abotx.org/Content/images/logoicon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process.</description>
     <summary>Open source C# web crawler built for speed, flexibility and extensibility.</summary>
-    <releaseNotes>$version$ release notes may be found on https://code.google.com/p/abot/</releaseNotes>
-    <copyright>Copyright 2013</copyright>
+    <releaseNotes>$version$ release notes may be found on https://github.com/sjdirect/abot</releaseNotes>
+    <copyright>Copyright 2015 Steven Jones</copyright>
     <tags>crawler robot spider</tags>
   </metadata>
   <files>
