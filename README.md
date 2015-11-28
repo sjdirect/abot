@@ -24,6 +24,15 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
   * [Take the usage survey](https://www.surveymonkey.com/s/JS5826F) to help prioritize features/improvements
   * [Consider making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ)
 
+######Use [AbotX](http://abotx.org) for powerfull extension/wrappers
+
+  * [Crawl multiple sites concurrently](http://abotx.org/Learn/ParallelCrawlerEngine)
+  * [Execute/Render Javascript](http://abotx.org/Learn/JavascriptRendering)
+  * [Avoid getting blocked by sites](http://abotx.org/Learn/CrawlerX#crawlerx-pause-resume)
+  * [Pause/Resume live crawls](http://abotx.org/Learn/CrawlerX#crawlerx-pause-resume)
+  * [Schedule day/time crawl limits](http://abotx.org/Learn/Scheduler)
+  * [Automatically speed up/down based on current resource usage](http://abotx.org/Learn/ThroughputMaximizer)
+
 <br /><br />
 <hr />
 ##Quick Start 
