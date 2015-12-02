@@ -1047,11 +1047,9 @@ namespace Abot.Crawler
 
             if (IsRedirect(crawledRootPage)) {
                 _crawlContext.RootUri = ExtractRedirectUri(crawledRootPage);
-                _logger.InfoFormat("The root URI [{0}] was redirected to [{1}]. Pages from domains [{2}] and [{3}] will be considered internal.",
+                _logger.InfoFormat("The root URI [{0}] was redirected to [{1}]. [{1}] is the new root.",
                     _crawlContext.OriginalRootUri,
-                    _crawlContext.RootUri,
-                    _crawlContext.RootUri.Authority,
-                    _crawlContext.OriginalRootUri.Authority);
+                    _crawlContext.RootUri);
             }
         }
 
