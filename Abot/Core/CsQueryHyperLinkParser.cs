@@ -12,12 +12,12 @@ namespace Abot.Core
     [Serializable]
     public class CSQueryHyperlinkParser : HyperLinkParser
     {
-        bool _isRespectAnchorRelNoFollowEnabled;
-        
         public CSQueryHyperlinkParser()
+            :base()
         {
         }
 
+        [Obsolete("Use the constructor that accepts a configuration object instead")]
         /// <summary>
         /// Constructor
         /// </summary>
@@ -25,15 +25,26 @@ namespace Abot.Core
         /// <param name="isRespectAnchorRelNoFollowEnabled">Whether parser should ignore links with rel no follow</param>
         /// <param name="cleanURLFunc">Function to clean the url</param>
         /// <param name="isRespectUrlNamedAnchorOrHashbangEnabled">Whether parser should consider named anchor and/or hashbang '#' character as part of the url</param>
-        public CSQueryHyperlinkParser(  bool isRespectMetaRobotsNoFollowEnabled, 
-                                        bool isRespectAnchorRelNoFollowEnabled, 
-                                        Func<string, string> cleanURLFunc = null, 
-                                        bool isRespectUrlNamedAnchorOrHashbangEnabled = false)
-            : base(isRespectMetaRobotsNoFollowEnabled, isRespectUrlNamedAnchorOrHashbangEnabled, cleanURLFunc)
+        public CSQueryHyperlinkParser(bool isRespectMetaRobotsNoFollowEnabled,
+                                  bool isRespectAnchorRelNoFollowEnabled,
+                                  Func<string, string> cleanURLFunc = null,
+                                  bool isRespectUrlNamedAnchorOrHashbangEnabled = false)
+            :this(new CrawlConfiguration
+            {
+                IsRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled,
+                IsRespectUrlNamedAnchorOrHashbangEnabled = isRespectUrlNamedAnchorOrHashbangEnabled,
+                IsRespectAnchorRelNoFollowEnabled = isRespectAnchorRelNoFollowEnabled
+            }, cleanURLFunc)
         {
-            _isRespectAnchorRelNoFollowEnabled = isRespectAnchorRelNoFollowEnabled;
+
         }
-        
+
+        public CSQueryHyperlinkParser(CrawlConfiguration config, Func<string, string> cleanURLFunc)
+            : base(config, cleanURLFunc)
+        {
+
+        }
+
         protected override string ParserType
         {
             get { return "CsQuery"; }
@@ -79,7 +90,7 @@ namespace Abot.Core
 
         protected virtual bool HasRelNoFollow(IDomElement e)
         {
-            return _isRespectAnchorRelNoFollowEnabled && (e.HasAttribute("rel") && e.GetAttribute("rel").ToLower().Trim() == "nofollow");
+            return _config.IsRespectAnchorRelNoFollowEnabled && (e.HasAttribute("rel") && e.GetAttribute("rel").ToLower().Trim() == "nofollow");
         }
     }
 }

@@ -190,6 +190,11 @@ namespace Abot.Poco
         public bool IsRespectMetaRobotsNoFollowEnabled { get; set; }
 
         /// <summary>
+        /// Whether the crawler should ignore links on pages that have an http X-Robots-Tag header of nofollow
+        /// </summary>
+        public bool IsRespectHttpXRobotsTagHeaderNoFollowEnabled { get; set; }
+
+        /// <summary>
         /// Whether the crawler should ignore links that have a <a href="whatever" rel="nofollow">...
         /// </summary>
         public bool IsRespectAnchorRelNoFollowEnabled { get; set; }

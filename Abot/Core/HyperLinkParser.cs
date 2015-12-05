@@ -22,20 +22,25 @@ namespace Abot.Core
     public abstract class HyperLinkParser : IHyperLinkParser
     {
         protected ILog _logger = LogManager.GetLogger("AbotLogger");
-        protected bool _isRespectMetaRobotsNoFollowEnabled;
-        protected bool _isRespectUrlNamedAnchorOrHashbangEnabled;
+        protected CrawlConfiguration _config;
         protected Func<string, string> _cleanURLFunc;
 
-        public HyperLinkParser()
-            :this(false, true, null)
+        protected HyperLinkParser()
+            :this(new CrawlConfiguration(), null)
         {
 
         }
 
-        public HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectUrlNamedAnchorOrHashbangEnabled, Func<string, string> cleanURLFunc)
+        [Obsolete("Use the constructor that accepts a configuration object instead")]
+        protected HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectUrlNamedAnchorOrHashbangEnabled, Func<string, string> cleanURLFunc)
+            : this(new CrawlConfiguration{ IsRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled, IsRespectUrlNamedAnchorOrHashbangEnabled = isRespectUrlNamedAnchorOrHashbangEnabled}, cleanURLFunc)
         {
-            _isRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
-            _isRespectUrlNamedAnchorOrHashbangEnabled = isRespectUrlNamedAnchorOrHashbangEnabled;
+
+        }
+
+        protected HyperLinkParser(CrawlConfiguration config, Func<string, string> cleanURLFunc)
+        {
+            _config = config;
             _cleanURLFunc = cleanURLFunc;
         }
 
@@ -102,7 +107,7 @@ namespace Abot.Core
                 {
                     // Remove the url fragment part of the url if needed.
                     // This is the part after the # and is often not useful.
-                    href = _isRespectUrlNamedAnchorOrHashbangEnabled
+                    href = _config.IsRespectUrlNamedAnchorOrHashbangEnabled
                         ? hrefValue
                         : hrefValue.Split('#')[0];
                     Uri newUri = new Uri(uriToUse, href);
@@ -125,18 +130,34 @@ namespace Abot.Core
 
         protected virtual bool HasRobotsNoFollow(CrawledPage crawledPage)
         {
-            if (!_isRespectMetaRobotsNoFollowEnabled)
-                return false;
+            //X-Robots-Tag http header
+            if(_config.IsRespectHttpXRobotsTagHeaderNoFollowEnabled)
+            {
+                var xRobotsTagHeader = crawledPage.HttpWebResponse.Headers["X-Robots-Tag"];
+                if (xRobotsTagHeader != null && 
+                    (xRobotsTagHeader.ToLower().Contains("nofollow") ||
+                     xRobotsTagHeader.ToLower().Contains("none")))
+                {
+                    _logger.InfoFormat("Http header X-Robots-Tag nofollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+                    return true;
+                }   
+            }
 
-            string robotsMeta = robotsMeta = GetMetaRobotsValue(crawledPage);
-            bool isRobotsNoFollow = robotsMeta != null &&
-                (robotsMeta.ToLower().Contains("nofollow") ||
-                robotsMeta.ToLower().Contains("none"));
+            //Meta robots tag
+            if (_config.IsRespectMetaRobotsNoFollowEnabled)
+            {
+                string robotsMeta = GetMetaRobotsValue(crawledPage);
+                if (robotsMeta != null &&
+                    (robotsMeta.ToLower().Contains("nofollow") ||
+                     robotsMeta.ToLower().Contains("none")))
+                {
+                    _logger.InfoFormat("Meta Robots nofollow tag detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+                    return true;
+                }                
+                
+            }
 
-            if (isRobotsNoFollow)
-                _logger.InfoFormat("Robots NoFollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
-
-            return isRobotsNoFollow;
+            return false;
         }
     }
 }

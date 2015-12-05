@@ -106,6 +106,12 @@ namespace Abot.Core
             get { return (bool)this["isRespectMetaRobotsNoFollowEnabled"]; }
         }
 
+        [ConfigurationProperty("isRespectHttpXRobotsTagHeaderNoFollowEnabled", IsRequired = false)]
+        public bool IsRespectHttpXRobotsTagHeaderNoFollowEnabled
+        {
+            get { return (bool)this["isRespectHttpXRobotsTagHeaderNoFollowEnabled"]; }
+        }
+
         [ConfigurationProperty("isRespectAnchorRelNoFollowEnabled", IsRequired = false)]
         public bool IsRespectAnchorRelNoFollowEnabled
         {

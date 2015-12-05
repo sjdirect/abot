@@ -43,6 +43,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(true, _uut.Politeness.IsRespectRobotsDotTextEnabled);
             Assert.AreEqual(true, _uut.Politeness.IsRespectMetaRobotsNoFollowEnabled);
             Assert.AreEqual(true, _uut.Politeness.IsRespectAnchorRelNoFollowEnabled);
+            Assert.AreEqual(true, _uut.Politeness.IsRespectHttpXRobotsTagHeaderNoFollowEnabled);
             Assert.AreEqual(true, _uut.Politeness.IsIgnoreRobotsDotTextIfRootDisallowedEnabled);
             Assert.AreEqual("zzzz", _uut.Politeness.RobotsDotTextUserAgentString);
             Assert.AreEqual(55, _uut.Politeness.MinCrawlDelayPerDomainMilliSeconds);
@@ -88,6 +89,10 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(result.MinRetryDelayInMilliseconds, _uut.CrawlBehavior.MinRetryDelayInMilliseconds);
             
             Assert.AreEqual(result.IsRespectRobotsDotTextEnabled, _uut.Politeness.IsRespectRobotsDotTextEnabled);
+            Assert.AreEqual(result.IsRespectMetaRobotsNoFollowEnabled, _uut.Politeness.IsRespectMetaRobotsNoFollowEnabled);
+            Assert.AreEqual(result.IsRespectHttpXRobotsTagHeaderNoFollowEnabled, _uut.Politeness.IsRespectHttpXRobotsTagHeaderNoFollowEnabled);
+            Assert.AreEqual(result.IsRespectAnchorRelNoFollowEnabled, _uut.Politeness.IsRespectAnchorRelNoFollowEnabled);
+
             Assert.AreEqual(result.IsIgnoreRobotsDotTextIfRootDisallowedEnabled, _uut.Politeness.IsIgnoreRobotsDotTextIfRootDisallowedEnabled);
             Assert.AreEqual(result.RobotsDotTextUserAgentString, _uut.Politeness.RobotsDotTextUserAgentString);
 
@@ -116,6 +121,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(pocoDefaults.IsExternalPageLinksCrawlingEnabled, _uut.CrawlBehavior.IsExternalPageLinksCrawlingEnabled);
             Assert.AreEqual(pocoDefaults.IsRespectRobotsDotTextEnabled, _uut.Politeness.IsRespectRobotsDotTextEnabled);
             Assert.AreEqual(pocoDefaults.IsRespectMetaRobotsNoFollowEnabled, _uut.Politeness.IsRespectMetaRobotsNoFollowEnabled);
+            Assert.AreEqual(pocoDefaults.IsRespectHttpXRobotsTagHeaderNoFollowEnabled, _uut.Politeness.IsRespectHttpXRobotsTagHeaderNoFollowEnabled);
             Assert.AreEqual(pocoDefaults.IsRespectAnchorRelNoFollowEnabled, _uut.Politeness.IsRespectAnchorRelNoFollowEnabled);
             Assert.AreEqual(pocoDefaults.IsIgnoreRobotsDotTextIfRootDisallowedEnabled, _uut.Politeness.IsIgnoreRobotsDotTextIfRootDisallowedEnabled);
             Assert.AreEqual(pocoDefaults.IsUriRecrawlingEnabled, _uut.CrawlBehavior.IsUriRecrawlingEnabled);
