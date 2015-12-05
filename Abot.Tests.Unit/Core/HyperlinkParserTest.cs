@@ -427,8 +427,8 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count());
-            Assert.AreEqual("http://a.com/xxx/x.html", result.ElementAt(0).AbsoluteUri);
-            Assert.AreEqual("http://a.com/yyy/y.html", result.ElementAt(1).AbsoluteUri);
+            Assert.AreEqual("http://x.com/xxx/x.html", result.ElementAt(0).AbsoluteUri);
+            Assert.AreEqual("http://x.com/yyy/y.html", result.ElementAt(1).AbsoluteUri);
         }
 
         [Test] //https://github.com/sjdirect/abot/issues/15

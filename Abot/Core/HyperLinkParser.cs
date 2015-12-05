@@ -23,18 +23,20 @@ namespace Abot.Core
     {
         protected ILog _logger = LogManager.GetLogger("AbotLogger");
         protected bool _isRespectMetaRobotsNoFollowEnabled;
-        protected bool _isRespectUrlNamedAnchorOrHashbangEnabled; 
+        protected bool _isRespectUrlNamedAnchorOrHashbangEnabled;
+        protected Func<string, string> _cleanURLFunc;
 
         public HyperLinkParser()
-            :this(false, true)
+            :this(false, true, null)
         {
 
         }
 
-        public HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectUrlNamedAnchorOrHashbangEnabled = false)
+        public HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectUrlNamedAnchorOrHashbangEnabled, Func<string, string> cleanURLFunc)
         {
             _isRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled;
             _isRespectUrlNamedAnchorOrHashbangEnabled = isRespectUrlNamedAnchorOrHashbangEnabled;
+            _cleanURLFunc = cleanURLFunc;
         }
 
         /// <summary>
@@ -104,6 +106,9 @@ namespace Abot.Core
                         ? hrefValue
                         : hrefValue.Split('#')[0];
                     Uri newUri = new Uri(uriToUse, href);
+
+                    if (_cleanURLFunc != null)
+                        newUri = new Uri(_cleanURLFunc(newUri.AbsoluteUri));
 
                     if (!uris.Exists(u => u.AbsoluteUri == newUri.AbsoluteUri))
                         uris.Add(newUri);

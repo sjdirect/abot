@@ -12,7 +12,6 @@ namespace Abot.Core
     [Serializable]
     public class HapHyperLinkParser : HyperLinkParser
     {
-        Func<string, string> _cleanURLFunc;
         bool _isRespectAnchorRelNoFollowEnabled;
 
         protected override string ParserType
@@ -36,10 +35,9 @@ namespace Abot.Core
                                   bool isRespectAnchorRelNoFollowEnabled,
                                   Func<string, string> cleanURLFunc = null,
                                   bool isRespectUrlNamedAnchorOrHashbangEnabled = false)
-            :base(isRespectMetaRobotsNoFollowEnabled, isRespectUrlNamedAnchorOrHashbangEnabled)
+            :base(isRespectMetaRobotsNoFollowEnabled, isRespectUrlNamedAnchorOrHashbangEnabled, cleanURLFunc)
         {
             _isRespectAnchorRelNoFollowEnabled = isRespectAnchorRelNoFollowEnabled;
-            _cleanURLFunc = cleanURLFunc;
         }
 
         protected override IEnumerable<string> GetHrefValues(CrawledPage crawledPage)
@@ -94,7 +92,7 @@ namespace Abot.Core
                 if (HasRelNoFollow(node))
                     continue;
 
-                hrefValue = _cleanURLFunc != null ? _cleanURLFunc(node.Attributes["href"].Value) : node.Attributes["href"].Value;
+                hrefValue = node.Attributes["href"].Value;
                 if (!string.IsNullOrWhiteSpace(hrefValue))
                 {
                     hrefValue = DeEntitize(hrefValue);

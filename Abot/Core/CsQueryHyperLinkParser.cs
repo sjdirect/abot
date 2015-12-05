@@ -12,7 +12,6 @@ namespace Abot.Core
     [Serializable]
     public class CSQueryHyperlinkParser : HyperLinkParser
     {
-        Func<string, string> _cleanURLFunc;
         bool _isRespectAnchorRelNoFollowEnabled;
         
         public CSQueryHyperlinkParser()
@@ -30,10 +29,9 @@ namespace Abot.Core
                                         bool isRespectAnchorRelNoFollowEnabled, 
                                         Func<string, string> cleanURLFunc = null, 
                                         bool isRespectUrlNamedAnchorOrHashbangEnabled = false)
-            : base(isRespectMetaRobotsNoFollowEnabled, isRespectUrlNamedAnchorOrHashbangEnabled)
+            : base(isRespectMetaRobotsNoFollowEnabled, isRespectUrlNamedAnchorOrHashbangEnabled, cleanURLFunc)
         {
             _isRespectAnchorRelNoFollowEnabled = isRespectAnchorRelNoFollowEnabled;
-            _cleanURLFunc = cleanURLFunc;
         }
         
         protected override string ParserType
@@ -49,7 +47,7 @@ namespace Abot.Core
             IEnumerable<string> hrefValues = crawledPage.CsQueryDocument.Select("a, area")
             .Elements
             .Where(e => !HasRelNoFollow(e))
-            .Select(y => _cleanURLFunc != null ? _cleanURLFunc(y.GetAttribute("href")) : y.GetAttribute("href"))
+            .Select(y => y.GetAttribute("href"))
             .Where(a => !string.IsNullOrWhiteSpace(a));
 
             IEnumerable<string> canonicalHref = crawledPage.CsQueryDocument.
