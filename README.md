@@ -97,6 +97,7 @@ using Abot.Poco;
     <politeness 
       isRespectRobotsDotTextEnabled="false"
       isRespectMetaRobotsNoFollowEnabled="false"
+	  isRespectHttpXRobotsTagHeaderNoFollowEnabled="false"
       isRespectAnchorRelNoFollowEnabled="false"
       isIgnoreRobotsDotTextIfRootDisallowedEnabled="false"
       robotsDotTextUserAgentString="abot"
