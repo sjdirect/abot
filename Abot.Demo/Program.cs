@@ -47,7 +47,7 @@ namespace Abot.Demo
         private static IWebCrawler GetManuallyConfiguredWebCrawler()
         {
             //Create a config object manually
-            CrawlConfiguration config = new CrawlConfiguration();
+            ICrawlConfiguration config = new CrawlConfiguration();
             config.CrawlTimeoutSeconds = 0;
             config.DownloadableContentTypes = "text/html, text/plain";
             config.IsExternalPageCrawlingEnabled = false;

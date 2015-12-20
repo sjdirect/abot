@@ -44,7 +44,7 @@ namespace Abot.Poco
         /// <summary>
         /// Configuration values used to determine crawl settings
         /// </summary>
-        public CrawlConfiguration CrawlConfiguration { get; set; }
+        public ICrawlConfiguration CrawlConfiguration { get; set; }
 
         /// <summary>
         /// The scheduler that is being used

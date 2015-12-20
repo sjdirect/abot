@@ -44,7 +44,7 @@ namespace Abot.Core
             
         }
 
-        public HapHyperLinkParser(CrawlConfiguration config, Func<string, string> cleanURLFunc)
+        public HapHyperLinkParser(ICrawlConfiguration config, Func<string, string> cleanURLFunc)
             : base(config, cleanURLFunc)
         {
             
