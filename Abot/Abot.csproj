@@ -101,7 +101,7 @@
     <Compile Include="Crawler\PageCrawlCompletedArgs.cs" />
     <Compile Include="Crawler\PageCrawlStartingArgs.cs" />
     <Compile Include="Crawler\PoliteWebCrawler.cs" />
-    <Compile Include="Poco\ICrawlConfiguration.cs" />
+    <Compile Include="Poco\CrawlConfiguration.cs" />
     <Compile Include="Poco\CrawlContext.cs" />
     <Compile Include="Poco\CrawlDecision.cs" />
     <Compile Include="Poco\CrawledPage.cs" />
