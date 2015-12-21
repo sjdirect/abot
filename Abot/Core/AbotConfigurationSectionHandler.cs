@@ -7,11 +7,6 @@ namespace Abot.Core
     [Serializable]
     public class AbotConfigurationSectionHandler : ConfigurationSection
     {
-        public AbotConfigurationSectionHandler()
-        {
-            
-        }
-
         [ConfigurationProperty("crawlBehavior")]
         public CrawlBehaviorElement CrawlBehavior
         {
@@ -37,7 +32,7 @@ namespace Abot.Core
             get { return (ExtensionValueCollection)this["extensionValues"]; }
         }
 
-        public CrawlConfiguration Convert()
+        public ICrawlConfiguration Convert()
         {
             AutoMapper.Mapper.CreateMap<CrawlBehaviorElement, CrawlConfiguration>();
             AutoMapper.Mapper.CreateMap<PolitenessElement, CrawlConfiguration>();

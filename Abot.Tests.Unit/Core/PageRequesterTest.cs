@@ -18,7 +18,7 @@ namespace Abot.Tests.Unit.Core
         Uri _301To200Uri = new Uri("http://localhost.fiddler:1111/HttpResponse/Redirect/?redirectHttpStatus=301&destinationHttpStatus=200");
         Uri _301To404Uri = new Uri("http://localhost.fiddler:1111/HttpResponse/Redirect/?redirectHttpStatus=301&destinationHttpStatus=404");
 
-        CrawlConfiguration _crawlConfig = new CrawlConfiguration { UserAgentString = "someuseragentstringhere" };
+        ICrawlConfiguration _crawlConfig = new CrawlConfiguration { UserAgentString = "someuseragentstringhere" };
 
         [SetUp]
         public void SetUp()

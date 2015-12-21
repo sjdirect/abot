@@ -59,7 +59,7 @@ namespace Abot.Tests.Unit.Core
         [Test]
         public void Convert_CovertsFromSectionObjectToDtoObject()
         {
-            CrawlConfiguration result = _uut.Convert();
+            ICrawlConfiguration result = _uut.Convert();
 
             Assert.IsNotNull(result);
             Assert.AreEqual(result.CrawlTimeoutSeconds, _uut.CrawlBehavior.CrawlTimeoutSeconds);
@@ -112,7 +112,7 @@ namespace Abot.Tests.Unit.Core
         public void SectionHandlerDefaults_MatchPocoDefaults()
         {
             _uut = new AbotConfigurationSectionHandler();
-            CrawlConfiguration pocoDefaults = new CrawlConfiguration();
+            ICrawlConfiguration pocoDefaults = new CrawlConfiguration();
 
             Assert.AreEqual(pocoDefaults.ConfigurationExtensions.Count, _uut.ExtensionValues.Count);
             Assert.AreEqual(pocoDefaults.CrawlTimeoutSeconds, _uut.CrawlBehavior.CrawlTimeoutSeconds);
