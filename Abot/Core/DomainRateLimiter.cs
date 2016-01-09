@@ -20,6 +20,16 @@ namespace Abot.Core
         /// Add a domain entry so that domain may be rate limited according the the param minumum crawl delay
         /// </summary>
         void AddDomain(Uri uri, long minCrawlDelayInMillisecs);
+
+        /// <summary>
+        /// Add/Update a domain entry so that domain may be rate limited according the the param minumum crawl delay
+        /// </summary>
+        void AddOrUpdateDomain(Uri uri, long minCrawlDelayInMillisecs);
+
+        /// <summary>
+        /// Remove a domain entry so that it will no longer be rate limited
+        /// </summary>
+        void RemoveDomain(Uri uri);
     }
 
     [Serializable]
@@ -62,9 +72,33 @@ namespace Abot.Core
             if (minCrawlDelayInMillisecs < 1)
                 throw new ArgumentException("minCrawlDelayInMillisecs");
 
-            long millThatIsGreater = minCrawlDelayInMillisecs > _defaultMinCrawlDelayInMillisecs ? minCrawlDelayInMillisecs : _defaultMinCrawlDelayInMillisecs;
-            GetRateLimter(uri, millThatIsGreater);//just calling this method adds the new domain
+            GetRateLimter(uri, Math.Max(minCrawlDelayInMillisecs, _defaultMinCrawlDelayInMillisecs));//just calling this method adds the new domain
         }
+
+        public void AddOrUpdateDomain(Uri uri, long minCrawlDelayInMillisecs)
+        {
+            if (uri == null)
+                throw new ArgumentNullException("uri");
+
+            if (minCrawlDelayInMillisecs < 1)
+                throw new ArgumentException("minCrawlDelayInMillisecs");
+
+            var delayToUse = Math.Max(minCrawlDelayInMillisecs, _defaultMinCrawlDelayInMillisecs);
+            if (delayToUse > 0)
+            {
+                var rateLimiter = new RateLimiter(1, TimeSpan.FromMilliseconds(delayToUse));
+
+                _rateLimiterLookup.AddOrUpdate(uri.Authority, rateLimiter, (key, oldValue) => rateLimiter);
+                _logger.DebugFormat("Added/updated domain [{0}] with minCrawlDelayInMillisecs of [{1}] milliseconds", uri.Authority, delayToUse);
+            }
+        }
+
+        public void RemoveDomain(Uri uri)
+        {
+            IRateLimiter rateLimiter;
+            _rateLimiterLookup.TryRemove(uri.Authority, out rateLimiter);
+        }
+
 
         private IRateLimiter GetRateLimter(Uri uri, long minCrawlDelayInMillisecs)
         {

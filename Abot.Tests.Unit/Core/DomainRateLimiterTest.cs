@@ -155,5 +155,123 @@ namespace Abot.Tests.Unit.Core
 
             Assert.IsTrue(timer.ElapsedMilliseconds > 190);
         }
+
+        [Test]
+        public void AddDomain_AddDuplicateDomain_FirstAddWins()
+        {
+            var domainRateLimiter = new DomainRateLimiter(5);
+            var domain = new Uri("http://a.com");
+
+            domainRateLimiter.AddDomain(domain, 50);
+            domainRateLimiter.AddDomain(domain, 150);//This should be ignored
+
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            domainRateLimiter.RateLimit(domain);
+            domainRateLimiter.RateLimit(domain);
+            timer.Stop();
+
+            Assert.IsTrue(timer.ElapsedMilliseconds >= 50 && timer.ElapsedMilliseconds < 150, string.Format("Expected it to take more than 50 but less than 150 but only took {0}", timer.ElapsedMilliseconds));
+        }
+
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddOrUpdateDomain_NullUri()
+        {
+            new DomainRateLimiter(1000).AddOrUpdateDomain(null, 100);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AddOrUpdateDomain_ZeroCrawlDelay()
+        {
+            new DomainRateLimiter(1000).AddOrUpdateDomain(new Uri("http://a.com"), 0);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void AddOrUpdateDomain_NegativeCrawlDelay()
+        {
+            new DomainRateLimiter(1000).AddOrUpdateDomain(new Uri("http://a.com"), -1);
+        }
+
+        [Test]
+        public void AddOrUpdateDomain_ParamLessThanDefault_UsesDefault()
+        {
+            Uri rootUri = new Uri("http://a.com/");
+            Uri pageUri1 = new Uri("http://a.com/a.html");
+            Uri pageUri2 = new Uri("http://a.com/b.html");
+
+            Stopwatch timer = Stopwatch.StartNew();
+            DomainRateLimiter unitUnderTest = new DomainRateLimiter(100);
+
+            unitUnderTest.AddOrUpdateDomain(rootUri, 5);
+
+            unitUnderTest.RateLimit(rootUri);
+            unitUnderTest.RateLimit(pageUri1);
+            unitUnderTest.RateLimit(pageUri2);
+            timer.Stop();
+
+            Assert.IsTrue(timer.ElapsedMilliseconds > 190);
+        }
+
+        [Test]
+        public void AddOrUpdateDomain_ParamGreaterThanDefault_UsesParam()
+        {
+            Uri rootUri = new Uri("http://a.com/");
+            Uri pageUri1 = new Uri("http://a.com/a.html");
+            Uri pageUri2 = new Uri("http://a.com/b.html");
+
+            Stopwatch timer = Stopwatch.StartNew();
+            DomainRateLimiter unitUnderTest = new DomainRateLimiter(5);
+
+            unitUnderTest.AddOrUpdateDomain(rootUri, 100);
+
+            unitUnderTest.RateLimit(rootUri);
+            unitUnderTest.RateLimit(pageUri1);
+            unitUnderTest.RateLimit(pageUri2);
+            timer.Stop();
+
+            Assert.IsTrue(timer.ElapsedMilliseconds > 190);
+        }
+
+        [Test]
+        public void AddOrUpdateDomain_AddDuplicateDomain_LastUpdateWins()
+        {
+            var domainRateLimiter = new DomainRateLimiter(5);
+            var domain = new Uri("http://a.com");
+            
+            domainRateLimiter.AddOrUpdateDomain(domain, 50);
+            domainRateLimiter.AddOrUpdateDomain(domain, 150);//This should override the previous
+
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            domainRateLimiter.RateLimit(domain);
+            domainRateLimiter.RateLimit(domain);
+            timer.Stop();
+
+            Assert.IsTrue(timer.ElapsedMilliseconds >= 150, $"Expected it to take more than 150 millisecs but only took {timer.ElapsedMilliseconds}");
+        }
+
+
+        [Test]
+        public void RemoveDomain_NoLongerRateLimitsThatDomain()
+        {
+            //Arrange
+            var domainRateLimiter = new DomainRateLimiter(5);
+            var domain = new Uri("http://a.com");
+
+            domainRateLimiter.AddDomain(domain, 1000);
+
+            //Act
+            domainRateLimiter.RemoveDomain(domain);
+
+            //Assert
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            domainRateLimiter.RateLimit(domain);
+            domainRateLimiter.RateLimit(domain);
+            timer.Stop();
+
+            Assert.IsTrue(timer.ElapsedMilliseconds < 25, $"Expected it to take less than 25 millisecs but only took {timer.ElapsedMilliseconds}");
+        }
     }
 }

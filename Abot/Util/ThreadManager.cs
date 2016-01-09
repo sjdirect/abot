@@ -12,7 +12,7 @@ namespace Abot.Util
         /// <summary>
         /// Max number of threads to use.
         /// </summary>
-        int MaxThreads { get; }
+        int MaxThreads { get; set; }
 
         /// <summary>
         /// Will perform the action asynchrously on a seperate thread
@@ -55,7 +55,7 @@ namespace Abot.Util
         public int MaxThreads
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
