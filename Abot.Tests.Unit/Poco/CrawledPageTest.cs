@@ -165,6 +165,18 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual("http://localhost.fiddler:1111/[200]", new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost.fiddler:1111/")).ToString());
         }
 
+        [Test]
+        public void Elapsed_ReturnsDiffInMilli()
+        {
+            CrawledPage uut = new CrawledPage(new Uri("http://a.com"))
+            {
+                RequestStarted = DateTime.Now.AddSeconds(-5),
+                RequestCompleted = DateTime.Now
+            };
+
+            Assert.IsTrue(uut.Elapsed >= 5000, "Expected >= 5000 but was " + uut.Elapsed);
+        }
+
         private string GetFileContent(string fileName)
         {
             if (!File.Exists(fileName))

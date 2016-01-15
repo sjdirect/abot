@@ -104,6 +104,15 @@ namespace Abot.Poco
         /// </summary>
         public PageToCrawl RedirectedTo { get; set; }
 
+        /// <summary>
+        /// Time it took from RequestStarted to RequestCompleted in milliseconds
+        /// </summary>
+        public double Elapsed {
+            get {
+                return (RequestCompleted - RequestStarted).TotalMilliseconds;
+            }
+        }
+
         private CQ InitializeCsQueryDocument()
         {
             CQ csQueryObject;
