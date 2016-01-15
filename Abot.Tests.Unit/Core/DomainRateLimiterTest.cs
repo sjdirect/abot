@@ -271,7 +271,7 @@ namespace Abot.Tests.Unit.Core
             domainRateLimiter.RateLimit(domain);
             timer.Stop();
 
-            Assert.IsTrue(timer.ElapsedMilliseconds < 25, "Expected it to take less than 25 millisecs but only took " + timer.ElapsedMilliseconds);
+            Assert.IsTrue(timer.ElapsedMilliseconds < 100, "Expected it to take less than 100 millisecs but only took " + timer.ElapsedMilliseconds);
         }
     }
 }
