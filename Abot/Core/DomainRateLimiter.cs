@@ -44,7 +44,8 @@ namespace Abot.Core
             if (minCrawlDelayMillisecs < 0)
                 throw new ArgumentException("minCrawlDelayMillisecs");
 
-            _defaultMinCrawlDelayInMillisecs = minCrawlDelayMillisecs;
+            if(minCrawlDelayMillisecs > 0)
+                _defaultMinCrawlDelayInMillisecs = minCrawlDelayMillisecs + 20;//IRateLimiter is always a little under so adding a little more time
         }
 
         public void RateLimit(Uri uri)
