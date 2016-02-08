@@ -32,7 +32,7 @@ namespace Abot.Core
             m_UrlRepository = null;
         }
 
-        private long ComputeNumericId(string p_Uri)
+        protected long ComputeNumericId(string p_Uri)
         {
             byte[] md5 = ToMd5Bytes(p_Uri);
 
@@ -45,7 +45,7 @@ namespace Abot.Core
             return numericId;
         }
 
-        private static byte[] ToMd5Bytes(string p_String)
+        protected byte[] ToMd5Bytes(string p_String)
         {
             using (MD5 md5 = MD5.Create())
             {
