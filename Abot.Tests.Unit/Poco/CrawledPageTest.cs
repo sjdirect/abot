@@ -75,7 +75,7 @@ namespace Abot.Tests.Unit.Poco
             };
 
             Assert.IsNotNull(unitUnderTest.HtmlDocument);
-            Assert.AreEqual("", unitUnderTest.HtmlDocument.DocumentNode.InnerText);
+            Assert.IsTrue(unitUnderTest.HtmlDocument.DocumentNode.InnerText.StartsWith("<!DOCTYPE html>\n\n\n\n\n13\nOffer In Compromise\nb7\n | Settling For"));
         }
 
         [Test]
