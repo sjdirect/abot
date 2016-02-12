@@ -133,7 +133,7 @@ namespace Abot.Poco
         private HtmlDocument InitializeHtmlAgilityPackDocument()
         {
             HtmlDocument hapDoc = new HtmlDocument();
-            //hapDoc.OptionFixNestedTags = true;//did not make this an externally configurable property since it is really an internal issue to hap
+            hapDoc.OptionFixNestedTags = true;//This is to prevent stackoverflow exceptions on the build server, local machine seems to handle it well.
             try
             {
                 hapDoc.LoadHtml(Content.Text);
