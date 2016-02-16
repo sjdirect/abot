@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using Abot.Core;
 using Abot.Poco;
@@ -870,8 +869,8 @@ namespace Abot.Crawler
             
             pageToCrawl.LastRequest = DateTime.Now;
 
-            CrawledPage crawledPage = _pageRequester.MakeRequest(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
-            //CrawledPage crawledPage = await _pageRequester.MakeRequestAsync(pageToCrawl.Uri, (x) => ShouldDownloadPageContentWrapper(x));
+            CrawledPage crawledPage = _pageRequester.MakeRequest(pageToCrawl.Uri, ShouldDownloadPageContent);
+            //CrawledPage crawledPage = await _pageRequester.MakeRequestAsync(pageToCrawl.Uri, ShouldDownloadPageContent);
 
             dynamic combinedPageBag = this.CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
             Mapper.CreateMap<PageToCrawl, CrawledPage>();
@@ -959,7 +958,7 @@ namespace Abot.Crawler
             return false;   
         }
 
-        protected virtual CrawlDecision ShouldDownloadPageContentWrapper(CrawledPage crawledPage)
+        protected virtual CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage)
         {
             CrawlDecision decision = _crawlDecisionMaker.ShouldDownloadPageContent(crawledPage, _crawlContext);
             if (decision.Allow)
