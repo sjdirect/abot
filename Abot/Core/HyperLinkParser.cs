@@ -93,6 +93,9 @@ namespace Abot.Core
             string baseHref = GetBaseHrefValue(crawledPage);
             if (!string.IsNullOrEmpty(baseHref))
             {
+                if (baseHref.StartsWith("//"))
+                    baseHref = crawledPage.Uri.Scheme + ":" + baseHref;
+
                 try
                 {
                     uriToUse = new Uri(baseHref);

@@ -280,6 +280,31 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
+        public void GetLinks_BaseTagNoScheme_ParentPageHttp_AddsParentPageScheme()
+        {
+            _crawledPage.Uri = new Uri("http://aaa.com/");//http
+            _crawledPage.Content.Text = "<base href=\"//aaa.com\"><a href=\"/aaa/a.html\" ></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("http://aaa.com/aaa/a.html", result.ElementAt(0).AbsoluteUri);
+        }
+
+        [Test]
+        public void GetLinks_BaseTagNoScheme_ParentPageHttps_AddsParentPageScheme()
+        {
+            _crawledPage.Uri = new Uri("https://aaa.com/");//https
+            _crawledPage.Content.Text = "<base href=\"//aaa.com\"><a href=\"/aaa/a.html\" ></a>";
+
+            IEnumerable<Uri> result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("https://aaa.com/aaa/a.html", result.ElementAt(0).AbsoluteUri);
+        }
+
+
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void GetLinks_NullCrawledPage()
         {
@@ -536,5 +561,6 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual("http://a.com/page2", result.ElementAt(0).AbsoluteUri);
             Assert.AreEqual("http://a.com/page1", result.ElementAt(1).AbsoluteUri);
         }
+
     }
 }
