@@ -35,6 +35,7 @@ namespace Abot.Core
                 }
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
+                charset = CleanCharset(charset);
                 Encoding e = GetEncoding(charset);
                 string content = "";
                 using (StreamReader sr = new StreamReader(memoryStream, e))
@@ -52,7 +53,7 @@ namespace Abot.Core
             }
         }
 
-        protected string GetCharsetFromHeaders(WebResponse webResponse)
+        protected virtual string GetCharsetFromHeaders(WebResponse webResponse)
         {
             string charset = null;
             String ctype = webResponse.Headers["content-type"];
@@ -65,7 +66,7 @@ namespace Abot.Core
             return charset;
         }
 
-        protected string GetCharsetFromBody(string body)
+        protected virtual string GetCharsetFromBody(string body)
         {
             String charset = null;
             
@@ -82,7 +83,7 @@ namespace Abot.Core
             return charset;
         }
         
-        protected Encoding GetEncoding(string charset)
+        protected virtual Encoding GetEncoding(string charset)
         {
             Encoding e = Encoding.UTF8;
             if (charset != null)
@@ -91,10 +92,19 @@ namespace Abot.Core
                 {
                     e = Encoding.GetEncoding(charset);
                 }
-                catch { }
+                catch{}
             }
 
             return e;
+        }
+
+        protected virtual string CleanCharset(string charset)
+        {
+            //TODO temporary hack, this needs to be a configurable value
+            if (charset == "cp1251") //Russian, Bulgarian, Serbian cyrillic
+                charset = "windows-1251";
+
+            return charset;
         }
 
         private MemoryStream GetRawData(WebResponse webResponse)
