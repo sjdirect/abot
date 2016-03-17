@@ -202,7 +202,7 @@ namespace Abot.Tests.Unit.Core
     class TestWebReponse : WebResponse
     {
         Stream responseStream;
-        public override WebHeaderCollection Headers { get; }
+        public override WebHeaderCollection Headers { get; set; }
 
         /// <summary>Initializes a new instance of <see cref="TestWebReponse"/> 
         /// with the response stream to return.</summary>
