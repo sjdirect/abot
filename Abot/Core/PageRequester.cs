@@ -222,10 +222,16 @@ namespace Abot.Core
             if (_config.IsSendingCookiesEnabled)
                 request.CookieContainer = _cookieContainer;
 
+            //Supposedly this does not work... https://github.com/sjdirect/abot/issues/122
+            //if (_config.IsAlwaysLogin)
+            //{
+            //    request.Credentials = new NetworkCredential(_config.LoginUser, _config.LoginPassword);
+            //    request.UseDefaultCredentials = false;
+            //}
             if (_config.IsAlwaysLogin)
             {
-                request.Credentials = new NetworkCredential(_config.LoginUser, _config.LoginPassword);
-                request.UseDefaultCredentials = false;
+                string credentials = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(_config.LoginUser + ":" + _config.LoginPassword));
+                request.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
             }
 
             return request;
