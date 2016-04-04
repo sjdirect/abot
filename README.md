@@ -305,7 +305,7 @@ crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
 ```
 
 ####Custom Implementations
-PoliteWebCrawler is the master of orchestrating the crawl. It's job is to coordinate all the utility classes to "crawl" a site. PoliteWebCrawler accepts an alternate implementation for all its dependencies through it's constructor.
+PoliteWebCrawler is the master of orchestrating the crawl. Its job is to coordinate all the utility classes to "crawl" a site. PoliteWebCrawler accepts an alternate implementation for all its dependencies through its constructor.
  
 ```c#
 PoliteWebCrawler crawler = new PoliteWebCrawler(
