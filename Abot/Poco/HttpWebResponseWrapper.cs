@@ -38,7 +38,7 @@ namespace Abot.Poco
             this.ContentEncoding = response.ContentEncoding;
             this.Cookies = response.Cookies;
             this.IsFromCache = response.IsFromCache;
-            this.IsMutuallyAuthenticated = response.IsMutuallyAuthenticated;
+            //this.IsMutuallyAuthenticated = response.IsMutuallyAuthenticated;
             this.LastModified = GetLastModified(response);
             this.Method = response.Method;
             this.ProtocolVersion = response.ProtocolVersion;
