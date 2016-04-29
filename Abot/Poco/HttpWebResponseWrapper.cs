@@ -16,35 +16,49 @@ namespace Abot.Poco
     /// </remarks>
     public class HttpWebResponseWrapper
     {
-        private HttpWebResponse InternalResponse;
-        private byte[] Content;
-        private Lazy<Stream> ContentStream;
+        private readonly HttpWebResponse _internalResponse;
+        private readonly byte[] _content;
+        private readonly Lazy<Stream> _contentStream;
+        protected static bool? IsMutuallyAuthenticatedImplemented { get; set; }
 
         #region Constructors
 
         /// <summary>Constructs a response based on the received system http response.</summary>
         public HttpWebResponseWrapper(HttpWebResponse response)
         {
-            this.InternalResponse = response;
+            _internalResponse = response;
 
             if (response == null)
                 return;
 
-            this.StatusCode = response.StatusCode;
-            this.ContentType = response.ContentType;
-            this.ContentLength = response.ContentLength;
-            this.Headers = response.Headers;
-            this.CharacterSet = response.CharacterSet;
-            this.ContentEncoding = response.ContentEncoding;
-            this.Cookies = response.Cookies;
-            this.IsFromCache = response.IsFromCache;
-            this.IsMutuallyAuthenticated = response.IsMutuallyAuthenticated;
-            this.LastModified = GetLastModified(response);
-            this.Method = response.Method;
-            this.ProtocolVersion = response.ProtocolVersion;
-            this.ResponseUri = response.ResponseUri;
-            this.Server = response.Server;
-            this.StatusDescription = response.StatusDescription;
+            StatusCode = response.StatusCode;
+            ContentType = response.ContentType;
+            ContentLength = response.ContentLength;
+            Headers = response.Headers;
+            CharacterSet = response.CharacterSet;
+            ContentEncoding = response.ContentEncoding;
+            Cookies = response.Cookies;
+            IsFromCache = response.IsFromCache;
+            LastModified = GetLastModified(response);
+            Method = response.Method;
+            ProtocolVersion = response.ProtocolVersion;
+            ResponseUri = response.ResponseUri;
+            Server = response.Server;
+            StatusDescription = response.StatusDescription;
+
+            if (!IsMutuallyAuthenticatedImplemented.HasValue)
+            {
+                try
+                {
+                    IsMutuallyAuthenticated = response.IsMutuallyAuthenticated;
+                    IsMutuallyAuthenticatedImplemented = true;
+                }
+                catch (NotImplementedException e)
+                {
+                    IsMutuallyAuthenticatedImplemented = false;
+                }
+            }
+            IsMutuallyAuthenticated = IsMutuallyAuthenticatedImplemented.Value && response.IsMutuallyAuthenticated;
         }
 
         private static DateTime GetLastModified(HttpWebResponse response)
@@ -63,12 +77,12 @@ namespace Abot.Poco
         /// <remarks>Recieves parameters neccesarily set for Abot to work.</remarks>
         public HttpWebResponseWrapper(HttpStatusCode statusCode, string contentType, byte[] content, NameValueCollection headers)
         {
-            this.StatusCode = statusCode;
-            this.Headers = headers;
-            this.ContentType = contentType;
-            this.ContentLength = content != null ? content.Length : 0;
-            this.Content = content;
-            this.ContentStream = new Lazy<Stream>(() => this.Content != null ? new MemoryStream(this.Content) : null);
+            StatusCode = statusCode;
+            Headers = headers;
+            ContentType = contentType;
+            ContentLength = content != null ? content.Length : 0;
+            _content = content;
+            _contentStream = new Lazy<Stream>(() => _content != null ? new MemoryStream(_content) : null);
         }
 
         /// <summary>Constructs an empty response to be filled later.</summary>
@@ -116,15 +130,15 @@ namespace Abot.Poco
         /// <summary>Gets the actual response data.</summary>
         public Stream GetResponseStream()
         {
-            return this.InternalResponse != null ?
-                this.InternalResponse.GetResponseStream() :
-                this.ContentStream.Value;
+            return _internalResponse != null ?
+                _internalResponse.GetResponseStream() :
+                _contentStream.Value;
         }
 
         /// <summary>Gets the header with the given name.</summary>
         public string GetResponseHeader(string header)
         {
-            return this.Headers != null ? this.Headers[header] : null;
+            return Headers != null ? Headers[header] : null;
         }
 
         #endregion
