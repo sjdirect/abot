@@ -27,7 +27,7 @@ namespace Abot.Core
         CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage, CrawlContext crawlContext);
 
         /// <summary>
-        /// Decides whether the page should be re-crawled on non-200 status
+        /// Decides whether the page should be re-crawled
         /// </summary>
         CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext);
     }
