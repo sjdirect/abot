@@ -1,6 +1,6 @@
 #Abot [![Build Status](https://ci.appveyor.com/api/projects/status/b1ukruawvu6uujn0?svg=true)](https://ci.appveyor.com/project/sjdirect/abot)
 
-*Please star this project!!* Steven is always open to hearing about exciting opportunities.
+*Please star this project!!* Contact me with exciting opportunities!!
 
 ######C# web crawler built for speed and flexibility.
 
