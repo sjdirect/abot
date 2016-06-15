@@ -16,7 +16,7 @@ namespace Abot.Tests.Unit.Crawler
     [TestFixture]
     public class WebCrawlerTest
     {
-        WebCrawler _unitUnderTest;
+        IPoliteWebCrawler _unitUnderTest;
         Mock<IPageRequester> _fakeHttpRequester;
         Mock<IHyperLinkParser> _fakeHyperLinkParser;
         Mock<ICrawlDecisionMaker> _fakeCrawlDecisionMaker;
@@ -460,6 +460,23 @@ namespace Abot.Tests.Unit.Crawler
         #region Async Event Tests
 
         [Test]
+        public void Crawl_ShouldFire_RobotsTxtParseCompletedAsync()
+        {
+            _dummyConfiguration.IsRespectRobotsDotTextEnabled = true;
+            _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(new CrawledPage(_rootUri));
+            _fakeHyperLinkParser.Setup(f => f.GetLinks(It.IsAny<CrawledPage>())).Returns(new List<Uri>());
+            _fakeRobotsDotTextFinder.Setup(f => f.Find(It.IsAny<Uri>())).Returns(new RobotsDotText(_rootUri, string.Empty));
+
+            int _pageRobotsTxtCompleted = 0;
+
+            _unitUnderTest.RobotsDotTextParseCompletedAsync += (s, e) => ++_pageRobotsTxtCompleted;
+
+            _unitUnderTest.Crawl(_rootUri);
+
+            Assert.AreEqual(1, _pageRobotsTxtCompleted);
+        }
+
+        [Test]
         public void Crawl_CrawlDecisionMakerMethodsReturnTrue_PageCrawlStartingAndCompletedAsyncEventsFires()
         {
             _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(new CrawledPage(_rootUri));
@@ -829,6 +846,23 @@ namespace Abot.Tests.Unit.Crawler
             Assert.AreEqual(0, pageCrawlCompletedCount);
             Assert.AreEqual(1, pageCrawlDisallowedCount);
             Assert.AreEqual(0, pageLinksCrawlDisallowedCount);
+        }
+
+        [Test]
+        public void Crawl_ShouldFire_RobotsTxtParseCompleted()
+        {
+            _dummyConfiguration.IsRespectRobotsDotTextEnabled = true;
+            _fakeHttpRequester.Setup(f => f.MakeRequest(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(new CrawledPage(_rootUri));
+            _fakeHyperLinkParser.Setup(f => f.GetLinks(It.IsAny<CrawledPage>())).Returns(new List<Uri>());
+            _fakeRobotsDotTextFinder.Setup(f => f.Find(It.IsAny<Uri>())).Returns(new RobotsDotText(_rootUri, string.Empty));
+
+            int _pageRobotsTxtCompleted = 0;
+
+            _unitUnderTest.RobotsDotTextParseCompleted += (s, e) => ++_pageRobotsTxtCompleted;
+
+            _unitUnderTest.Crawl(_rootUri);
+
+            Assert.AreEqual(1, _pageRobotsTxtCompleted);
         }
 
         [Test]
