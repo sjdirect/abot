@@ -472,7 +472,7 @@ namespace Abot.Tests.Unit.Crawler
             _unitUnderTest.RobotsDotTextParseCompletedAsync += (s, e) => ++_pageRobotsTxtCompleted;
 
             _unitUnderTest.Crawl(_rootUri);
-
+            System.Threading.Thread.Sleep(100);
             Assert.AreEqual(1, _pageRobotsTxtCompleted);
         }
 
