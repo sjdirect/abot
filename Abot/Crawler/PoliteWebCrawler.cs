@@ -2,6 +2,7 @@
 using Abot.Poco;
 using log4net;
 using System;
+using Robots;
 
 namespace Abot.Crawler
 {
@@ -9,10 +10,24 @@ namespace Abot.Crawler
     using System.Threading;
 
     /// <summary>
+    /// Polite web crawler
+    /// </summary>
+    public interface IPoliteWebCrawler : IWebCrawler
+    {
+        /// <summary>
+        /// Event occur after robots txt is parsed asynchroniously
+        /// </summary>
+        event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompletedAsync;
+        /// <summary>
+        /// Event occur after robots txt is parsed synchroniously
+        /// </summary>
+        event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompleted;
+    }
+    /// <summary>
     /// Extends the WebCrawler class and added politeness features like crawl delays and respecting robots.txt files. 
     /// </summary>
     [Serializable]
-    public class PoliteWebCrawler : WebCrawler
+    public class PoliteWebCrawler : WebCrawler, IPoliteWebCrawler
     {
         private static ILog _logger = LogManager.GetLogger("AbotLogger");
         protected IDomainRateLimiter _domainRateLimiter;
@@ -57,6 +72,9 @@ namespace Abot.Crawler
 
                 if (_robotsDotText != null)
                 {
+                    FireRobotsDotTextParseCompletedAsync(_robotsDotText.Robots);
+                    FireRobotsDotTextParseCompleted(_robotsDotText.Robots);
+
                     robotsDotTextCrawlDelayInSecs = _robotsDotText.GetCrawlDelay(_crawlContext.CrawlConfiguration.RobotsDotTextUserAgentString);
                     robotsDotTextCrawlDelayInMillisecs = robotsDotTextCrawlDelayInSecs * 1000;
                 }
@@ -127,6 +145,51 @@ namespace Abot.Crawler
             }
 
             return allowedByRobots && base.ShouldCrawlPage(pageToCrawl);
+        }
+
+        /// <summary>
+        /// Event occur after robots txt is parsed asynchroniously
+        /// </summary>
+        public event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompletedAsync;
+
+        /// <summary>
+        /// Event occur after robots txt is parsed synchroniously
+        /// </summary>
+        public event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompleted;
+
+        /// <summary>
+        /// Fire robots txt parsed completed async
+        /// </summary>
+        /// <param name="robots"></param>
+        protected virtual void FireRobotsDotTextParseCompletedAsync(IRobots robots)
+        {
+            var threadSafeEvent = RobotsDotTextParseCompletedAsync;
+            if (threadSafeEvent == null) return;
+            //Fire each subscribers delegate async
+            foreach (var @delegate in threadSafeEvent.GetInvocationList())
+            {
+                var del = (EventHandler<RobotsDotTextParseCompletedArgs>) @delegate;
+                del.BeginInvoke(this, new RobotsDotTextParseCompletedArgs(_crawlContext, robots), null, null);
+            }
+        }
+
+        /// <summary>
+        /// Fire robots txt parsed completed
+        /// </summary>
+        /// <param name="robots"></param>
+        protected virtual void FireRobotsDotTextParseCompleted(IRobots robots)
+        {
+            try
+            {
+                if (RobotsDotTextParseCompleted == null) return;
+                RobotsDotTextParseCompleted.Invoke(this, new RobotsDotTextParseCompletedArgs(_crawlContext, robots));
+            }
+            catch (Exception e)
+            {
+                _logger.Error(
+                    "An unhandled exception was thrown by a subscriber of the PageLinksCrawlDisallowed event for robots.txt");
+                _logger.Error(e);
+            }
         }
     }
 }

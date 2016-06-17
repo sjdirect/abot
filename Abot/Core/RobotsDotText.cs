@@ -20,6 +20,11 @@ namespace Abot.Core
         /// Whether the user agent is "allowed" to crawl the root url
         /// </summary>
         bool IsUserAgentAllowed(string userAgentString);
+
+        /// <summary>
+        /// Instance of robot.txt object
+        /// </summary>
+        IRobots Robots { get; }
     }
 
     [Serializable]
@@ -58,6 +63,8 @@ namespace Abot.Core
         {
             return _robotsDotTextUtil.Allowed(_rootUri.AbsoluteUri, userAgentString);
         }
+
+        public IRobots Robots { get { return _robotsDotTextUtil; } }
 
         private void Load(Uri rootUri, string content)
         {
