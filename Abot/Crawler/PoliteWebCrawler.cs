@@ -182,7 +182,10 @@ namespace Abot.Crawler
         {
             try
             {
-                RobotsDotTextParseCompleted?.Invoke(this, new RobotsDotTextParseCompletedArgs(_crawlContext, robots));
+                if (RobotsDotTextParseCompleted != null)
+                {
+                    RobotsDotTextParseCompleted.Invoke(this, new RobotsDotTextParseCompletedArgs(_crawlContext, robots));
+                }
             }
             catch (Exception e)
             {
