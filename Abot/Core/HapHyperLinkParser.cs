@@ -75,11 +75,7 @@ namespace Abot.Core
             //Must use node.InnerHtml instead of node.InnerText since "aaa<br />bbb" will be returned as "aaabbb"
             if (node != null)
                 hrefValue = node.GetAttributeValue("href", "").Trim();
-            //if website has basehref starts with // it should take page schema
-            if (hrefValue.StartsWith("//"))
-            {
-                hrefValue = crawledPage.Uri.Scheme + ":" + hrefValue;
-            }
+
             return hrefValue;
         }
 
