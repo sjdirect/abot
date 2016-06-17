@@ -182,14 +182,13 @@ namespace Abot.Crawler
         {
             try
             {
-                if (RobotsDotTextParseCompleted != null)
-                {
-                    RobotsDotTextParseCompleted.Invoke(this, new RobotsDotTextParseCompletedArgs(_crawlContext, robots));
-                }
+                if (RobotsDotTextParseCompleted == null) return;
+                RobotsDotTextParseCompleted.Invoke(this, new RobotsDotTextParseCompletedArgs(_crawlContext, robots));
             }
             catch (Exception e)
             {
-                _logger.Error("An unhandled exception was thrown by a subscriber of the PageLinksCrawlDisallowed event for robots.txt");
+                _logger.Error(
+                    "An unhandled exception was thrown by a subscriber of the PageLinksCrawlDisallowed event for robots.txt");
                 _logger.Error(e);
             }
         }
