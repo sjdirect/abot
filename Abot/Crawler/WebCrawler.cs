@@ -112,6 +112,7 @@ namespace Abot.Crawler
         protected bool _crawlComplete = false;
         protected bool _crawlStopReported = false;
         protected bool _crawlCancellationReported = false;
+        protected bool _maxPagesToCrawlLimitReachedOrScheduled = false;
         protected Timer _timeoutTimer;
         protected CrawlResult _crawlResult = null;
         protected CrawlContext _crawlContext;
@@ -127,6 +128,7 @@ namespace Abot.Crawler
         protected Func<CrawledPage, CrawlContext, CrawlDecision> _shouldRecrawlPageDecisionMaker;
         protected Func<Uri, CrawledPage, CrawlContext, bool> _shouldScheduleLinkDecisionMaker;
         protected Func<Uri, Uri, bool> _isInternalDecisionMaker = (uriInQuestion, rootUri) => uriInQuestion.Authority == rootUri.Authority;
+        
 
         /// <summary>
         /// Dynamic object that can hold any value that needs to be available in the crawl context
@@ -803,7 +805,18 @@ namespace Abot.Crawler
 
         protected virtual bool ShouldCrawlPage(PageToCrawl pageToCrawl)
         {
+            if (_maxPagesToCrawlLimitReachedOrScheduled)
+                return false;
+
             CrawlDecision shouldCrawlPageDecision = _crawlDecisionMaker.ShouldCrawlPage(pageToCrawl, _crawlContext);
+            if (!shouldCrawlPageDecision.Allow &&
+                shouldCrawlPageDecision.Reason.Contains("MaxPagesToCrawl limit of"))
+            {
+                _maxPagesToCrawlLimitReachedOrScheduled = true;
+                _logger.Info("MaxPagesToCrawlLimit has been reached or scheduled. No more pages will be scheduled.");
+                return false;
+            }
+
             if (shouldCrawlPageDecision.Allow)
                 shouldCrawlPageDecision = (_shouldCrawlPageDecisionMaker != null) ? _shouldCrawlPageDecisionMaker.Invoke(pageToCrawl, _crawlContext) : new CrawlDecision { Allow = true };
 
