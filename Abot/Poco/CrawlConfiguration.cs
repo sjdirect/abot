@@ -161,6 +161,12 @@ namespace Abot.Poco
         public int MaxCrawlDepth { get; set; }
 
         /// <summary>
+        /// Maximum links to crawl per page.
+        /// If value is zero, this setting has no effect.
+        /// </summary>
+        public int MaxLinksPerPage { get; set; }
+
+        /// <summary>
         /// Gets or sets a value that indicates whether the crawler should parse the page's links even if a CrawlDecision (like CrawlDecisionMaker.ShouldCrawlPageLinks()) determines that those links will not be crawled.
         /// </summary>
         public bool IsForcedLinkParsingEnabled { get; set; }
