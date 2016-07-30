@@ -84,6 +84,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(result.MaxMemoryUsageInMb, _uut.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(result.MaxMemoryUsageCacheTimeInSeconds, _uut.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
             Assert.AreEqual(result.MaxCrawlDepth, _uut.CrawlBehavior.MaxCrawlDepth);
+            Assert.AreEqual(result.MaxLinksPerPage, _uut.CrawlBehavior.MaxLinksPerPage);
             Assert.AreEqual(result.IsForcedLinkParsingEnabled, _uut.CrawlBehavior.IsForcedLinkParsingEnabled);
             Assert.AreEqual(result.MaxRetryCount, _uut.CrawlBehavior.MaxRetryCount);
             Assert.AreEqual(result.MinRetryDelayInMilliseconds, _uut.CrawlBehavior.MinRetryDelayInMilliseconds);
@@ -144,6 +145,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(pocoDefaults.MaxMemoryUsageInMb, _uut.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(pocoDefaults.MinAvailableMemoryRequiredInMb, _uut.CrawlBehavior.MinAvailableMemoryRequiredInMb);
             Assert.AreEqual(pocoDefaults.MaxCrawlDepth, _uut.CrawlBehavior.MaxCrawlDepth);
+            Assert.AreEqual(pocoDefaults.MaxLinksPerPage, _uut.CrawlBehavior.MaxLinksPerPage);
             Assert.AreEqual(pocoDefaults.IsForcedLinkParsingEnabled, _uut.CrawlBehavior.IsForcedLinkParsingEnabled);
             Assert.AreEqual(pocoDefaults.MaxRetryCount, _uut.CrawlBehavior.MaxRetryCount);
             Assert.AreEqual(pocoDefaults.MinRetryDelayInMilliseconds, _uut.CrawlBehavior.MinRetryDelayInMilliseconds);

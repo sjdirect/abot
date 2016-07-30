@@ -920,13 +920,7 @@ namespace Abot.Crawler
 
             int domainCount = 0;
             Interlocked.Increment(ref _crawlContext.CrawledCount);
-            lock (_crawlContext.CrawlCountByDomain)
-            {
-                if (_crawlContext.CrawlCountByDomain.TryGetValue(pageToCrawl.Uri.Authority, out domainCount))
-                    _crawlContext.CrawlCountByDomain[pageToCrawl.Uri.Authority] = domainCount + 1;
-                else
-                    _crawlContext.CrawlCountByDomain.TryAdd(pageToCrawl.Uri.Authority, 1);
-            }
+            _crawlContext.CrawlCountByDomain.AddOrUpdate(pageToCrawl.Uri.Authority, 1, (key, oldValue) => oldValue + 1);
         }
 
         protected virtual void ParsePageLinks(CrawledPage crawledPage)
@@ -936,12 +930,14 @@ namespace Abot.Crawler
 
         protected virtual void SchedulePageLinks(CrawledPage crawledPage)
         {
+            int linksToCrawl = 0;
             foreach (Uri uri in crawledPage.ParsedLinks)
             {
                 // First validate that the link was not already visited or added to the list of pages to visit, so we don't
                 // make the same validation and fire the same events twice.
                 if (!_scheduler.IsUriKnown(uri) &&
-                    (_shouldScheduleLinkDecisionMaker == null || _shouldScheduleLinkDecisionMaker.Invoke(uri, crawledPage, _crawlContext))) {
+                    (_shouldScheduleLinkDecisionMaker == null || _shouldScheduleLinkDecisionMaker.Invoke(uri, crawledPage, _crawlContext)))
+                {
                     try //Added due to a bug in the Uri class related to this (http://stackoverflow.com/questions/2814951/system-uriformatexception-invalid-uri-the-hostname-could-not-be-parsed)
                     {
                         PageToCrawl page = new PageToCrawl(uri);
@@ -953,6 +949,13 @@ namespace Abot.Crawler
                         if (ShouldSchedulePageLink(page))
                         {
                             _scheduler.Add(page);
+                            linksToCrawl++;
+                        }
+
+                        if (!ShouldScheduleMorePageLink(linksToCrawl))
+                        {
+                            _logger.InfoFormat("MaxLinksPerPage has been reached. No more links will be scheduled for current page [{0}].", crawledPage.Uri);
+                            break;
                         }
                     }
                     catch { }
@@ -969,6 +972,11 @@ namespace Abot.Crawler
                 return true;
 
             return false;   
+        }
+
+        protected virtual bool ShouldScheduleMorePageLink(int linksAdded)
+        {
+            return _crawlContext.CrawlConfiguration.MaxLinksPerPage == 0 || _crawlContext.CrawlConfiguration.MaxLinksPerPage > linksAdded;
         }
 
         protected virtual CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage)

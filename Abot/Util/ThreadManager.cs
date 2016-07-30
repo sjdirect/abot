@@ -79,8 +79,8 @@ namespace Abot.Util
                         _resetEvent.Reset();
 
                     _logger.DebugFormat("Starting another thread, increasing running threads to [{0}].", _numberOfRunningThreads);
-                    RunActionOnDedicatedThread(action);
                 }
+                RunActionOnDedicatedThread(action);
             }
             else
             {
