@@ -35,6 +35,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(26, _uut.CrawlBehavior.MaxMemoryUsageInMb);
             Assert.AreEqual(27, _uut.CrawlBehavior.MaxMemoryUsageCacheTimeInSeconds);
             Assert.AreEqual(28, _uut.CrawlBehavior.MaxCrawlDepth);
+            Assert.AreEqual(29, _uut.CrawlBehavior.MaxLinksPerPage);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsForcedLinkParsingEnabled);
             Assert.AreEqual(4, _uut.CrawlBehavior.MaxRetryCount);
             Assert.AreEqual(4444, _uut.CrawlBehavior.MinRetryDelayInMilliseconds);

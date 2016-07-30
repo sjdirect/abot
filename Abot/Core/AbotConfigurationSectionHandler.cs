@@ -278,10 +278,10 @@ namespace Abot.Core
             get { return (int)this["maxCrawlDepth"]; }
         }
 
-        [ConfigurationProperty("maxlinksperpage", IsRequired = false, DefaultValue = 0)]
+        [ConfigurationProperty("maxLinksPerPage", IsRequired = false, DefaultValue = 0)]
         public int MaxLinksPerPage
         {
-            get { return (int)this["maxlinksperpage"]; }
+            get { return (int)this["maxLinksPerPage"]; }
         }
 
         [ConfigurationProperty("isForcedLinkParsingEnabled", IsRequired = false)]

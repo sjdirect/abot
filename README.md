@@ -86,6 +86,7 @@ using Abot.Poco;
       maxMemoryUsageInMb="0"
       maxMemoryUsageCacheTimeInSeconds="0"
       maxCrawlDepth="1000"
+	  maxLinksPerPage="1000"
       isForcedLinkParsingEnabled="false"
       maxRetryCount="0"
       minRetryDelayInMilliseconds="0"
