@@ -31,8 +31,8 @@ namespace Abot.Poco
         public int MaxConcurrentThreads { get; set; }
 
         /// <summary>
-        /// Maximum number of pages to crawl.
-        /// This value is required.
+        /// Maximum number of pages to crawl. 
+        /// If zero, this setting has no effect
         /// </summary>
         public int MaxPagesToCrawl { get; set; }
 
