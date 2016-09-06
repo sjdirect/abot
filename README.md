@@ -165,6 +165,9 @@ void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
 
 	if (string.IsNullOrEmpty(crawledPage.Content.Text))
 		Console.WriteLine("Page had no content {0}", crawledPage.Uri.AbsoluteUri);
+	
+	var htmlAgilityPackDocument = crawledPage.HtmlDocument; //Html Agility Pack
+	var csQueryCqObject = crawledPage.CsQueryDocument; //CSQuery
 }
 
 void crawler_PageLinksCrawlDisallowed(object sender, PageLinksCrawlDisallowedArgs e)
