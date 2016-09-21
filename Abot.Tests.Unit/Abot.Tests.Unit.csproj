@@ -35,6 +35,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.9.8.1, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.9.8.1\lib\net45\AngleSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="BCMakeCert">
       <HintPath>..\packages\FiddlerCore.4.4.8.4\lib\net40\BCMakeCert.dll</HintPath>
     </Reference>
@@ -132,6 +136,7 @@
     <Compile Include="Core\AbotConfigurationSectionHandlerTest.cs" />
     <Compile Include="Core\BloomFilterCrawledUrlRepositoryTest.cs" />
     <Compile Include="Core\CompactCrawledUrlRepositoryTest.cs" />
+    <Compile Include="Core\AngleSharpHyperLinkParserTest.cs" />
     <Compile Include="Util\CachedMemoryMonitorTest.cs" />
     <Compile Include="Core\PagesToCrawlRepositoryTest.cs" />
     <Compile Include="Core\CrawledUrlRepositoryTest.cs" />

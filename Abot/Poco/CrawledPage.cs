@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
+using AngleSharp;
+using AngleSharp.Dom.Html;
+using AngleSharp.Parser.Html;
 
 namespace Abot.Poco
 {
@@ -12,15 +15,19 @@ namespace Abot.Poco
     public class CrawledPage : PageToCrawl
     {
         ILog _logger = LogManager.GetLogger("AbotLogger");
+        HtmlParser _angleSharpHtmlParser;
 
         Lazy<HtmlDocument> _htmlDocument;
         Lazy<CQ> _csQueryDocument;
+        Lazy<IHtmlDocument> _angleSharpHtmlDocument;
 
         public CrawledPage(Uri uri)
             : base(uri)
         {
-            _htmlDocument = new Lazy<HtmlDocument>(() => InitializeHtmlAgilityPackDocument() );
-            _csQueryDocument = new Lazy<CQ>(() => InitializeCsQueryDocument());
+            _htmlDocument = new Lazy<HtmlDocument>(InitializeHtmlAgilityPackDocument);
+            _csQueryDocument = new Lazy<CQ>(InitializeCsQueryDocument);
+            _angleSharpHtmlDocument = new Lazy<IHtmlDocument>(InitializeAngleSharpHtmlParser);
+
             Content = new PageContent();
         }
 
@@ -38,7 +45,13 @@ namespace Abot.Poco
         /// <summary>
         /// Lazy loaded CsQuery (https://github.com/jamietre/CsQuery) document that can be used to retrieve/modify html elements on the crawled page.
         /// </summary>
+        [Obsolete("CSQuery is no longer actively maintained. Use AngleSharpHyperlinkParser for similar usage/functionality")]
         public CQ CsQueryDocument { get { return _csQueryDocument.Value;  } }
+
+        /// <summary>
+        /// Lazy loaded AngleSharp IHtmlDocument (https://github.com/AngleSharp/AngleSharp) that can be used to retrieve/modify html elements on the crawled page.
+        /// </summary>
+        public IHtmlDocument AngleSharpHtmlDocument { get { return _angleSharpHtmlDocument.Value; } }
 
         /// <summary>
         /// Web request sent to the server
@@ -146,6 +159,27 @@ namespace Abot.Poco
                 _logger.Error(e);
             }
             return hapDoc;
+        }
+
+        private IHtmlDocument InitializeAngleSharpHtmlParser()
+        {
+            if(_angleSharpHtmlParser == null)
+                _angleSharpHtmlParser = new HtmlParser();
+
+            IHtmlDocument document;
+            try
+            {
+                document = _angleSharpHtmlParser.Parse(Content.Text);
+            }
+            catch (Exception e)
+            {
+                document = _angleSharpHtmlParser.Parse("");
+
+                _logger.ErrorFormat("Error occurred while loading AngularSharp object for Url [{0}]", Uri);
+                _logger.Error(e);
+            }
+
+            return document;
         }
     }
 }
