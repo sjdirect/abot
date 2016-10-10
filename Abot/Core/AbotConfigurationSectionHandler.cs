@@ -4,6 +4,8 @@ using System.Configuration;
 
 namespace Abot.Core
 {
+    using AutoMapper;
+
     [Serializable]
     public class AbotConfigurationSectionHandler : ConfigurationSection
     {
