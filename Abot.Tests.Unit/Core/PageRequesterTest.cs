@@ -27,10 +27,9 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullUserAgent()
         {
-            new PageRequester(null);
+            Assert.Throws<ArgumentNullException>(() => new PageRequester(null));
         }
 
         [Test]
@@ -181,10 +180,9 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void MakeRequest_NullUri()
         {
-            _unitUnderTest.MakeRequest(null);
+            Assert.Throws<ArgumentNullException>(() => _unitUnderTest.MakeRequest(null));
         }
 
         [Test]

@@ -305,10 +305,9 @@ namespace Abot.Tests.Unit.Core
 
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void GetLinks_NullCrawledPage()
         {
-            _unitUnderTest.GetLinks(null);
+            Assert.Throws<ArgumentNullException>(() => _unitUnderTest.GetLinks(null));
         }
 
         [Test]
