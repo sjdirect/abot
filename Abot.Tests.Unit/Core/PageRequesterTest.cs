@@ -125,7 +125,7 @@ namespace Abot.Tests.Unit.Core
 	        Assert.AreEqual("The remote server returned an error: (503) Server Unavailable.", result.WebException.Message);
         }
 
-        [Test, Ignore]//Cox intercepts 502 status and returns 200
+        [Test, Ignore("Cox intercepts 502 status and returns 200")]
         public void MakeHttpWebHeadRequest_NonResolvable_ReturnsNullResponse()
         {
             CrawledPage result = _unitUnderTest.MakeRequest(_502ErrorUri);
