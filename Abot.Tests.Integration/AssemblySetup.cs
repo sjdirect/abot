@@ -8,7 +8,7 @@ namespace Abot.Tests.Integration
     [SetUpFixture]
     public class AssemblySetup
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             XmlConfigurator.Configure();
@@ -17,7 +17,7 @@ namespace Abot.Tests.Integration
             Console.WriteLine("Started FiddlerCore to autorespond with pre recorded http responses.");
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void After()
         {
             FiddlerProxyUtil.StopAutoResponding();
