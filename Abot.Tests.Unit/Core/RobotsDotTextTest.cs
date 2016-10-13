@@ -1,6 +1,4 @@
 ﻿using Abot.Core;
-using Abot.Poco;
-using Moq;
 using NUnit.Framework;
 using System;
 

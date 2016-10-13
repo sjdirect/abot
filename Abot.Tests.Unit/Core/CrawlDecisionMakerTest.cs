@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net;
 
 namespace Abot.Tests.Unit.Core
