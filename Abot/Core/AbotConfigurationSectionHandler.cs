@@ -1,6 +1,7 @@
 ﻿using Abot.Poco;
 using System;
 using System.Configuration;
+using System.Runtime.Remoting.Channels;
 
 namespace Abot.Core
 {
@@ -39,20 +40,64 @@ namespace Abot.Core
 
         public CrawlConfiguration Convert()
         {
-            AutoMapper.Mapper.CreateMap<CrawlBehaviorElement, CrawlConfiguration>();
-            AutoMapper.Mapper.CreateMap<PolitenessElement, CrawlConfiguration>();
-            AutoMapper.Mapper.CreateMap<AuthorizationElement, CrawlConfiguration>();
-
-
             CrawlConfiguration config = new CrawlConfiguration();
-            AutoMapper.Mapper.Map<CrawlBehaviorElement, CrawlConfiguration>(CrawlBehavior, config);
-            AutoMapper.Mapper.Map<PolitenessElement, CrawlConfiguration>(Politeness, config);
-            AutoMapper.Mapper.Map<AuthorizationElement, CrawlConfiguration>(Authorization, config);
+            Map(CrawlBehavior, config);
+            Map(Politeness, config);
+            Map(Authorization, config);
 
             foreach (ExtensionValueElement element in ExtensionValues)
                 config.ConfigurationExtensions.Add(element.Key, element.Value);
 
             return config;
+        }
+
+        private void Map(CrawlBehaviorElement src, CrawlConfiguration dest)
+        {
+            dest.MaxConcurrentThreads = src.MaxConcurrentThreads;
+            dest.MaxPagesToCrawl = src.MaxPagesToCrawl;
+            dest.MaxPagesToCrawlPerDomain = src.MaxPagesToCrawlPerDomain;
+            dest.MaxPageSizeInBytes = src.MaxPageSizeInBytes;
+            dest.UserAgentString = src.UserAgentString;
+            dest.CrawlTimeoutSeconds = src.CrawlTimeoutSeconds;
+            dest.IsUriRecrawlingEnabled = src.IsUriRecrawlingEnabled;
+            dest.IsExternalPageCrawlingEnabled = src.IsExternalPageCrawlingEnabled;
+            dest.IsExternalPageLinksCrawlingEnabled = src.IsExternalPageLinksCrawlingEnabled;
+            dest.IsRespectUrlNamedAnchorOrHashbangEnabled = src.IsRespectUrlNamedAnchorOrHashbangEnabled;
+            dest.DownloadableContentTypes = src.DownloadableContentTypes;
+            dest.HttpServicePointConnectionLimit = src.HttpServicePointConnectionLimit;
+            dest.HttpRequestTimeoutInSeconds = src.HttpRequestTimeoutInSeconds;
+            dest.HttpRequestMaxAutoRedirects = src.HttpRequestMaxAutoRedirects;
+            dest.IsHttpRequestAutoRedirectsEnabled = src.IsHttpRequestAutoRedirectsEnabled;
+            dest.IsHttpRequestAutomaticDecompressionEnabled = src.IsHttpRequestAutomaticDecompressionEnabled;
+            dest.IsSendingCookiesEnabled = src.IsSendingCookiesEnabled;
+            dest.IsSslCertificateValidationEnabled = src.IsSslCertificateValidationEnabled;
+            dest.MinAvailableMemoryRequiredInMb = src.MinAvailableMemoryRequiredInMb;
+            dest.MaxMemoryUsageInMb = src.MaxMemoryUsageInMb;
+            dest.MaxMemoryUsageCacheTimeInSeconds = src.MaxMemoryUsageCacheTimeInSeconds;
+            dest.MaxCrawlDepth = src.MaxCrawlDepth;
+            dest.MaxLinksPerPage = src.MaxLinksPerPage;
+            dest.IsForcedLinkParsingEnabled = src.IsForcedLinkParsingEnabled;
+            dest.MaxRetryCount = src.MaxRetryCount;
+            dest.MinRetryDelayInMilliseconds = src.MinRetryDelayInMilliseconds;
+        }
+
+        private void Map(PolitenessElement src, CrawlConfiguration dest)
+        {
+            dest.IsRespectRobotsDotTextEnabled = src.IsRespectRobotsDotTextEnabled;
+            dest.IsRespectMetaRobotsNoFollowEnabled = src.IsRespectMetaRobotsNoFollowEnabled;
+            dest.IsRespectHttpXRobotsTagHeaderNoFollowEnabled = src.IsRespectHttpXRobotsTagHeaderNoFollowEnabled;
+            dest.IsRespectAnchorRelNoFollowEnabled = src.IsRespectAnchorRelNoFollowEnabled;
+            dest.IsIgnoreRobotsDotTextIfRootDisallowedEnabled = src.IsIgnoreRobotsDotTextIfRootDisallowedEnabled;
+            dest.RobotsDotTextUserAgentString = src.RobotsDotTextUserAgentString;
+            dest.MinCrawlDelayPerDomainMilliSeconds = src.MinCrawlDelayPerDomainMilliSeconds;
+            dest.MaxRobotsDotTextCrawlDelayInSeconds = src.MaxRobotsDotTextCrawlDelayInSeconds;
+        }
+
+        private void Map(AuthorizationElement src, CrawlConfiguration dest)
+        {
+            dest.IsAlwaysLogin = src.IsAlwaysLogin;
+            dest.LoginUser = src.LoginUser;
+            dest.LoginPassword = src.LoginPassword;
         }
 
         public static AbotConfigurationSectionHandler LoadFromXml()
