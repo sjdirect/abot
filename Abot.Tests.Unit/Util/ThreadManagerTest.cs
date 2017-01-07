@@ -130,7 +130,7 @@ namespace Abot.Tests.Unit.Util
         {
             _unitUnderTest.AbortAll();
 
-            Assert.Throws<ArgumentNullException>(() => _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(10)));
+            Assert.Throws<InvalidOperationException>(() => _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(10)));
         }
 
         [Test]

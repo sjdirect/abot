@@ -28,7 +28,7 @@ namespace Abot.Tests.Unit.Poco
         [Test]
         public void Constructor_InvalidUri_ThrowsException()
         {
-            Assert.Throws<ArgumentException>(() => new CrawledPage(null));
+            Assert.Throws<ArgumentNullException>(() => new CrawledPage(null));
         }
 
         [Test]
@@ -238,10 +238,11 @@ namespace Abot.Tests.Unit.Poco
 
         private string GetFileContent(string fileName)
         {
-            if (!File.Exists(fileName))
+            string testFile = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName));
+            if (!File.Exists(testFile))
                 throw new ApplicationException("Cannot find file " + fileName);
 
-            return File.ReadAllText(fileName);
+            return File.ReadAllText(testFile);
         }
     }
 }

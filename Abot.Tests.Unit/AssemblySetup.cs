@@ -14,9 +14,7 @@ namespace Abot.Tests.Unit
         {
             XmlConfigurator.Configure();
 
-            
             string pathToFiddlerResponseArchive = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, @"..\..\..\", "TestResponses.saz"));
-
             if (!File.Exists(pathToFiddlerResponseArchive))
                 throw new InvalidOperationException("Cannot find fiddler response archive needed to run tests at " + pathToFiddlerResponseArchive);
 

@@ -58,7 +58,6 @@ Sitemap: http://b.com/sitemap.xml
         public void Constructor_NullContent()
         {
             string nullContent = null;
-            _unitUnderTest = new RobotsDotText(_rootUri, nullContent);
             Assert.Throws<ArgumentNullException>(() => _unitUnderTest = new RobotsDotText(_rootUri, nullContent));
         }
 

@@ -13,19 +13,19 @@ namespace Abot.Tests.Unit.Util
         [Test]
         public void Constructor_InvalidOccurrances()
         {
-            Assert.Throws<ArgumentException>(() => new RateLimiter(0, TimeSpan.FromSeconds(10)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RateLimiter(0, TimeSpan.FromSeconds(10)));
         }
 
         [Test]
         public void Constructor_NegativeTimeSpan()
         {
-            Assert.Throws<ArgumentException>(() => new RateLimiter(1, TimeSpan.FromSeconds(-10)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RateLimiter(1, TimeSpan.FromSeconds(-10)));
         }
 
         [Test]
         public void Constructor_TimeSpanToBig()
         {
-            Assert.Throws<ArgumentException>(() => new RateLimiter(1, TimeSpan.FromDays(1000)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RateLimiter(1, TimeSpan.FromDays(1000)));
         }
 
         [Test]
