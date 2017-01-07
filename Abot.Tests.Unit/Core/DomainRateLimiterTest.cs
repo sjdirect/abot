@@ -15,10 +15,9 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Constructor_NegativeCrawlDelay()
-        {
-            new DomainRateLimiter(-1);
+        public void Constructor_NegativeCrawlDelay_ThrowsException()
+        { 
+            Assert.Throws<ArgumentException>(() => new DomainRateLimiter(-1));
         }
 
         [Test]
@@ -88,32 +87,28 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RateLimit_NullUri()
         {
-            new DomainRateLimiter(1000).RateLimit(null);
+            Assert.Throws<ArgumentNullException>(() => new DomainRateLimiter(1000).RateLimit(null));
         }
 
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddDomain_NullUri()
         {
-            new DomainRateLimiter(1000).AddDomain(null, 100);
+            Assert.Throws<ArgumentNullException>(() => new DomainRateLimiter(1000).AddDomain(null, 100));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void AddDomain_ZeroCrawlDelay()
         {
-            new DomainRateLimiter(1000).AddDomain(new Uri("http://a.com"), 0);
+            Assert.Throws<ArgumentException>(() => new DomainRateLimiter(1000).AddDomain(new Uri("http://a.com"), 0));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void AddDomain_NegativeCrawlDelay()
         {
-            new DomainRateLimiter(1000).AddDomain(new Uri("http://a.com"), -1);
+            Assert.Throws<ArgumentException>(() => new DomainRateLimiter(1000).AddDomain(new Uri("http://a.com"), -1));
         }
 
         [Test]
@@ -175,24 +170,21 @@ namespace Abot.Tests.Unit.Core
 
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddOrUpdateDomain_NullUri()
         {
-            new DomainRateLimiter(1000).AddOrUpdateDomain(null, 100);
+            Assert.Throws<ArgumentNullException>(() => new DomainRateLimiter(1000).AddOrUpdateDomain(null, 100));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void AddOrUpdateDomain_ZeroCrawlDelay()
         {
-            new DomainRateLimiter(1000).AddOrUpdateDomain(new Uri("http://a.com"), 0);
+            Assert.Throws<ArgumentException>(() => new DomainRateLimiter(1000).AddOrUpdateDomain(new Uri("http://a.com"), 0));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void AddOrUpdateDomain_NegativeCrawlDelay()
         {
-            new DomainRateLimiter(1000).AddOrUpdateDomain(new Uri("http://a.com"), -1);
+            Assert.Throws<ArgumentException>(() => new DomainRateLimiter(1000).AddOrUpdateDomain(new Uri("http://a.com"), -1));
         }
 
         [Test]

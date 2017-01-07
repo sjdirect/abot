@@ -26,10 +26,9 @@ namespace Abot.Tests.Unit.Poco
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_InvalidUri()
+        public void Constructor_InvalidUri_ThrowsException()
         {
-            new CrawledPage(null);
+            Assert.Throws<ArgumentException>(() => new CrawledPage(null));
         }
 
         [Test]

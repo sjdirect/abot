@@ -92,50 +92,44 @@ namespace Abot.SiteSimulator.Test.Controllers
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Generate_Status200_NegativeNumber()
+        public void Generate_Status200_NegativeNumber_ThrowsException()
         {
             _specs1.Status200Count = -1;
-            _unitUnderTest.Generate(_specs1);
+            Assert.Throws<ArgumentException>(() => _unitUnderTest.Generate(_specs1));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Generate_Status403_NegativeNumber()
+        public void Generate_Status403_NegativeNumber_ThrowsException()
         {
             _specs1.Status403Count = -1;
-            _unitUnderTest.Generate(_specs1);
+            Assert.Throws<ArgumentException>(() => _unitUnderTest.Generate(_specs1));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Generate_Status404_NegativeNumber()
+        public void Generate_Status404_NegativeNumber_ThrowsException()
         {
             _specs1.Status404Count = -1;
-            _unitUnderTest.Generate(_specs1);
+            Assert.Throws<ArgumentException>(() => _unitUnderTest.Generate(_specs1));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Generate_Status500_NegativeNumber()
+        public void Generate_Status500_NegativeNumber_ThrowsException()
         {
             _specs1.Status500Count = -1;
-            _unitUnderTest.Generate(_specs1);
+            Assert.Throws<ArgumentException>(() => _unitUnderTest.Generate(_specs1));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Generate_Status503_NegativeNumber()
+        public void Generate_Status503_NegativeNumber_ThrowsException()
         {
             _specs1.Status503Count = -1;
-            _unitUnderTest.Generate(_specs1);
+            Assert.Throws<ArgumentException>(() => _unitUnderTest.Generate(_specs1));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Generate_NullPageSpecs()
+        public void Generate_NullPageSpecs_ThrowsException()
         {
-            _unitUnderTest.Generate(null);
+            Assert.Throws<ArgumentNullException>(() => _unitUnderTest.Generate(null));
         }
 
         [Test]
