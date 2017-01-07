@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Commoner.Core.Testing;
 using log4net.Config;
 using NUnit.Framework;
@@ -8,16 +9,20 @@ namespace Abot.Tests.Integration
     [SetUpFixture]
     public class AssemblySetup
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             XmlConfigurator.Configure();
 
-            FiddlerProxyUtil.StartAutoRespond(@"..\..\..\TestResponses.saz");
+            string pathToFiddlerResponseArchive = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, @"..\..\..\", "TestResponses.saz"));
+            if (!File.Exists(pathToFiddlerResponseArchive))
+                throw new InvalidOperationException("Cannot find fiddler response archive needed to run tests at " + pathToFiddlerResponseArchive);
+
+            FiddlerProxyUtil.StartAutoRespond(pathToFiddlerResponseArchive);
             Console.WriteLine("Started FiddlerCore to autorespond with pre recorded http responses.");
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void After()
         {
             FiddlerProxyUtil.StopAutoResponding();

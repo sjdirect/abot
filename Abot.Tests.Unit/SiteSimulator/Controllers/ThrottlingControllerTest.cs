@@ -31,11 +31,10 @@ namespace Abot.SiteSimulator.Test.Controllers
         }
 
         [Test]
-        [ExpectedException(typeof(System.Web.HttpException))]
         public void Handle1RequestEveryXSeconds_2ndRequestWithin1Second()
         {
             _unitUnderTest.Handle1RequestEveryXSeconds(1);
-            _unitUnderTest.Handle1RequestEveryXSeconds(1);
+            Assert.Throws<System.Web.HttpException>(() =>_unitUnderTest.Handle1RequestEveryXSeconds(1));
         }
 
         [Test]

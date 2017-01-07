@@ -25,10 +25,9 @@ namespace Abot.Tests.Unit.Util
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_MemoryMonitorIsNull()
+        public void Constructor_MemoryMonitorIsNull_ThrowsException()
         {
-            new CachedMemoryMonitor(null, 1);
+            Assert.Throws<ArgumentNullException>(() => new CachedMemoryMonitor(null, 1));
         }
 
         [Test]
