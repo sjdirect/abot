@@ -8,7 +8,6 @@ using System.Timers;
 using Abot.Core;
 using Abot.Poco;
 using Abot.Util;
-using AutoMapper;
 using log4net;
 using Timer = System.Timers.Timer;
 
@@ -885,10 +884,7 @@ namespace Abot.Crawler
             CrawledPage crawledPage = _pageRequester.MakeRequest(pageToCrawl.Uri, ShouldDownloadPageContent);
             //CrawledPage crawledPage = await _pageRequester.MakeRequestAsync(pageToCrawl.Uri, ShouldDownloadPageContent);
 
-            dynamic combinedPageBag = this.CombinePageBags(pageToCrawl.PageBag, crawledPage.PageBag);
-            Mapper.CreateMap<PageToCrawl, CrawledPage>();
-            Mapper.Map(pageToCrawl, crawledPage);
-            crawledPage.PageBag = combinedPageBag;
+            Map(pageToCrawl, crawledPage);
 
             if (crawledPage.HttpWebResponse == null)
                 _logger.InfoFormat("Page crawl complete, Status:[NA] Url:[{0}] Elapsed:[{1}] Parent:[{2}] Retry:[{3}]", crawledPage.Uri.AbsoluteUri, crawledPage.Elapsed, crawledPage.ParentUri, crawledPage.RetryCount);
@@ -898,12 +894,28 @@ namespace Abot.Crawler
             return crawledPage;
         }
 
-        protected virtual dynamic CombinePageBags(dynamic pageToCrawlBag, dynamic crawledPageBag )
+        protected void Map(PageToCrawl src, CrawledPage dest)
+        {
+            dest.Uri = src.Uri;
+            dest.ParentUri = src.Uri;
+            dest.IsRetry = src.IsRetry;
+            dest.RetryAfter = src.RetryAfter;
+            dest.RetryCount = src.RetryCount;
+            dest.LastRequest = src.LastRequest;
+            dest.IsRoot = src.IsRoot;
+            dest.IsInternal = src.IsInternal;
+            dest.PageBag = CombinePageBags(src.PageBag, dest.PageBag);
+            dest.CrawlDepth = src.CrawlDepth;
+            dest.RedirectedFrom = src.RedirectedFrom;
+            dest.RedirectPosition = src.RedirectPosition;
+        }
+
+        protected virtual dynamic CombinePageBags(dynamic pageToCrawlBag, dynamic crawledPageBag)
         {
             IDictionary<string, object> combinedBag = new ExpandoObject();
             var pageToCrawlBagDict = pageToCrawlBag as IDictionary<string, object>;
             var crawledPageBagDict = crawledPageBag as IDictionary<string, object>;
-            
+
             foreach (KeyValuePair<string, object> entry in pageToCrawlBagDict) combinedBag[entry.Key] = entry.Value;
             foreach (KeyValuePair<string, object> entry in crawledPageBagDict) combinedBag[entry.Key] = entry.Value;
 

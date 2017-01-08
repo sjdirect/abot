@@ -33,17 +33,15 @@ namespace Abot.Tests.Unit.Util
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Constructor_OverMax()
+        public void Constructor_OverMax_ThrowsException()
         {
-            _unitUnderTest = GetInstance(101);
+            Assert.Throws<ArgumentException>(() => _unitUnderTest = GetInstance(101));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void Constructor_BelowMinimum()
         {
-            _unitUnderTest = GetInstance(0);
+            Assert.Throws<ArgumentException>(() => GetInstance(0));
         }
 
         [Test]
@@ -122,18 +120,17 @@ namespace Abot.Tests.Unit.Util
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void DoWork_ActionIsNull()
+        public void DoWork_ActionIsNull_ThrowsException()
         {
-            _unitUnderTest.DoWork(null);
+            Assert.Throws<ArgumentNullException>(() => _unitUnderTest.DoWork(null));
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void DoWork_CalledAfterAbortAll()
+        public void DoWork_CalledAfterAbortAll_ThrowsException()
         {
             _unitUnderTest.AbortAll();
-            _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(10));
+
+            Assert.Throws<InvalidOperationException>(() => _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(10)));
         }
 
         [Test]

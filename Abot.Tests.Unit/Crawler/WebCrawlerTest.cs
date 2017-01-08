@@ -106,10 +106,9 @@ namespace Abot.Tests.Unit.Crawler
 
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Crawl_NullUri()
+        public void Crawl_NullUri_ThrowsException()
         {
-            _unitUnderTest.Crawl(null);
+            Assert.Throws<ArgumentNullException>(() => _unitUnderTest.Crawl(null));
         }
 
         [Test]

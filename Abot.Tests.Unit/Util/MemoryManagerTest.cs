@@ -27,10 +27,9 @@ namespace Abot.Tests.Unit.Util
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_MemoryMonitorIsNull()
         {
-            new MemoryManager(null);
+            Assert.Throws<ArgumentNullException>(() => new MemoryManager(null));
         }
 
 

@@ -49,18 +49,16 @@ Sitemap: http://b.com/sitemap.xml
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullRootUri()
         {
-            _unitUnderTest = new RobotsDotText(null, _robotsContent);
+            Assert.Throws<ArgumentNullException>(() => _unitUnderTest = new RobotsDotText(null, _robotsContent));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullContent()
         {
             string nullContent = null;
-            _unitUnderTest = new RobotsDotText(_rootUri, nullContent);
+            Assert.Throws<ArgumentNullException>(() => _unitUnderTest = new RobotsDotText(_rootUri, nullContent));
         }
 
         [Test]
@@ -163,10 +161,9 @@ Sitemap: http://b.com/sitemap.xml
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void IsUrlAllowed_NullRobotsContent()
         {
-            new RobotsDotText(_rootUri, null);
+            Assert.Throws<ArgumentNullException>(() => new RobotsDotText(_rootUri, null));
         }
 
         [Test]
@@ -230,7 +227,7 @@ Disallow: /?category=another&color=red");
             Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
         }
 
-        [Test, Ignore]//This is a bug and needs to be fixed
+        [Test, Ignore("This is a bug and needs to be fixed")]
         public void IsUrlAllowed_QuerystringOnRoot2_ReturnsTrue()
         {
             string userAgentString = _userAgentString;

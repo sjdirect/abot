@@ -118,17 +118,15 @@ namespace Abot.SiteSimulator.Test.Unit.Controllers
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Redirect_InvalidRedirectStatus()
+        public void Redirect_InvalidRedirectStatus_ThrowsException()
         {
-            _unitUnderTest.Redirect(123, 200);
+            Assert.Throws<ArgumentException>(() => _unitUnderTest.Redirect(123, 200));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Redirect_InvalidDestinationStatus()
+        public void Redirect_InvalidDestinationStatus_ThrowsException()
         {
-            _unitUnderTest.Redirect(301, 123);
+            Assert.Throws<ArgumentException>(() => _unitUnderTest.Redirect(301, 123));
         }
     }
 }

@@ -30,17 +30,15 @@ namespace Abot.Tests.Unit.Core
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_PageRequesterIsNull()
         {
-            new RobotsDotTextFinder(null);
+            Assert.Throws<ArgumentNullException>(() => new RobotsDotTextFinder(null));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Find_NullUrl()
         {
-            _uut.Find(null);
+            Assert.Throws<ArgumentNullException>(() => _uut.Find(null));
         }
 
         [Test]

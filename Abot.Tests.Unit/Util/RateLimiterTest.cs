@@ -11,24 +11,21 @@ namespace Abot.Tests.Unit.Util
         RateLimiter _unitUnderTest;
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Constructor_InvalidOccurrances()
         {
-            new RateLimiter(0, TimeSpan.FromSeconds(10));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RateLimiter(0, TimeSpan.FromSeconds(10)));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Constructor_NegativeTimeSpan()
         {
-            new RateLimiter(1, TimeSpan.FromSeconds(-10));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RateLimiter(1, TimeSpan.FromSeconds(-10)));
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Constructor_TimeSpanToBig()
         {
-            new RateLimiter(1, TimeSpan.FromDays(1000));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RateLimiter(1, TimeSpan.FromDays(1000)));
         }
 
         [Test]
@@ -95,11 +92,10 @@ namespace Abot.Tests.Unit.Util
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void WaitToProceed_NegativeMilli()
         {
             _unitUnderTest = new RateLimiter(1, TimeSpan.FromSeconds(1));
-            _unitUnderTest.WaitToProceed(-10);
+            Assert.Throws<ArgumentOutOfRangeException>(() => _unitUnderTest.WaitToProceed(-10));
         }
     }
 }

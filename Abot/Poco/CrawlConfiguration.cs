@@ -49,13 +49,6 @@ namespace Abot.Poco
         public int MaxPageSizeInBytes { get; set; }
 
         /// <summary>
-        /// The maximum numer of seconds to respect in the robots.txt "Crawl-delay: X" directive. 
-        /// IsRespectRobotsDotTextEnabled must be true for this value to be used.
-        /// If zero, will use whatever the robots.txt crawl delay requests no matter how high the value is.
-        /// </summary>
-        public int MaxRobotsDotTextCrawlDelayInSeconds { get; set; }
-
-        /// <summary>
         /// The user agent string to use for http requests
         /// </summary>
         public string UserAgentString { get; set; }
@@ -219,6 +212,13 @@ namespace Abot.Poco
         /// The number of milliseconds to wait in between http requests to the same domain.
         /// </summary>
         public int MinCrawlDelayPerDomainMilliSeconds { get; set; }
+
+        /// <summary>
+        /// The maximum numer of seconds to respect in the robots.txt "Crawl-delay: X" directive. 
+        /// IsRespectRobotsDotTextEnabled must be true for this value to be used.
+        /// If zero, will use whatever the robots.txt crawl delay requests no matter how high the value is.
+        /// </summary>
+        public int MaxRobotsDotTextCrawlDelayInSeconds { get; set; }
 
         #endregion
 
