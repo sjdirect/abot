@@ -897,7 +897,7 @@ namespace Abot.Crawler
         protected void Map(PageToCrawl src, CrawledPage dest)
         {
             dest.Uri = src.Uri;
-            dest.ParentUri = src.Uri;
+            dest.ParentUri = src.ParentUri;
             dest.IsRetry = src.IsRetry;
             dest.RetryAfter = src.RetryAfter;
             dest.RetryCount = src.RetryCount;
