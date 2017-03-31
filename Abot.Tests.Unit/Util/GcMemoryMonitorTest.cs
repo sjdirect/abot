@@ -35,7 +35,7 @@ namespace Abot.Tests.Unit.Util
             int originalValue = _uut.GetCurrentUsageInMb();
 
             List<Guid> guids = new List<Guid>();
-            for (int i = 0; i < 500000; i++)
+            for (int i = 0; i < 10000000; i++)
                 guids.Add(Guid.NewGuid());
 
             Assert.IsTrue(_uut.GetCurrentUsageInMb() > originalValue);
