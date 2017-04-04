@@ -64,6 +64,7 @@ namespace Abot.Tests.Unit.Poco
         [Test]
         public void HtmlDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
         {
+            //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
             CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
             {
                 Content = new PageContent
@@ -73,14 +74,15 @@ namespace Abot.Tests.Unit.Poco
             };
 
             Assert.IsNotNull(unitUnderTest.HtmlDocument);
-            Assert.IsTrue(unitUnderTest.HtmlDocument.DocumentNode.InnerText.Length > 1);
+            Assert.AreEqual("", unitUnderTest.HtmlDocument.DocumentNode.InnerText);
         }
 
         [Test]
         public void HtmlDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
         {
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-            { 
+            //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
+            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
+            {
                 Content = new PageContent
                 {
                     Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
@@ -88,7 +90,7 @@ namespace Abot.Tests.Unit.Poco
             };
 
             Assert.IsNotNull(unitUnderTest.HtmlDocument);
-            Assert.IsTrue(unitUnderTest.HtmlDocument.DocumentNode.InnerText.Length > 1);
+            Assert.AreEqual("", unitUnderTest.HtmlDocument.DocumentNode.InnerText);
         }
 
         [Test]
