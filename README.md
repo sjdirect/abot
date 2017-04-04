@@ -1,12 +1,12 @@
-# Abot [![Build Status](https://ci.appveyor.com/api/projects/status/b1ukruawvu6uujn0/branch/master?svg=true)](https://ci.appveyor.com/project/sjdirect/abot)
+#Abot [![Build Status](https://ci.appveyor.com/api/projects/status/b1ukruawvu6uujn0/branch/master?svg=true)](https://ci.appveyor.com/project/sjdirect/abot)
 
 *Please star this project!!* Contact me with exciting opportunities!!
 
-### C# web crawler built for speed and flexibility.
+######C# web crawler built for speed and flexibility.
 
 Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process. Abot targets .NET version 4.0. 
 
-### What's So Great About It?
+######What's So Great About It?
   * Open Source (Free for commercial and personal use)
   * It's fast!!
   * Easily customizable (Pluggable architecture allows you to decide what gets crawled and how)
@@ -15,7 +15,7 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
   * No out of process dependencies (database, installed services, etc...)
   * Runs on Mono
 
-### Links of Interest
+######Links of Interest
 
   * [Ask a question](http://groups.google.com/group/abot-web-crawler)
   * [Report a bug or suggest a feature](https://github.com/sjdirect/abot/issues)
@@ -26,7 +26,7 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
   * [ASP.NET Core support](https://github.com/sjdirect/abot-dotnet-core/tree/master)
   * [Unofficial Chinese Documentation](https://github.com/zixiliuyue/abot)
 
-### Use [AbotX](http://abotx.org) for powerful extensions/wrappers
+######Use [AbotX](http://abotx.org) for powerful extensions/wrappers
 
   * [Crawl multiple sites concurrently](http://abotx.org/Learn/ParallelCrawlerEngine)
   * [Execute/Render Javascript](http://abotx.org/Learn/JavascriptRendering)
@@ -38,13 +38,13 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
 
 <br /><br />
 <hr />
-## Quick Start 
+##Quick Start 
 
-### Installing Abot
+######Installing Abot
   * Install Abot using [Nuget](https://www.nuget.org/packages/Abot/)
   * If you prefer to build from source yourself see the [Working With The Source Code section](#working-with-the-source-code) below
 
-### Using Abot
+######Using Abot
 1: Add the following using statements to the host class... 
 ```c#
 using Abot.Crawler;
@@ -222,7 +222,7 @@ CrawlResult result = crawler.Crawl(new Uri("addurihere"), cancellationTokenSourc
 
 <br /><br /><br />
 <hr />
-## Logging (Optional)
+##Logging (Optional)
 Abot uses Log4Net to log messages. These log statements are a great way to see whats going on during a crawl. However, if you dont want to use log4net you can skip this section. 
 
 Below is an example log4net configuration. Read more abot log4net at [their website](http://logging.apache.org/log4net/release/manual/introduction.html)
@@ -271,13 +271,13 @@ The following configuration data should be added to the app.config file of the a
 
 <br /><br /><br />
 <hr />
-## Customizing Crawl Behavior
+##Customizing Crawl Behavior
 
 Abot was designed to be as pluggable as possible. This allows you to easily alter the way it works to suite your needs.
 
 The easiest way to change Abot's behavior for common features is to change the config values that control them. See the [Quick Start](#quick-start) page for examples on the different ways Abot can be configured.
 
-### CrawlDecision Callbacks/Delegates
+####CrawlDecision Callbacks/Delegates
 Sometimes you don't want to create a class and go through the ceremony of extending a base class or implementing the interface directly. For all you lazy developers out there Abot provides a shorthand method to easily add your custom crawl decision logic. NOTE: The ICrawlDecisionMaker's corresponding method is called first and if it does not "allow" a decision, these callbacks will not be called.
 
 ```c#
@@ -311,7 +311,7 @@ crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
 });
 ```
 
-### Custom Implementations
+####Custom Implementations
 PoliteWebCrawler is the master of orchestrating the crawl. Its job is to coordinate all the utility classes to "crawl" a site. PoliteWebCrawler accepts an alternate implementation for all its dependencies through its constructor.
  
 ```c#
@@ -344,7 +344,7 @@ PoliteWebCrawler crawler = new PoliteWebCrawler(
 
 The following are explanations of each interface that PoliteWebCrawler relies on to do the real work.
 
-#### ICrawlDecisionMaker
+######ICrawlDecisionMaker
 The callback/delegate shortcuts are great to add a small amount of logic but if you are doing anything more heavy you will want to pass in your custom implementation of ICrawlDecisionMaker. The crawler calls this implementation to see whether a page should be crawled, whether the page's content should be downloaded and whether a crawled page's links should be crawled.
 
 [CrawlDecisionMaker.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/CrawlDecisionMaker.cs) is the default ICrawlDecisionMaker used by Abot. This class takes care of common checks like making sure the config value MaxPagesToCrawl is not exceeded. Most users will only need to create a class that extends CrawlDecision maker and just add their custom logic. However, you are completely free to create a class that implements ICrawlDecisionMaker and pass it into PoliteWebCrawlers constructor.
@@ -373,7 +373,7 @@ public interface ICrawlDecisionMaker
 ```
 
 
-#### IThreadManager
+######IThreadManager
 The IThreadManager interface deals with the multithreading details. It is used by the crawler to manage concurrent http requests. 
 
 [TaskThreadManager.cs](https://github.com/sjdirect/abot/blob/master/Abot/Util/TaskThreadManager.cs) is the default IThreadManager used by Abot. 
@@ -409,7 +409,7 @@ public interface IThreadManager : IDisposable
 ```
 
 
-#### IScheduler
+######IScheduler
 The IScheduler interface deals with managing what pages need to be crawled. The crawler gives the links it finds to and gets the pages to crawl from the IScheduler implementation. A common use cases for writing your own implementation might be to distribute crawls across multiple machines which could be managed by a DistributedScheduler.
 
 [Scheduler.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/Scheduler.cs) is the default IScheduler used by the crawler and by default is constructed with in memory collection to determine what pages have been crawled and which need to be crawled. 
@@ -448,7 +448,7 @@ public interface IScheduler
 ```
 
 
-#### IPageRequester
+######IPageRequester
 The IPageRequester interface deals with making the raw http requests.
 
 [PageRequester.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/PageRequester.cs) is the default IPageRequester used by the crawler. 
@@ -468,7 +468,7 @@ public interface IPageRequester
 }
 ```
 
-#### IHyperLinkParser
+######IHyperLinkParser
 The IHyperLinkParser interface deals with parsing the links out of raw html.
 
 [HapHyperlinkParser.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/HapHyperLinkParser.cs) is the default IHyperLinkParser used by the crawler. It uses the well known parsing library [Html Agility Pack](http://htmlagilitypack.codeplex.com/). There is also an alternative implementation [AngleSharpHyperLinkParser.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/AngleSharpHyperLinkParser.cs) which uses [AngleSharp](https://github.com/AngleSharp/AngleSharp) to do the parsing. AngleSharp uses a css style selector like jquery but all in c#. 
@@ -486,7 +486,7 @@ public interface IHyperLinkParser
 }
 ```
 
-#### IMemoryManager
+######IMemoryManager
 The IMemoryManager handles memory monitoring. This feature is still experimental and could be removed in a future release if found to be unreliable. 
 
 [MemoryManager.cs](https://github.com/sjdirect/abot/blob/master/Abot/Util/MemoryManager.cs) is the default implementation used by the crawler. 
@@ -509,7 +509,7 @@ public interface IMemoryManager : IMemoryMonitor, IDisposable
 }
 ```
 
-#### IDomainRateLimiter
+######IDomainRateLimiter
 The IDomainRateLimiter handles domain rate limiting. It will handle determining how much time needs to elapse before it is ok to make another http request to the domain.
 
 [DomainRateLimiter.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/DomainRateLimiter.cs) is the default implementation used by the crawler. 
@@ -533,7 +533,7 @@ public interface IDomainRateLimiter
 ```
 
 
-#### IRobotsDotTextFinder
+######IRobotsDotTextFinder
 The IRobotsDotTextFinder is responsible for retrieving the robots.txt file for every domain (if isRespectRobotsDotTextEnabled="true") and building the robots.txt abstraction which implements the IRobotsDotText interface. 
 
 [RobotsDotTextFinder.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core/RobotsDotTextFinder.cs) is the default implementation used by the crawler. 
@@ -553,21 +553,21 @@ public interface IRobotsDotTextFinder
 
 <br /><br /><br />
 <hr />
-## Working With The Source Code
+##Working With The Source Code
 The most common way to customize crawl behavior is by extending classes and overriding methods. You can also create a custom implementation of a core interface. All this can be done outside of Abot's source code. 
 
 However, if the changes that you are going to make are out of the ordinary or you want to contribute a bug fix or feature then you will want to work directly with Abot's source code. Below you will find what you need to get the solution building/running on your local machine.
 
-#### Your First Build
+######Your First Build
 1: Clone the latest using the following commands<br /><br />
   *git clone git@github.com:sjdirect/abot.git*<br /><br />
 2: Open the Abot.sln file in Visual Studio (all dev done in vs 2013 premium)<br />
 3: Build the solution normally<br />
 
-#### External Tools Needed
+######External Tools Needed
 NUnit Test Runner: The unit tests for Abot are using NUnit which is not supported right out of the box in visual studio. You must either install a NUnit test adapter or a product like TestDriven or Resharper. Download the [NUnit test adapter](http://visualstudiogallery.msdn.microsoft.com/6ab922d0-21c0-4f06-ab5f-4ecd1fe7175d) or install it through visual studio extension manager.
 
-#### Solution Project/Assembly Overview
+######Solution Project/Assembly Overview
 * **Abot:** Main library for all crawling and utility code.<br />
 * **Abot.Demo:** Simple console app that demonstrates how to use abot.<br />
 * **Abot.SiteSimulator:** An asp.net mvc application that can simulate any number of pages and several http responses that are encountered during a crawl. This site is used to produce a predictable site crawl for abot.
@@ -575,7 +575,7 @@ Both Abot.Tests.Unit and Abot.Tests.Integration make calls to this site. However
 * **Abot.Tests.Unit:** Unit tests for all Abot assemblies. Abot.SiteSimulator site must be running for tests to pass since mocking http web requests is more trouble then its worth.<br />
 * **Abot.Tests.Integration:** Tests the end to end crawl behavior. These are real crawls, no mocks/stubs/etc.. Abot.SiteSimulator site must be running for tests to pass.<br />
 
-#### How to run Abot.Demo
+######How to run Abot.Demo
 The demo project has a few config values set that greatly limit Abot's speed.  This is to make sure you don't get banned by your isp provider or get blocked by the sites you are crawling. These setting are..
 
 ```xml
@@ -620,7 +620,7 @@ This will tell Abot to use 10 threads, to crawl up to 10,000 pages and that it s
 4: Press enter<br />
 5: View the Abot.Demo/bin/debug/abotlog.txt file for all the output.<br />
 
-#### How To Run Demo Against Abot.SiteSimulator
+######How To Run Demo Against Abot.SiteSimulator
 
 If you would rather test your crawls on a test site then I would suggest you use the Abot.SiteSimulator mvc project. This site is hosted on your machine and will not generate any http traffic beyond your local network. This allows you to crawl as aggressively as you would like without of fear of isp issues. This site also has links that purposefully return http 200, 301-302, 403-404 and 500 responses to simulate a wide range of what can be encountered while crawling the web. To use the Abot.SiteSimulator project do the following...
 
@@ -634,14 +634,14 @@ If you would rather test your crawls on a test site then I would suggest you use
 
 Now the Abot.Demo console application will be crawling the Abot.SiteSimulator test site that is running locally on your machine. This is the best way to develop Abot without being banned by your ip.
 
-#### How to run Abot.Tests.Unit
+######How to run Abot.Tests.Unit
 1: Verify "External Tools" defined above are installed and working<br />
 2: Run Abot.Tests.Unit tests using whatever test runner you like (Visual Studio test runner, Testdriven.net or Resharper).<br />
 
-#### How to run Abot.Tests.Integration
+######How to run Abot.Tests.Integration
 1: Verify "External Tools" defined above are installed and working<br />
 2: Run Abot.Tests.Integration using whatever test runner you like (Visual Studio test runner, Testdriven.net or Resharper).<br />
 3: View the file output at Abot.Tests.Integration/bin/debug/abotlog.txt file for all the output.<br />
 
-#### Fiddler Core
+######Fiddler Core
 Just a note that Fiddler.Core is started and stopped during unit and integration tests. This allows replaying predictable http requests. Read more about [Fiddler Core here](http://www.telerik.com/fiddler/fiddlercore)
