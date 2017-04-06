@@ -146,7 +146,7 @@ namespace Abot.Poco
         private HtmlDocument InitializeHtmlAgilityPackDocument()
         {
             HtmlDocument hapDoc = new HtmlDocument();
-            HtmlDocument.MaxDepthLevel = 4000; //did not make this an externally configurable property since it is really an internal issue to hap
+            HtmlDocument.MaxDepthLevel = 100; //did not make this an externally configurable property since it is really an internal issue to hap
             try
             {
                 hapDoc.LoadHtml(Content.Text);
