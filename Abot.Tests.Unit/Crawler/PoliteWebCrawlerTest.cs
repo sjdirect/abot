@@ -22,7 +22,7 @@ namespace Abot.Tests.Unit.Crawler
         Mock<IRobotsDotText> _fakeRobotsDotText;
         Scheduler _dummyScheduler;
         ManualThreadManager _dummyThreadManager;
-        CrawlConfiguration _dummyConfiguration;
+        ICrawlConfiguration _dummyConfiguration;
         Uri _rootUri;
 
         [SetUp]

@@ -26,7 +26,7 @@ namespace Abot.Tests.Unit.Crawler
         
         Scheduler _dummyScheduler;
         TaskThreadManager _dummyThreadManager;
-        CrawlConfiguration _dummyConfiguration;
+        ICrawlConfiguration _dummyConfiguration;
         Uri _rootUri;
 
         [SetUp]

@@ -33,17 +33,17 @@ namespace Abot.Core
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");
 
-        protected CrawlConfiguration _config;
+        protected ICrawlConfiguration _config;
         protected IWebContentExtractor _extractor;
         protected CookieContainer _cookieContainer = new CookieContainer();
 
-        public PageRequester(CrawlConfiguration config)
+        public PageRequester(ICrawlConfiguration config)
             : this(config, null)
         {
 
         }
 
-        public PageRequester(CrawlConfiguration config, IWebContentExtractor contentExtractor)
+        public PageRequester(ICrawlConfiguration config, IWebContentExtractor contentExtractor)
         {
             if (config == null)
                 throw new ArgumentNullException("config");

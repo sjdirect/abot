@@ -40,7 +40,7 @@ namespace Abot.Core
 
         }
 
-        public CSQueryHyperlinkParser(CrawlConfiguration config, Func<string, string> cleanURLFunc)
+        public CSQueryHyperlinkParser(ICrawlConfiguration config, Func<string, string> cleanURLFunc)
             : base(config, cleanURLFunc)
         {
 

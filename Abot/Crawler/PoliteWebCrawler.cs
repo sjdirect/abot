@@ -39,13 +39,13 @@ namespace Abot.Crawler
         {
         }
 
-        public PoliteWebCrawler(CrawlConfiguration crawlConfiguration)
+        public PoliteWebCrawler(ICrawlConfiguration crawlConfiguration)
             : this(crawlConfiguration, null, null, null, null, null, null, null, null)
         {
         }
 
         public PoliteWebCrawler(
-            CrawlConfiguration crawlConfiguration,
+            ICrawlConfiguration crawlConfiguration,
             ICrawlDecisionMaker crawlDecisionMaker,
             IThreadManager threadManager,
             IScheduler scheduler,

@@ -9,7 +9,7 @@ namespace Abot.Tests.Unit.Poco
         [Test]
         public void Constructor_ValidUri_CreatesInstance()
         {
-            CrawlConfiguration unitUnderTest = new CrawlConfiguration();
+            ICrawlConfiguration unitUnderTest = new CrawlConfiguration();
 
             Assert.IsNotNull(unitUnderTest.ConfigurationExtensions);
             Assert.AreEqual(0, unitUnderTest.ConfigurationExtensions.Count);

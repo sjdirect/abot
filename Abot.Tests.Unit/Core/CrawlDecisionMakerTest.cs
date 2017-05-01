@@ -254,7 +254,7 @@ namespace Abot.Tests.Unit.Core
         public void ShouldCrawlPage_OverMaxPagesToCrawlPerDomain_IsRetry_ReturnsTrue()
         {
             Uri uri = new Uri("http://a.com/");
-            CrawlConfiguration config = new CrawlConfiguration
+            ICrawlConfiguration config = new CrawlConfiguration
             {
                 MaxPagesToCrawlPerDomain = 100
             };

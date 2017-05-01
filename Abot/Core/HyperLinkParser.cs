@@ -22,7 +22,7 @@ namespace Abot.Core
     public abstract class HyperLinkParser : IHyperLinkParser
     {
         protected ILog _logger = LogManager.GetLogger("AbotLogger");
-        protected CrawlConfiguration _config;
+        protected ICrawlConfiguration _config;
         protected Func<string, string> _cleanURLFunc;
 
         protected HyperLinkParser()
@@ -38,7 +38,7 @@ namespace Abot.Core
 
         }
 
-        protected HyperLinkParser(CrawlConfiguration config, Func<string, string> cleanURLFunc)
+        protected HyperLinkParser(ICrawlConfiguration config, Func<string, string> cleanURLFunc)
         {
             _config = config;
             _cleanURLFunc = cleanURLFunc;

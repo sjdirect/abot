@@ -3,8 +3,211 @@ using System.Collections.Generic;
 
 namespace Abot.Poco
 {
+    public interface ICrawlConfiguration
+    {
+        /// <summary>
+        /// Max concurrent threads to use for http requests
+        /// </summary>
+        int MaxConcurrentThreads { get; set; }
+
+        /// <summary>
+        /// Maximum number of pages to crawl.
+        /// This value is required.
+        /// </summary>
+        int MaxPagesToCrawl { get; set; }
+
+        /// <summary>
+        /// Maximum number of pages to crawl per domain
+        /// If zero, this setting has no effect.
+        /// </summary>
+        int MaxPagesToCrawlPerDomain { get; set; }
+
+        /// <summary>
+        /// Maximum size of page. If the page size is above this value, it will not be downloaded or processed
+        /// If zero, this setting has no effect.
+        /// </summary>
+        int MaxPageSizeInBytes { get; set; }
+
+        /// <summary>
+        /// The maximum numer of seconds to respect in the robots.txt "Crawl-delay: X" directive. 
+        /// IsRespectRobotsDotTextEnabled must be true for this value to be used.
+        /// If zero, will use whatever the robots.txt crawl delay requests no matter how high the value is.
+        /// </summary>
+        int MaxRobotsDotTextCrawlDelayInSeconds { get; set; }
+
+        /// <summary>
+        /// The user agent string to use for http requests
+        /// </summary>
+        string UserAgentString { get; set; }
+
+        /// <summary>
+        /// Maximum seconds before the crawl times out and stops. 
+        /// If zero, this setting has no effect.
+        /// </summary>
+        int CrawlTimeoutSeconds { get; set; }
+
+        /// <summary>
+        /// Dictionary that stores additional keyvalue pairs that can be accessed throught the crawl pipeline
+        /// </summary>
+        Dictionary<string, string> ConfigurationExtensions { get; set; }
+
+        /// <summary>
+        /// Whether Uris should be crawled more than once. This is not common and should be false for most scenarios
+        /// </summary>
+        bool IsUriRecrawlingEnabled { get; set; }
+
+        /// <summary>
+        /// Whether pages external to the root uri should be crawled
+        /// </summary>
+        bool IsExternalPageCrawlingEnabled { get; set; }
+
+        /// <summary>
+        /// Whether pages external to the root uri should have their links crawled. NOTE: IsExternalPageCrawlEnabled must be true for this setting to have any effect
+        /// </summary>
+        bool IsExternalPageLinksCrawlingEnabled { get; set; }
+
+        /// <summary>
+        /// Whether or not url named anchors or hashbangs are considered part of the url. If false, they will be ignored. If true, they will be considered part of the url.
+        /// </summary>
+        bool IsRespectUrlNamedAnchorOrHashbangEnabled { get; set; }
+
+        /// <summary>
+        /// A comma seperated string that has content types that should have their page content downloaded. For each page, the content type is checked to see if it contains any of the values defined here.
+        /// </summary>
+        string DownloadableContentTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of concurrent connections allowed by a System.Net.ServicePoint. The system default is 2. This means that only 2 concurrent http connections can be open to the same host.
+        /// If zero, this setting has no effect.
+        /// </summary>
+        int HttpServicePointConnectionLimit { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time-out value in milliseconds for the System.Net.HttpWebRequest.GetResponse() and System.Net.HttpWebRequest.GetRequestStream() methods.
+        /// If zero, this setting has no effect.
+        /// </summary>
+        int HttpRequestTimeoutInSeconds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of redirects that the request follows.
+        /// If zero, this setting has no effect.
+        /// </summary>
+        int HttpRequestMaxAutoRedirects { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether the request should follow redirection
+        /// </summary>
+        bool IsHttpRequestAutoRedirectsEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates gzip and deflate will be automatically accepted and decompressed
+        /// </summary>
+        bool IsHttpRequestAutomaticDecompressionEnabled { get; set; }
+
+        /// <summary>
+        /// Whether the cookies should be set and resent with every request
+        /// </summary>
+        bool IsSendingCookiesEnabled { get; set; }
+
+        /// <summary>
+        /// Whether or not to validate the server SSL certificate. If true, the default validation will be made.
+        /// If false, the certificate validation is bypassed. This setting is useful to crawl sites with an
+        /// invalid or expired SSL certificate.
+        /// </summary>
+        bool IsSslCertificateValidationEnabled { get; set; }
+
+        /// <summary>
+        /// Uses closest mulitple of 16 to the value set. If there is not at least this much memory available before starting a crawl, throws InsufficientMemoryException.
+        /// If zero, this setting has no effect.
+        /// </summary>
+        /// <exception cref="http://msdn.microsoft.com/en-us/library/system.insufficientmemoryexception.aspx">InsufficientMemoryException</exception>
+        int MinAvailableMemoryRequiredInMb { get; set; }
+
+        /// <summary>
+        /// The max amout of memory to allow the process to use. If this limit is exceeded the crawler will stop prematurely.
+        /// If zero, this setting has no effect.
+        /// </summary>
+        int MaxMemoryUsageInMb { get; set; }
+
+        /// <summary>
+        /// The max amount of time before refreshing the value used to determine the amount of memory being used by the process that hosts the crawler instance.
+        /// This value has no effect if MaxMemoryUsageInMb is zero.
+        /// </summary>
+        int MaxMemoryUsageCacheTimeInSeconds { get; set; }
+
+        /// <summary>
+        /// Maximum levels below root page to crawl. If value is 0, the homepage will be crawled but none of its links will be crawled. If the level is 1, the homepage and its links will be crawled but none of the links links will be crawled.
+        /// </summary>
+        int MaxCrawlDepth { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether the crawler should parse the page's links even if a CrawlDecision (like CrawlDecisionMaker.ShouldCrawlPageLinks()) determines that those links will not be crawled.
+        /// </summary>
+        bool IsForcedLinkParsingEnabled { get; set; }
+
+        /// <summary>
+        /// The max number of retries for a url if a web exception is encountered. If the value is 0, no retries will be made
+        /// </summary>
+        int MaxRetryCount { get; set; }
+
+        /// <summary>
+        /// The minimum delay between a failed http request and the next retry
+        /// </summary>
+        int MinRetryDelayInMilliseconds { get; set; }
+
+        /// <summary>
+        /// Whether the crawler should retrieve and respect the robots.txt file.
+        /// </summary>
+        bool IsRespectRobotsDotTextEnabled { get; set; }
+
+        /// <summary>
+        /// Whether the crawler should ignore links on pages that have a <meta name="robots" content="nofollow" /> tag
+        /// </summary>
+        bool IsRespectMetaRobotsNoFollowEnabled { get; set; }
+
+        /// <summary>
+        /// Whether the crawler should ignore links on pages that have an http X-Robots-Tag header of nofollow
+        /// </summary>
+        bool IsRespectHttpXRobotsTagHeaderNoFollowEnabled { get; set; }
+
+        /// <summary>
+        /// Whether the crawler should ignore links that have a <a href="whatever" rel="nofollow">...
+        /// </summary>
+        bool IsRespectAnchorRelNoFollowEnabled { get; set; }
+
+        /// <summary>
+        /// If true, will ignore the robots.txt file if it disallows crawling the root uri.
+        /// </summary>
+        bool IsIgnoreRobotsDotTextIfRootDisallowedEnabled { get; set; }
+
+        /// <summary>
+        /// The user agent string to use when checking robots.txt file for specific directives.  Some examples of other crawler's user agent values are "googlebot", "slurp" etc...
+        /// </summary>
+        string RobotsDotTextUserAgentString { get; set; }
+
+        /// <summary>
+        /// The number of milliseconds to wait in between http requests to the same domain.
+        /// </summary>
+        int MinCrawlDelayPerDomainMilliSeconds { get; set; }
+
+        /// <summary>
+        /// Defines whatewer each request shold be autorized via login 
+        /// </summary>
+        bool IsAlwaysLogin { get; set; }
+
+        /// <summary>
+        /// The user name to be used for autorization 
+        /// </summary>
+        string LoginUser { get; set; }
+
+        /// <summary>
+        /// The password to be used for autorization 
+        /// </summary>
+        string LoginPassword { get; set; }
+    }
+
     [Serializable]
-    public class CrawlConfiguration
+    public class CrawlConfiguration : ICrawlConfiguration
     {
         public CrawlConfiguration()
         {

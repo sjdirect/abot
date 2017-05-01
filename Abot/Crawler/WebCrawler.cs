@@ -177,7 +177,7 @@ namespace Abot.Crawler
         /// <param name="crawlConfiguration">Configurable crawl values</param>
         /// <param name="memoryManager">Checks the memory usage of the host process</param>
         public WebCrawler(
-            CrawlConfiguration crawlConfiguration,
+            ICrawlConfiguration crawlConfiguration,
             ICrawlDecisionMaker crawlDecisionMaker,
             IThreadManager threadManager,
             IScheduler scheduler,
@@ -517,7 +517,7 @@ namespace Abot.Crawler
             _isInternalDecisionMaker = decisionMaker;
         }
 
-        private CrawlConfiguration GetCrawlConfigurationFromConfigFile()
+        private ICrawlConfiguration GetCrawlConfigurationFromConfigFile()
         {
             AbotConfigurationSectionHandler configFromFile = AbotConfigurationSectionHandler.LoadFromXml();
 
@@ -1001,7 +1001,7 @@ namespace Abot.Crawler
             return decision;
         }
 
-        protected virtual void PrintConfigValues(CrawlConfiguration config)
+        protected virtual void PrintConfigValues(ICrawlConfiguration config)
         {
             _logger.Info("Configuration Values:");
 
