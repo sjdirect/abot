@@ -113,7 +113,7 @@ namespace Abot.Util
                 action.Invoke();
                 _logger.Debug("Action completed successfully.");
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
                 _logger.DebugFormat("Thread cancelled.");
                 throw;

@@ -63,13 +63,13 @@ namespace Abot.Crawler
         /// <summary>
         /// Synchronous method that registers a delegate to be called to determine whether the page's content should be dowloaded
         /// </summary>
-        /// <param name="shouldDownloadPageContent"></param>
+        /// <param name="decisionMaker"></param>
         void ShouldDownloadPageContent(Func<CrawledPage, CrawlContext, CrawlDecision> decisionMaker);
 
         /// <summary>
         /// Synchronous method that registers a delegate to be called to determine whether a page's links should be crawled or not
         /// </summary>
-        /// <param name="shouldCrawlPageLinksDelegate"></param>
+        /// <param name="decisionMaker"></param>
         void ShouldCrawlPageLinks(Func<CrawledPage, CrawlContext, CrawlDecision> decisionMaker);
 
         /// <summary>
@@ -477,7 +477,7 @@ namespace Abot.Crawler
         /// <summary>
         /// Synchronous method that registers a delegate to be called to determine whether the page's content should be dowloaded
         /// </summary>
-        /// <param name="shouldDownloadPageContent"></param>
+        /// <param name="decisionMaker"></param>
         public void ShouldDownloadPageContent(Func<CrawledPage, CrawlContext, CrawlDecision> decisionMaker)
         {
             _shouldDownloadPageContentDecisionMaker = decisionMaker;
@@ -486,7 +486,7 @@ namespace Abot.Crawler
         /// <summary>
         /// Synchronous method that registers a delegate to be called to determine whether a page's links should be crawled or not
         /// </summary>
-        /// <param name="shouldCrawlPageLinksDelegate"></param>
+        /// <param name="decisionMaker"></param>
         public void ShouldCrawlPageLinks(Func<CrawledPage, CrawlContext, CrawlDecision> decisionMaker)
         {
             _shouldCrawlPageLinksDecisionMaker = decisionMaker;
@@ -702,7 +702,7 @@ namespace Abot.Crawler
                     _scheduler.Add(crawledPage);
                 }   
             }
-            catch (OperationCanceledException oce)
+            catch (OperationCanceledException)
             {
                 _logger.DebugFormat("Thread cancelled while crawling/processing page [{0}]", pageToCrawl.Uri);
                 throw;
@@ -930,7 +930,6 @@ namespace Abot.Crawler
                 return;
             }
 
-            int domainCount = 0;
             Interlocked.Increment(ref _crawlContext.CrawledCount);
             _crawlContext.CrawlCountByDomain.AddOrUpdate(pageToCrawl.Uri.Authority, 1, (key, oldValue) => oldValue + 1);
         }

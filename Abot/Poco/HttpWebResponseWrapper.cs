@@ -53,7 +53,7 @@ namespace Abot.Poco
                     IsMutuallyAuthenticated = response.IsMutuallyAuthenticated;
                     IsMutuallyAuthenticatedImplemented = true;
                 }
-                catch (NotImplementedException e)
+                catch (NotImplementedException)
                 {
                     IsMutuallyAuthenticatedImplemented = false;
                 }

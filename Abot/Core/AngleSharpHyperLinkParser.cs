@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Dom;
+#pragma warning disable 1591
 
 namespace Abot.Core
 {
@@ -17,7 +18,6 @@ namespace Abot.Core
         {
         }
 
-        [Obsolete("Use the constructor that accepts a configuration object instead")]
         /// <summary>
         /// Constructor
         /// </summary>
@@ -25,6 +25,7 @@ namespace Abot.Core
         /// <param name="isRespectAnchorRelNoFollowEnabled">Whether parser should ignore links with rel no follow</param>
         /// <param name="cleanURLFunc">Function to clean the url</param>
         /// <param name="isRespectUrlNamedAnchorOrHashbangEnabled">Whether parser should consider named anchor and/or hashbang '#' character as part of the url</param>
+        [Obsolete("Use the constructor that accepts a configuration object instead")]
         public AngleSharpHyperlinkParser(bool isRespectMetaRobotsNoFollowEnabled,
                                   bool isRespectAnchorRelNoFollowEnabled,
                                   Func<string, string> cleanURLFunc = null,
