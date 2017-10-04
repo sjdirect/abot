@@ -207,8 +207,11 @@ namespace Abot.Core
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.AllowAutoRedirect = _config.IsHttpRequestAutoRedirectsEnabled;
-            request.UserAgent = _config.UserAgentString;
-            request.Accept = "*/*";
+
+            if (string.IsNullOrEmpty(_config.AcceptHeader))
+            {
+                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
+            }
 
             if (_config.HttpRequestMaxAutoRedirects > 0)
                 request.MaximumAutomaticRedirections = _config.HttpRequestMaxAutoRedirects;
@@ -233,6 +236,16 @@ namespace Abot.Core
                 string credentials = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(_config.LoginUser + ":" + _config.LoginPassword));
                 request.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
             }
+
+            if (_config.Headers.Keys.Any())
+            {
+                foreach (var headerKey in _config.Headers.Keys)
+                {
+                    request.Headers[headerKey] = _config.Headers[headerKey];
+                }
+            }
+
+            request.UserAgent = _config.UserAgentString;
 
             return request;
         }

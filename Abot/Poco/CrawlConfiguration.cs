@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+#pragma warning disable 1591
 
 namespace Abot.Poco
 {
@@ -133,7 +134,9 @@ namespace Abot.Poco
         /// Uses closest mulitple of 16 to the value set. If there is not at least this much memory available before starting a crawl, throws InsufficientMemoryException.
         /// If zero, this setting has no effect.
         /// </summary>
-        /// <exception cref="http://msdn.microsoft.com/en-us/library/system.insufficientmemoryexception.aspx">InsufficientMemoryException</exception>
+        /// <exception>InsufficientMemoryException
+        ///     <cref>http://msdn.microsoft.com/en-us/library/system.insufficientmemoryexception.aspx</cref>
+        /// </exception>
         public int MinAvailableMemoryRequiredInMb { get; set; }
 
         /// <summary>
@@ -194,7 +197,7 @@ namespace Abot.Poco
         public bool IsRespectHttpXRobotsTagHeaderNoFollowEnabled { get; set; }
 
         /// <summary>
-        /// Whether the crawler should ignore links that have a <a href="whatever" rel="nofollow">...
+        /// Whether the crawler should ignore links that have a <a href="whatever" rel="nofollow"/>...
         /// </summary>
         public bool IsRespectAnchorRelNoFollowEnabled { get; set; }
 
@@ -238,5 +241,14 @@ namespace Abot.Poco
         public string LoginPassword { get; set; }
 
         #endregion
+
+        #region Headers
+
+        public IDictionary<string, string> Headers { get; set; }
+
+        public string AcceptHeader { get; set; }
+
+        #endregion
+
     }
 }

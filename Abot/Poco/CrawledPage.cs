@@ -8,6 +8,7 @@ using System.Net;
 using AngleSharp;
 using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
+#pragma warning disable 1591
 
 namespace Abot.Poco
 {
