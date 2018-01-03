@@ -96,7 +96,7 @@ namespace Abot.Poco
         public int HttpServicePointConnectionLimit { get; set; }
 
         /// <summary>
-        /// Gets or sets the time-out value in milliseconds for the System.Net.HttpWebRequest.GetResponse() and System.Net.HttpWebRequest.GetRequestStream() methods.
+        /// Gets or sets the time-out value in seconds for the System.Net.HttpWebRequest.GetResponse() and System.Net.HttpWebRequest.GetRequestStream() methods.
         /// If zero, this setting has no effect.
         /// </summary>
         public int HttpRequestTimeoutInSeconds { get; set; }
