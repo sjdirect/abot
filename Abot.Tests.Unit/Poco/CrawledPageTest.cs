@@ -19,7 +19,6 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual(null, unitUnderTest.ParentUri);
             Assert.IsNotNull(unitUnderTest.Content);
             Assert.IsNotNull(unitUnderTest.HtmlDocument);
-            Assert.IsNotNull(unitUnderTest.CsQueryDocument);
             Assert.AreEqual("http://a.com/", unitUnderTest.Uri.AbsoluteUri);
             Assert.AreEqual(null, unitUnderTest.WebException);
             Assert.AreEqual(null, unitUnderTest.ParsedLinks);
@@ -93,64 +92,6 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual("", unitUnderTest.HtmlDocument.DocumentNode.InnerText);
         }
 
-        [Test]
-        public void CsQueryDocument_RawContentIsNull_CsQueryDocumentIsNotNull()
-        {
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-            {
-                Content = new PageContent
-                {
-                    Text = null
-                }
-            };
-
-            Assert.IsNotNull(unitUnderTest.CsQueryDocument);
-        }
-
-        [Test]
-        public void CsQueryDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
-        {
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-            { 
-                Content = new PageContent
-                {
-                    Text = GetFileContent("HtmlAgilityPackStackOverflow1.html")
-                }
-            };
-
-            Assert.IsNotNull(unitUnderTest.CsQueryDocument);
-            Assert.IsTrue(unitUnderTest.CsQueryDocument.ToString().Length > 1);
-        }
-
-        [Test, Ignore("This test passes but takes 28 seconds to run")]
-        public void CsQueryDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
-        {
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-            { 
-                Content = new PageContent
-                {
-                    Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
-                }
-            };
-
-            Assert.IsNotNull(unitUnderTest.CsQueryDocument);
-            Assert.IsTrue(unitUnderTest.CsQueryDocument.ToString().Length > 1);
-        }
-
-        [Test]
-        public void CsQuery_EncodingChangedTwice_IsLoaded()
-        {
-            CrawledPage unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-            { 
-                Content = new PageContent
-                {
-                    Text = @"<div>hehe</div><meta http-equiv=""Content-Type"" content=""text/html; charset=iso-8859-1""><meta http-equiv=""content-type"" content=""text/html; charset=utf-8"" /><div>hi</div>"
-                } 
-            };
-
-            Assert.IsNotNull(unitUnderTest.CsQueryDocument);
-            Assert.AreEqual(4, unitUnderTest.CsQueryDocument.Length);
-        }
 
         [Test]
         public void AngleSharpDocument_RawContentIsNull_AngleSharpDocumentIsNotNull()
