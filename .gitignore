@@ -108,3 +108,4 @@ Backup*/
 UpgradeLog*.XML
 Settings.StyleCop
 .vs/config/applicationhost.config
+/.vs/Abot/v15
