@@ -31,13 +31,6 @@ namespace Abot.Core
 
         }
 
-        [Obsolete("Use the constructor that accepts a configuration object instead")]
-        protected HyperLinkParser(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectUrlNamedAnchorOrHashbangEnabled, Func<string, string> cleanURLFunc)
-            : this(new CrawlConfiguration{ IsRespectMetaRobotsNoFollowEnabled = isRespectMetaRobotsNoFollowEnabled, IsRespectUrlNamedAnchorOrHashbangEnabled = isRespectUrlNamedAnchorOrHashbangEnabled}, cleanURLFunc)
-        {
-
-        }
-
         protected HyperLinkParser(CrawlConfiguration config, Func<string, string> cleanURLFunc)
         {
             _config = config;
