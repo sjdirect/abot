@@ -1,12 +1,7 @@
 ﻿using Abot.Poco;
 using log4net;
 using System;
-using System.CodeDom;
-using System.Linq;
 using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
-using log4net.Core;
 
 namespace Abot.Core
 {
@@ -209,6 +204,7 @@ namespace Abot.Core
             request.AllowAutoRedirect = _config.IsHttpRequestAutoRedirectsEnabled;
             request.UserAgent = _config.UserAgentString;
             request.Accept = "*/*";
+            request.ProtocolVersion = HttpVersion.Version10; //https://github.com/sjdirect/abot/issues/187
 
             if (_config.HttpRequestMaxAutoRedirects > 0)
                 request.MaximumAutomaticRedirections = _config.HttpRequestMaxAutoRedirects;
