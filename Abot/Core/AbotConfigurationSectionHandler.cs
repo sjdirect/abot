@@ -98,6 +98,7 @@ namespace Abot.Core
             dest.IsAlwaysLogin = src.IsAlwaysLogin;
             dest.LoginUser = src.LoginUser;
             dest.LoginPassword = src.LoginPassword;
+            dest.UseDefaultCredentials = src.UseDefaultCredentials;
         }
 
         public static AbotConfigurationSectionHandler LoadFromXml()
@@ -134,6 +135,15 @@ namespace Abot.Core
         public string LoginPassword
         {
             get { return (string)this["loginPassword"]; }
+        }
+
+        /// <summary>
+        /// Specifies whether to use default credentials. 
+        /// </summary>
+        [ConfigurationProperty("useDefaultCredentials", IsRequired = false)]
+        public bool UseDefaultCredentials
+        {
+            get { return (bool)this["useDefaultCredentials"]; }
         }
     }
     [Serializable]

@@ -48,6 +48,7 @@ namespace Abot.Tests.Unit.Poco
             Assert.AreEqual(null, unitUnderTest.LoginUser);
             Assert.AreEqual(null, unitUnderTest.LoginPassword);
             Assert.AreEqual(false, unitUnderTest.IsAlwaysLogin);
+            Assert.AreEqual(false, unitUnderTest.UseDefaultCredentials);
         }
 
 

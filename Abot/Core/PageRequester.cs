@@ -1,4 +1,4 @@
-﻿using Abot.Poco;
+using Abot.Poco;
 using log4net;
 using System;
 using System.Net;
@@ -228,6 +228,11 @@ namespace Abot.Core
             {
                 string credentials = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(_config.LoginUser + ":" + _config.LoginPassword));
                 request.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
+            }
+
+            if (_config.UseDefaultCredentials)
+            {
+                request.UseDefaultCredentials = true;
             }
 
             return request;
