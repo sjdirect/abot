@@ -54,6 +54,11 @@ namespace Abot.Poco
         public string UserAgentString { get; set; }
 
         /// <summary>
+        /// The http protocol version number to use during http requests. Currently supporting values "1.1" and "1.0". 
+        /// </summary>
+        public HttpProtocolVersion HttpProtocolVersion { get; set; }
+
+        /// <summary>
         /// Maximum seconds before the crawl times out and stops. 
         /// If zero, this setting has no effect.
         /// </summary>

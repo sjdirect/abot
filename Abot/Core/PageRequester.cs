@@ -204,7 +204,7 @@ namespace Abot.Core
             request.AllowAutoRedirect = _config.IsHttpRequestAutoRedirectsEnabled;
             request.UserAgent = _config.UserAgentString;
             request.Accept = "*/*";
-            request.ProtocolVersion = HttpVersion.Version10; //https://github.com/sjdirect/abot/issues/187
+            request.ProtocolVersion = GetEquivalentHttpProtocolVersion();
 
             if (_config.HttpRequestMaxAutoRedirects > 0)
                 request.MaximumAutomaticRedirections = _config.HttpRequestMaxAutoRedirects;
@@ -231,6 +231,14 @@ namespace Abot.Core
             }
 
             return request;
+        }
+
+        private Version GetEquivalentHttpProtocolVersion()
+        {
+            if (_config.HttpProtocolVersion == Abot.Poco.HttpProtocolVersion.Version10)
+                return HttpVersion.Version10;
+
+            return HttpVersion.Version11;
         }
 
         protected virtual void ProcessResponseObject(HttpWebResponse response)

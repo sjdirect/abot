@@ -21,6 +21,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(333, _uut.CrawlBehavior.MaxPagesToCrawlPerDomain);
             Assert.AreEqual(4444, _uut.CrawlBehavior.MaxPageSizeInBytes);
             Assert.AreEqual("aaaa", _uut.CrawlBehavior.UserAgentString);
+            Assert.AreEqual("1.0", _uut.CrawlBehavior.HttpProtocolVersion);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsExternalPageCrawlingEnabled);
             Assert.AreEqual(true, _uut.CrawlBehavior.IsExternalPageLinksCrawlingEnabled);
             Assert.AreEqual(21, _uut.CrawlBehavior.HttpServicePointConnectionLimit);
@@ -71,6 +72,7 @@ namespace Abot.Tests.Unit.Core
             Assert.AreEqual(result.MaxPagesToCrawlPerDomain, _uut.CrawlBehavior.MaxPagesToCrawlPerDomain);
             Assert.AreEqual(result.MaxPageSizeInBytes, _uut.CrawlBehavior.MaxPageSizeInBytes);
             Assert.AreEqual(result.UserAgentString, _uut.CrawlBehavior.UserAgentString);
+            Assert.AreEqual(result.HttpProtocolVersion, HttpProtocolVersion.Version10);
             Assert.AreEqual(result.IsExternalPageCrawlingEnabled, _uut.CrawlBehavior.IsExternalPageCrawlingEnabled);
             Assert.AreEqual(result.IsExternalPageLinksCrawlingEnabled, _uut.CrawlBehavior.IsExternalPageLinksCrawlingEnabled);
             Assert.AreEqual(result.HttpServicePointConnectionLimit, _uut.CrawlBehavior.HttpServicePointConnectionLimit);
