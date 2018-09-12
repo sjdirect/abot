@@ -96,6 +96,7 @@
     <Compile Include="Core\CompactCrawledUrlRepository.cs" />
     <Compile Include="Core\AngleSharpHyperLinkParser.cs" />
     <Compile Include="Crawler\RobotsDotTextParseCompletedArgs.cs" />
+    <Compile Include="Poco\Enums.cs" />
     <Compile Include="Poco\HttpWebResponseWrapper.cs" />
     <Compile Include="Util\BloomFilter.cs" />
     <Compile Include="Util\CachedMemoryMonitor.cs" />
