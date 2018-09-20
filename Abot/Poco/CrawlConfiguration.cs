@@ -242,6 +242,11 @@ namespace Abot.Poco
         /// </summary>
         public string LoginPassword { get; set; }
 
+        /// <summary>
+        /// Specifies whether to use default credentials.
+        /// </summary>
+        public bool UseDefaultCredentials { get; set; }
+
         #endregion
     }
 }
