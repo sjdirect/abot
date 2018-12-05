@@ -1,4 +1,4 @@
-﻿using Abot.Util;
+using Abot.Util;
 using log4net;
 using System;
 using System.Collections.Concurrent;
@@ -53,7 +53,7 @@ namespace Abot.Core
             if (uri == null)
                 throw new ArgumentNullException("uri");
 
-            IRateLimiter rateLimiter = GetRateLimter(uri, _defaultMinCrawlDelayInMillisecs);
+            IRateLimiter rateLimiter = GetRateLimiter(uri, _defaultMinCrawlDelayInMillisecs);
             if (rateLimiter == null)
                 return;
 
@@ -73,7 +73,7 @@ namespace Abot.Core
             if (minCrawlDelayInMillisecs < 1)
                 throw new ArgumentException("minCrawlDelayInMillisecs");
 
-            GetRateLimter(uri, Math.Max(minCrawlDelayInMillisecs, _defaultMinCrawlDelayInMillisecs));//just calling this method adds the new domain
+            GetRateLimiter(uri, Math.Max(minCrawlDelayInMillisecs, _defaultMinCrawlDelayInMillisecs));//just calling this method adds the new domain
         }
 
         public void AddOrUpdateDomain(Uri uri, long minCrawlDelayInMillisecs)
@@ -100,8 +100,7 @@ namespace Abot.Core
             _rateLimiterLookup.TryRemove(uri.Authority, out rateLimiter);
         }
 
-
-        private IRateLimiter GetRateLimter(Uri uri, long minCrawlDelayInMillisecs)
+        protected virtual IRateLimiter GetRateLimiter(Uri uri, long minCrawlDelayInMillisecs)
         {
             IRateLimiter rateLimiter;
             _rateLimiterLookup.TryGetValue(uri.Authority, out rateLimiter);
