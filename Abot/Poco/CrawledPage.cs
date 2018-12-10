@@ -3,6 +3,7 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Reflection;
 using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
 
@@ -103,11 +104,13 @@ namespace Abot.Poco
             }
         }
 
-
         private HtmlDocument InitializeHtmlAgilityPackDocument()
         {
             HtmlDocument hapDoc = new HtmlDocument();
-            hapDoc.OptionMaxNestedChildNodes = 5000;//did not make this an externally configurable property since it is really an internal issue to hap
+            FieldInfo optionMaxNestedChildNodes = hapDoc.GetType().GetField("OptionMaxNestedChildNodes");
+            if (optionMaxNestedChildNodes != null)
+                optionMaxNestedChildNodes.SetValue(hapDoc, 5000);//did not make this an externally configurable property since it is really an internal issue to hap
+
             try
             {
                 hapDoc.LoadHtml(Content.Text);

@@ -36,7 +36,7 @@ namespace Abot.Core
     public class DomainRateLimiter : IDomainRateLimiter
     {
         static ILog _logger = LogManager.GetLogger("AbotLogger");
-        ConcurrentDictionary<string, IRateLimiter> _rateLimiterLookup = new ConcurrentDictionary<string, IRateLimiter>();
+        protected internal ConcurrentDictionary<string, IRateLimiter> _rateLimiterLookup = new ConcurrentDictionary<string, IRateLimiter>();
         long _defaultMinCrawlDelayInMillisecs;
 
         public DomainRateLimiter(long minCrawlDelayMillisecs)
