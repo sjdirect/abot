@@ -29,12 +29,12 @@ namespace Abot.Poco
         /// <summary>
         /// Lazy loaded Html Agility Pack (http://htmlagilitypack.codeplex.com/) document that can be used to retrieve/modify html elements on the crawled page.
         /// </summary>
-        public HtmlDocument HtmlDocument { get { return _htmlDocument.Value; } }
+        public virtual HtmlDocument HtmlDocument { get { return _htmlDocument.Value; } }
 
         /// <summary>
         /// Lazy loaded AngleSharp IHtmlDocument (https://github.com/AngleSharp/AngleSharp) that can be used to retrieve/modify html elements on the crawled page.
         /// </summary>
-        public IHtmlDocument AngleSharpHtmlDocument { get { return _angleSharpHtmlDocument.Value; } }
+        public virtual IHtmlDocument AngleSharpHtmlDocument { get { return _angleSharpHtmlDocument.Value; } }
 
         /// <summary>
         /// Web request sent to the server
