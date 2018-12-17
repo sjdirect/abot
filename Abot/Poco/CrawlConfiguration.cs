@@ -65,7 +65,7 @@ namespace Abot.Poco
         public int CrawlTimeoutSeconds { get; set; }
 
         /// <summary>
-        /// Dictionary that stores additional keyvalue pairs that can be accessed throught the crawl pipeline
+        /// Dictionary that stores additional key-value pairs that can be accessed through the crawl pipeline
         /// </summary>
         public Dictionary<string, string> ConfigurationExtensions { get; set; }
 
@@ -135,14 +135,14 @@ namespace Abot.Poco
         public bool IsSslCertificateValidationEnabled { get; set; }
 
         /// <summary>
-        /// Uses closest mulitple of 16 to the value set. If there is not at least this much memory available before starting a crawl, throws InsufficientMemoryException.
+        /// Uses closest multiple of 16 to the value set. If there is not at least this much memory available before starting a crawl, throws InsufficientMemoryException.
         /// If zero, this setting has no effect.
         /// </summary>
         /// <exception cref="http://msdn.microsoft.com/en-us/library/system.insufficientmemoryexception.aspx">InsufficientMemoryException</exception>
         public int MinAvailableMemoryRequiredInMb { get; set; }
 
         /// <summary>
-        /// The max amout of memory to allow the process to use. If this limit is exceeded the crawler will stop prematurely.
+        /// The max amount of memory to allow the process to use. If this limit is exceeded the crawler will stop prematurely.
         /// If zero, this setting has no effect.
         /// </summary>
         public int MaxMemoryUsageInMb { get; set; }
@@ -230,15 +230,15 @@ namespace Abot.Poco
         #region Authorization
 
         /// <summary>
-        /// Defines whatewer each request shold be autorized via login 
+        /// Defines whether each request should be authorized via login
         /// </summary>
         public bool IsAlwaysLogin { get; set; }
         /// <summary>
-        /// The user name to be used for autorization 
+        /// The user name to be used for authorization
         /// </summary>
         public string LoginUser { get; set; }
         /// <summary>
-        /// The password to be used for autorization 
+        /// The password to be used for authorization
         /// </summary>
         public string LoginPassword { get; set; }
 
