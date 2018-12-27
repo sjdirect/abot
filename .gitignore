@@ -109,3 +109,7 @@ UpgradeLog*.XML
 Settings.StyleCop
 .vs/config/applicationhost.config
 /.vs/Abot/v15
+
+\.vs/Abot/DesignTimeBuild/
+
+\.vs/
