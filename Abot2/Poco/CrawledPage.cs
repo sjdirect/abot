@@ -20,7 +20,7 @@ namespace Abot2.Poco
         public CrawledPage(Uri uri)
             : base(uri)
         {
-            _htmlDocument = new Lazy<HtmlDocument>(InitializeHtmlAgilityPackDocument);
+            //_htmlDocument = new Lazy<HtmlDocument>(InitializeHtmlAgilityPackDocument);
             _angleSharpHtmlDocument = new Lazy<IHtmlDocument>(InitializeAngleSharpHtmlParser);
 
             Content = new PageContent();
