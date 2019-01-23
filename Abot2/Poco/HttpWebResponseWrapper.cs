@@ -86,7 +86,10 @@ namespace Abot2.Poco
         }
 
         /// <summary>Constructs an empty response to be filled later.</summary>
-        public HttpWebResponseWrapper() { }
+        public HttpWebResponseWrapper()
+        {
+            Headers = new NameValueCollection();
+        }
 
         #endregion
 
