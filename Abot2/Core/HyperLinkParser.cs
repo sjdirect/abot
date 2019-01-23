@@ -1,5 +1,5 @@
 ﻿using Abot2.Poco;
-//using log4net;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +22,7 @@ namespace Abot2.Core
     [Serializable]
     public abstract class HyperLinkParser : IHtmlParser
     {
-        //protected ILog _logger = LogManager.GetLogger("AbotLogger");
+        protected ILog _logger = LogManager.GetLogger(typeof(HyperLinkParser));
         protected CrawlConfiguration _config;
         protected Func<string, string> _cleanURLFunc;
 
@@ -52,7 +52,7 @@ namespace Abot2.Core
                 .ToList();
             
             timer.Stop();
-            //_logger.DebugFormat("{0} parsed links from [{1}] in [{2}] milliseconds", ParserType, crawledPage.Uri, timer.ElapsedMilliseconds);
+            _logger.DebugFormat("{0} parsed links from [{1}] in [{2}] milliseconds", ParserType, crawledPage.Uri, timer.ElapsedMilliseconds);
 
             return links;
         }
@@ -119,8 +119,8 @@ namespace Abot2.Core
                 }
                 catch (Exception e)
                 {
-                    //_logger.DebugFormat("Could not parse link [{0}] on page [{1}]", hrefValue, crawledPage.Uri);
-                    //_logger.Debug(e);
+                    _logger.DebugFormat("Could not parse link [{0}] on page [{1}]", hrefValue, crawledPage.Uri);
+                    _logger.Debug(e);
                 }
             }
 
@@ -137,7 +137,7 @@ namespace Abot2.Core
                     (xRobotsTagHeader.ToLower().Contains("nofollow") ||
                      xRobotsTagHeader.ToLower().Contains("none")))
                 {
-                    //_logger.InfoFormat("Http header X-Robots-Tag nofollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+                    _logger.InfoFormat("Http header X-Robots-Tag nofollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
                     return true;
                 }   
             }
@@ -150,7 +150,7 @@ namespace Abot2.Core
                     (robotsMeta.ToLower().Contains("nofollow") ||
                      robotsMeta.ToLower().Contains("none")))
                 {
-                    //_logger.InfoFormat("Meta Robots nofollow tag detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+                    _logger.InfoFormat("Meta Robots nofollow tag detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
                     return true;
                 }                
                 

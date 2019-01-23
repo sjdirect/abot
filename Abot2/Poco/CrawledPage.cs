@@ -1,17 +1,15 @@
-﻿//using HtmlAgilityPack;
-//using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
+using log4net;
 
 namespace Abot2.Poco
 {
-    [Serializable]
     public class CrawledPage : PageToCrawl
     {
-        //ILog _logger = LogManager.GetLogger("AbotLogger");
+        ILog _logger = LogManager.GetLogger(typeof(CrawledPage));
         HtmlParser _angleSharpHtmlParser;
 
         //Lazy<HtmlDocument> _htmlDocument;
@@ -104,24 +102,6 @@ namespace Abot2.Poco
         }
 
 
-        //private HtmlDocument InitializeHtmlAgilityPackDocument()
-        //{
-        //    HtmlDocument hapDoc = new HtmlDocument();
-        //    hapDoc.OptionMaxNestedChildNodes = 5000;//did not make this an externally configurable property since it is really an internal issue to hap
-        //    try
-        //    {
-        //        hapDoc.LoadHtml(Content.Text);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        hapDoc.LoadHtml("");
-
-        //        _logger.ErrorFormat("Error occurred while loading HtmlAgilityPack object for Url [{0}]", Uri);
-        //        _logger.Error(e);
-        //    }
-        //    return hapDoc;
-        //}
-
         private IHtmlDocument InitializeAngleSharpHtmlParser()
         {
             if(_angleSharpHtmlParser == null)
@@ -136,8 +116,8 @@ namespace Abot2.Poco
             {
                 document = _angleSharpHtmlParser.Parse("");
 
-                //_logger.ErrorFormat("Error occurred while loading AngularSharp object for Url [{0}]", Uri);
-                //_logger.Error(e);
+                _logger.ErrorFormat("Error occurred while loading AngularSharp object for Url [{0}]", Uri);
+                _logger.Error(e);
             }
 
             return document;
