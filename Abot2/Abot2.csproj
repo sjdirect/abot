@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Poco\HttpRequest.cs" />
+    <Compile Remove="Poco\HttpResponse.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.9.11" />
     <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>

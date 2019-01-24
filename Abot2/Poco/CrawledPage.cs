@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
 using log4net;
@@ -12,49 +12,42 @@ namespace Abot2.Poco
         ILog _logger = LogManager.GetLogger(typeof(CrawledPage));
         HtmlParser _angleSharpHtmlParser;
 
-        //Lazy<HtmlDocument> _htmlDocument;
-        Lazy<IHtmlDocument> _angleSharpHtmlDocument;
+        readonly Lazy<IHtmlDocument> _angleSharpHtmlDocument;
 
         public CrawledPage(Uri uri)
             : base(uri)
         {
-            //_htmlDocument = new Lazy<HtmlDocument>(InitializeHtmlAgilityPackDocument);
             _angleSharpHtmlDocument = new Lazy<IHtmlDocument>(InitializeAngleSharpHtmlParser);
 
             Content = new PageContent();
         }
 
-        ///// <summary>
-        ///// Lazy loaded Html Agility Pack (http://htmlagilitypack.codeplex.com/) document that can be used to retrieve/modify html elements on the crawled page.
-        ///// </summary>
-        //public virtual HtmlDocument HtmlDocument { get { return _htmlDocument.Value; } }
-
         /// <summary>
         /// Lazy loaded AngleSharp IHtmlDocument (https://github.com/AngleSharp/AngleSharp) that can be used to retrieve/modify html elements on the crawled page.
         /// </summary>
-        public virtual IHtmlDocument AngleSharpHtmlDocument { get { return _angleSharpHtmlDocument.Value; } }
+        public virtual IHtmlDocument AngleSharpHtmlDocument => _angleSharpHtmlDocument.Value;
 
         /// <summary>
-        /// Web request sent to the server
+        /// Web request sent to the server.
         /// </summary>
-        public HttpWebRequest HttpWebRequest { get; set; }
+        public HttpRequestMessage HttpRequestMessage { get; set; }
 
         /// <summary>
-        /// Web response from the server. NOTE: The Close() method has been called before setting this property.
+        /// Web response from the server.
         /// </summary>
-        public HttpWebResponseWrapper HttpWebResponse { get; set; }
+        public HttpResponseMessage HttpResponseMessage { get; set; }
 
         /// <summary>
-        /// The web exception that occurred during the crawl
+        /// The request exception that occurred during the request
         /// </summary>
-        public WebException WebException { get; set; }
+        public HttpRequestException HttpRequestException { get; set; }
 
         public override string ToString()
         {
-            if(HttpWebResponse == null)
+            if(HttpResponseMessage == null)
                 return Uri.AbsoluteUri;
-            else
-                return string.Format("{0}[{1}]", Uri.AbsoluteUri, (int)HttpWebResponse.StatusCode);
+         
+            return $"{Uri.AbsoluteUri}[{HttpResponseMessage.StatusCode}]";
         }
 
         /// <summary>
@@ -95,11 +88,7 @@ namespace Abot2.Poco
         /// <summary>
         /// Time it took from RequestStarted to RequestCompleted in milliseconds
         /// </summary>
-        public double Elapsed {
-            get {
-                return (RequestCompleted - RequestStarted).TotalMilliseconds;
-            }
-        }
+        public double Elapsed => (RequestCompleted - RequestStarted).TotalMilliseconds;
 
 
         private IHtmlDocument InitializeAngleSharpHtmlParser()
