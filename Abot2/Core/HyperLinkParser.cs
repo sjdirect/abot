@@ -45,9 +45,9 @@ namespace Abot2.Core
         {
             CheckParams(crawledPage);
 
-            Stopwatch timer = Stopwatch.StartNew();
+            var timer = Stopwatch.StartNew();
 
-            List<HyperLink> links = GetUris(crawledPage, GetHrefValues(crawledPage))
+            var links = GetUris(crawledPage, GetHrefValues(crawledPage))
                 .Select(hrv => new HyperLink(){ HrefValue = hrv})
                 .ToList();
             
@@ -77,16 +77,16 @@ namespace Abot2.Core
 
         protected virtual List<Uri> GetUris(CrawledPage crawledPage, IEnumerable<string> hrefValues)
         {
-            List<Uri> uris = new List<Uri>();
+            var uris = new List<Uri>();
             if (hrefValues == null || hrefValues.Count() < 1)
                 return uris;
 
             //Use the uri of the page that actually responded to the request instead of crawledPage.Uri (Issue 82).
             //Using HttpWebRequest.Address instead of HttpWebResonse.ResponseUri since this is the best practice and mentioned on http://msdn.microsoft.com/en-us/library/system.net.httpwebresponse.responseuri.aspx
-            Uri uriToUse = crawledPage.HttpWebRequest.Address ?? crawledPage.Uri;
+            var uriToUse = crawledPage.HttpRequestMessage.RequestUri ?? crawledPage.Uri;
 
             //If html base tag exists use it instead of page uri for relative links
-            string baseHref = GetBaseHrefValue(crawledPage);
+            var baseHref = GetBaseHrefValue(crawledPage);
             if (!string.IsNullOrEmpty(baseHref))
             {
                 if (baseHref.StartsWith("//"))
@@ -99,8 +99,8 @@ namespace Abot2.Core
                 catch { }
             }
 
-            string href = "";
-            foreach (string hrefValue in hrefValues)
+            var href = "";
+            foreach (var hrefValue in hrefValues)
             {
                 try
                 {
@@ -109,7 +109,7 @@ namespace Abot2.Core
                     href = _config.IsRespectUrlNamedAnchorOrHashbangEnabled
                         ? hrefValue
                         : hrefValue.Split('#')[0];
-                    Uri newUri = new Uri(uriToUse, href);
+                    var newUri = new Uri(uriToUse, href);
 
                     if (_cleanURLFunc != null)
                         newUri = new Uri(_cleanURLFunc(newUri.AbsoluteUri));
@@ -132,7 +132,11 @@ namespace Abot2.Core
             //X-Robots-Tag http header
             if(_config.IsRespectHttpXRobotsTagHeaderNoFollowEnabled)
             {
-                var xRobotsTagHeader = crawledPage.HttpWebResponse.Headers["X-Robots-Tag"];
+                IEnumerable<string> xRobotsTagHeaderValues;
+                if (!crawledPage.HttpResponseMessage.Headers.TryGetValues("X-Robots-Tag", out xRobotsTagHeaderValues))
+                    return false;
+                
+                var xRobotsTagHeader = xRobotsTagHeaderValues.ElementAt(0);
                 if (xRobotsTagHeader != null && 
                     (xRobotsTagHeader.ToLower().Contains("nofollow") ||
                      xRobotsTagHeader.ToLower().Contains("none")))
@@ -145,7 +149,7 @@ namespace Abot2.Core
             //Meta robots tag
             if (_config.IsRespectMetaRobotsNoFollowEnabled)
             {
-                string robotsMeta = GetMetaRobotsValue(crawledPage);
+                var robotsMeta = GetMetaRobotsValue(crawledPage);
                 if (robotsMeta != null &&
                     (robotsMeta.ToLower().Contains("nofollow") ||
                      robotsMeta.ToLower().Contains("none")))
