@@ -107,7 +107,7 @@ namespace Abot.Core
             return charset;
         }
 
-        private MemoryStream GetRawData(WebResponse webResponse)
+        protected virtual MemoryStream GetRawData(WebResponse webResponse)
         {
             MemoryStream rawData = new MemoryStream();
 
