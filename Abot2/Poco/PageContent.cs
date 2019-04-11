@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace Abot2.Poco
 {
@@ -8,7 +7,7 @@ namespace Abot2.Poco
         public PageContent()
         {
             Text = "";
-        }
+        } 
 
         /// <summary>
         /// The raw data bytes taken from the web response

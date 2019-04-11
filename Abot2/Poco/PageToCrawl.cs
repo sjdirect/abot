@@ -9,13 +9,10 @@ namespace Abot2.Poco
         public PageToCrawl()
         {
         }
-
+         
         public PageToCrawl(Uri uri)
         {
-            if (uri == null)
-                throw new ArgumentNullException("uri");
-
-            Uri = uri;
+            Uri = uri ?? throw new ArgumentNullException(nameof(uri));
             PageBag = new ExpandoObject();
         }
 

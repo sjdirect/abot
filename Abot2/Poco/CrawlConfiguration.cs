@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Abot2.Poco
 {
-    public class CrawlConfiguration
+    public class CrawlConfiguration 
     {
         public CrawlConfiguration()
         {
             MaxConcurrentThreads = 10;
-            UserAgentString = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+            UserAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36";
             RobotsDotTextUserAgentString = "abot";
             MaxPagesToCrawl = 1000;
             DownloadableContentTypes = "text/html";
@@ -198,7 +197,7 @@ namespace Abot2.Poco
         public bool IsRespectHttpXRobotsTagHeaderNoFollowEnabled { get; set; }
 
         /// <summary>
-        /// Whether the crawler should ignore links that have a <a href="whatever" rel="nofollow">...
+        /// Whether the crawler should ignore links that have a <a href="whatever" rel="nofollow" />...
         /// </summary>
         public bool IsRespectAnchorRelNoFollowEnabled { get; set; }
 
