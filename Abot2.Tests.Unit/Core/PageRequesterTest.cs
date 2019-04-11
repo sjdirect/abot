@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Abot2.Core;
@@ -10,7 +8,7 @@ using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace Abot2.Tests.Unit
+namespace Abot2.Tests.Unit.Core
 {
     [TestClass]
     public class PageRequesterTest

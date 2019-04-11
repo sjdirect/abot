@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using Abot2.Core;
 using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Abot2.Tests.Unit
+namespace Abot2.Tests.Unit.Core
 {
     [TestClass]
     public abstract class HyperLinkParserTest

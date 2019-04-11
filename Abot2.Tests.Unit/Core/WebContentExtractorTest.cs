@@ -5,7 +5,7 @@ using Abot2.Core;
 using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Abot2.Tests.Unit
+namespace Abot2.Tests.Unit.Core
 {
     [TestClass]
     public class WebContentExtractorTest
