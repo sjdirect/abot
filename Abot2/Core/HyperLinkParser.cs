@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Abot2.Poco;
 
 namespace Abot2.Core
 {
@@ -22,9 +21,9 @@ namespace Abot2.Core
     [Serializable]
     public abstract class HyperLinkParser : IHtmlParser
     {
-        protected ILog _logger = LogManager.GetLogger(typeof(HyperLinkParser));
-        protected CrawlConfiguration _config;
-        protected Func<string, string> _cleanURLFunc;
+        protected ILog Logger = LogManager.GetLogger(typeof(HyperLinkParser));
+        protected CrawlConfiguration Config;
+        protected Func<string, string> CleanUrlFunc;
 
         protected HyperLinkParser()
             :this(new CrawlConfiguration(), null)
@@ -32,10 +31,10 @@ namespace Abot2.Core
 
         }
 
-        protected HyperLinkParser(CrawlConfiguration config, Func<string, string> cleanURLFunc)
+        protected HyperLinkParser(CrawlConfiguration config, Func<string, string> cleanUrlFunc)
         {
-            _config = config;
-            _cleanURLFunc = cleanURLFunc;
+            Config = config;
+            CleanUrlFunc = cleanUrlFunc;
         }
 
         /// <summary>
@@ -52,7 +51,7 @@ namespace Abot2.Core
                 .ToList();
             
             timer.Stop();
-            _logger.DebugFormat("{0} parsed links from [{1}] in [{2}] milliseconds", ParserType, crawledPage.Uri, timer.ElapsedMilliseconds);
+            Logger.DebugFormat("{0} parsed links from [{1}] in [{2}] milliseconds", ParserType, crawledPage.Uri, timer.ElapsedMilliseconds);
 
             return links;
         }
@@ -78,7 +77,8 @@ namespace Abot2.Core
         protected virtual List<Uri> GetUris(CrawledPage crawledPage, IEnumerable<string> hrefValues)
         {
             var uris = new List<Uri>();
-            if (hrefValues == null || hrefValues.Count() < 1)
+
+            if (hrefValues == null || !hrefValues.Any())
                 return uris;
 
             //Use the uri of the page that actually responded to the request instead of crawledPage.Uri (Issue 82).
@@ -96,31 +96,33 @@ namespace Abot2.Core
                 {
                     uriToUse = new Uri(baseHref);
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
 
-            var href = "";
             foreach (var hrefValue in hrefValues)
             {
                 try
                 {
                     // Remove the url fragment part of the url if needed.
                     // This is the part after the # and is often not useful.
-                    href = _config.IsRespectUrlNamedAnchorOrHashbangEnabled
+                    var href = Config.IsRespectUrlNamedAnchorOrHashbangEnabled
                         ? hrefValue
                         : hrefValue.Split('#')[0];
                     var newUri = new Uri(uriToUse, href);
 
-                    if (_cleanURLFunc != null)
-                        newUri = new Uri(_cleanURLFunc(newUri.AbsoluteUri));
+                    if (CleanUrlFunc != null)
+                        newUri = new Uri(CleanUrlFunc(newUri.AbsoluteUri));
 
                     if (!uris.Exists(u => u.AbsoluteUri == newUri.AbsoluteUri))
                         uris.Add(newUri);
                 }
                 catch (Exception e)
                 {
-                    _logger.DebugFormat("Could not parse link [{0}] on page [{1}]", hrefValue, crawledPage.Uri);
-                    _logger.Debug(e);
+                    Logger.DebugFormat("Could not parse link [{0}] on page [{1}]", hrefValue, crawledPage.Uri);
+                    Logger.Debug(e);
                 }
             }
 
@@ -130,7 +132,7 @@ namespace Abot2.Core
         protected virtual bool HasRobotsNoFollow(CrawledPage crawledPage)
         {
             //X-Robots-Tag http header
-            if(_config.IsRespectHttpXRobotsTagHeaderNoFollowEnabled)
+            if(Config.IsRespectHttpXRobotsTagHeaderNoFollowEnabled)
             {
                 IEnumerable<string> xRobotsTagHeaderValues;
                 if (!crawledPage.HttpResponseMessage.Headers.TryGetValues("X-Robots-Tag", out xRobotsTagHeaderValues))
@@ -141,20 +143,20 @@ namespace Abot2.Core
                     (xRobotsTagHeader.ToLower().Contains("nofollow") ||
                      xRobotsTagHeader.ToLower().Contains("none")))
                 {
-                    _logger.InfoFormat("Http header X-Robots-Tag nofollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+                    Logger.InfoFormat("Http header X-Robots-Tag nofollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
                     return true;
                 }   
             }
 
             //Meta robots tag
-            if (_config.IsRespectMetaRobotsNoFollowEnabled)
+            if (Config.IsRespectMetaRobotsNoFollowEnabled)
             {
                 var robotsMeta = GetMetaRobotsValue(crawledPage);
                 if (robotsMeta != null &&
                     (robotsMeta.ToLower().Contains("nofollow") ||
                      robotsMeta.ToLower().Contains("none")))
                 {
-                    _logger.InfoFormat("Meta Robots nofollow tag detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+                    Logger.InfoFormat("Meta Robots nofollow tag detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
                     return true;
                 }                
                 

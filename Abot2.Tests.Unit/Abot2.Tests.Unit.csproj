@@ -17,4 +17,11 @@
     <ProjectReference Include="..\Abot2\Abot2.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\" />
+    <Folder Include="Crawler\" />
+    <Folder Include="Util\" />
+    <Folder Include="Poco\" />
+  </ItemGroup>
+
 </Project>

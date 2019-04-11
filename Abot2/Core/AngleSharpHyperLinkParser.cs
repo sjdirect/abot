@@ -1,5 +1,4 @@
 ﻿using Abot2.Poco;
-using AngleSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +16,8 @@ namespace Abot2.Core
         {
         }
 
-        public AngleSharpHyperlinkParser(CrawlConfiguration config, Func<string, string> cleanURLFunc)
-            : base(config, cleanURLFunc)
+        public AngleSharpHyperlinkParser(CrawlConfiguration config, Func<string, string> cleanUrlFunc)
+            : base(config, cleanUrlFunc)
         {
 
         }
@@ -33,12 +32,12 @@ namespace Abot2.Core
             if (HasRobotsNoFollow(crawledPage))
                 return null;
 
-            IEnumerable<string> hrefValues = crawledPage.AngleSharpHtmlDocument.QuerySelectorAll("a, area")
+            var hrefValues = crawledPage.AngleSharpHtmlDocument.QuerySelectorAll("a, area")
             .Where(e => !HasRelNoFollow(e))
             .Select(y => y.GetAttribute("href"))
             .Where(a => !string.IsNullOrWhiteSpace(a));
 
-            IEnumerable<string> canonicalHref = crawledPage.AngleSharpHtmlDocument
+            var canonicalHref = crawledPage.AngleSharpHtmlDocument
                 .QuerySelectorAll("link")
                 .Where(e => HasRelCanonicalPointingToDifferentUrl(e, crawledPage.Uri.ToString()))
                 .Select(e => e.GetAttribute("href"));
@@ -81,7 +80,7 @@ namespace Abot2.Core
 
         protected virtual bool HasRelNoFollow(IElement e)
         {
-            return _config.IsRespectAnchorRelNoFollowEnabled && (e.HasAttribute("rel") && e.GetAttribute("rel").ToLower().Trim() == "nofollow");
+            return Config.IsRespectAnchorRelNoFollowEnabled && (e.HasAttribute("rel") && e.GetAttribute("rel").ToLower().Trim() == "nofollow");
         }
     }
 }

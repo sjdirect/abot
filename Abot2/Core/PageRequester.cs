@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +8,7 @@ using Abot2.Poco;
 using log4net;
 
 namespace Abot2.Core
-{
+{ 
     public interface IPageRequester : IDisposable
     {
         /// <summary>
@@ -158,7 +156,7 @@ namespace Abot2.Core
 
             if (_config.IsAlwaysLogin)
             {
-                string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(_config.LoginUser + ":" + _config.LoginPassword));
+                var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(_config.LoginUser + ":" + _config.LoginPassword));
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Basic " + credentials);
             }
 
