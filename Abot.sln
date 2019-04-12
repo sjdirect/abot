@@ -25,7 +25,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abot2", "Abot2\Abot2.csproj", "{A1CB064A-18C6-4964-AC23-93426CCB2288}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot2.Tests.Unit", "Abot2.Tests.Unit\Abot2.Tests.Unit.csproj", "{C97EACF1-D791-438D-AA05-CB60DCCF9310}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Abot2.Tests.Unit", "Abot2.Tests.Unit\Abot2.Tests.Unit.csproj", "{C97EACF1-D791-438D-AA05-CB60DCCF9310}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abot2.Demo", "Abot2.Demo\Abot2.Demo.csproj", "{4324C969-FCD5-467C-BBD1-DA6BBCF98767}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,12 +85,20 @@ Global
 		{C97EACF1-D791-438D-AA05-CB60DCCF9310}.Deploy-Release|Any CPU.Build.0 = Release|Any CPU
 		{C97EACF1-D791-438D-AA05-CB60DCCF9310}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C97EACF1-D791-438D-AA05-CB60DCCF9310}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4324C969-FCD5-467C-BBD1-DA6BBCF98767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4324C969-FCD5-467C-BBD1-DA6BBCF98767}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4324C969-FCD5-467C-BBD1-DA6BBCF98767}.Deploy-Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{4324C969-FCD5-467C-BBD1-DA6BBCF98767}.Deploy-Dev|Any CPU.Build.0 = Debug|Any CPU
+		{4324C969-FCD5-467C-BBD1-DA6BBCF98767}.Deploy-Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4324C969-FCD5-467C-BBD1-DA6BBCF98767}.Deploy-Release|Any CPU.Build.0 = Release|Any CPU
+		{4324C969-FCD5-467C-BBD1-DA6BBCF98767}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4324C969-FCD5-467C-BBD1-DA6BBCF98767}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CE61BA35-B8AD-494A-B9AA-BC177A23EFDA}
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\Unity.2.1.505.0\lib\NET35;packages\Unity.2.1.505.2\lib\NET35
+		SolutionGuid = {CE61BA35-B8AD-494A-B9AA-BC177A23EFDA}
 	EndGlobalSection
 EndGlobal
