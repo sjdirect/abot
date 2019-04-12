@@ -52,7 +52,7 @@ namespace Abot2.Tests.Unit.Poco
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_InvalidUri_ThrowsException()
         {
             new PageToCrawl(null);

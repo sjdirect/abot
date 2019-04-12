@@ -46,7 +46,7 @@ namespace Abot2.Poco
             if(HttpResponseMessage == null)
                 return Uri.AbsoluteUri;
          
-            return $"{Uri.AbsoluteUri}[{HttpResponseMessage.StatusCode}]";
+            return $"{Uri.AbsoluteUri}[{Convert.ToInt32(HttpResponseMessage.StatusCode)}]";
         }
 
         /// <summary>

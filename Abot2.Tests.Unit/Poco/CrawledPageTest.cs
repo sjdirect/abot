@@ -3,6 +3,7 @@ using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Abot2.Tests.Unit.Poco
 {
@@ -25,7 +26,7 @@ namespace Abot2.Tests.Unit.Poco
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_InvalidUri_ThrowsException()
         {
             new CrawledPage(null);
@@ -43,7 +44,7 @@ namespace Abot2.Tests.Unit.Poco
             };
 
             Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
-            Assert.AreEqual("hi there", unitUnderTest.AngleSharpHtmlDocument.TextContent);//unitUnderTest.AngleSharpHtmlDocument.DocumentNode.InnerText
+            Assert.AreEqual("hi there", unitUnderTest.AngleSharpHtmlDocument.Body.TextContent);
         }
 
         [TestMethod]
@@ -58,10 +59,9 @@ namespace Abot2.Tests.Unit.Poco
             };
 
             Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
-            Assert.AreEqual("", unitUnderTest.AngleSharpHtmlDocument.TextContent);//unitUnderTest.AngleSharpHtmlDocument.DocumentNode.InnerText
+            Assert.AreEqual("", unitUnderTest.AngleSharpHtmlDocument.Body.TextContent);
         }
 
-        //TODO fix this and all references
         //[TestMethod]
         //public void AngleSharpHtmlDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
         //{
@@ -78,13 +78,12 @@ namespace Abot2.Tests.Unit.Poco
         //    Assert.AreEqual("", unitUnderTest.AngleSharpHtmlDocument.TextContent);
         //}
 
-        //TODO fix this and all references
         //[TestMethod]
         //public void AngleSharpHtmlDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
         //{
         //    //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
-        //    var unitUnderTest = new CrawledPage(new Uri("http://a.com/")) 
-        //    { 
+        //    var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
+        //    {
         //        Content = new PageContent
         //        {
         //            Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
@@ -110,7 +109,6 @@ namespace Abot2.Tests.Unit.Poco
             Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
         }
 
-        //TODO fix this and all references
         //[TestMethod]
         //public void AngleSharpDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
         //{
@@ -126,7 +124,6 @@ namespace Abot2.Tests.Unit.Poco
         //    Assert.IsTrue(unitUnderTest.AngleSharpHtmlDocument.ToString().Length > 1);
         //}
 
-        //TODO fix this and all references
         //[TestMethod]
         //public void AngleSharpDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
         //{
@@ -164,12 +161,15 @@ namespace Abot2.Tests.Unit.Poco
             Assert.AreEqual("http://localhost.fiddler:1111/", new CrawledPage(new Uri("http://localhost.fiddler:1111/")).ToString());
         }
 
-        //TODO fix this and all references
-        //[TestMethod, Ignore("Failing on the build server for some reason")]//TODO FIx this test
-        //public void ToString_HttpResponseExists_MessageHasUriAndStatus()
-        //{
-        //    Assert.AreEqual("http://localhost.fiddler:1111/[200]", new PageRequester(new CrawlConfiguration{ UserAgentString = "aaa" }).MakeRequest(new Uri("http://localhost.fiddler:1111/")).ToString());
-        //}
+        [TestMethod]
+        public async Task ToString_HttpResponseExists_MessageHasUriAndStatus()
+        {
+            var result =
+                await new PageRequester(new CrawlConfiguration(), new WebContentExtractor()).MakeRequestAsync(
+                    new Uri("http://google.com/"));
+
+            Assert.AreEqual("http://google.com/[200]", result.ToString());
+        }
 
         [TestMethod]
         public void Elapsed_ReturnsDiffInMilli()
@@ -183,7 +183,6 @@ namespace Abot2.Tests.Unit.Poco
             Assert.IsTrue(uut.Elapsed >= 5000, "Expected >= 5000 but was " + uut.Elapsed);
         }
 
-        //TODO fix this and all references
         //private string GetFileContent(string fileName)
         //{
         //    var testFile = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName));
