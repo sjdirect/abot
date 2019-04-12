@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Abot2.Poco;
-using log4net;
+using Serilog;
 
 namespace Abot2.Core
 { 
@@ -24,8 +24,6 @@ namespace Abot2.Core
 
     public class PageRequester : IPageRequester
     {
-        static ILog _logger = LogManager.GetLogger(typeof(PageRequester));
-
         private readonly CrawlConfiguration _config;
         private readonly IWebContentExtractor _contentExtractor;
         private readonly CookieContainer _cookieContainer = new CookieContainer();
@@ -86,13 +84,11 @@ namespace Abot2.Core
             {
                 crawledPage.HttpRequestException = hre;
 
-                _logger.DebugFormat("Error occurred requesting url [{0}]", uri.AbsoluteUri);
-                _logger.Debug(hre);
+                Log.Logger.Debug("Error occurred requesting url [{0}] {@Exception}", uri.AbsoluteUri, hre);
             }
             catch (Exception e)
             {
-                _logger.DebugFormat("Error occurred requesting url [{0}]", uri.AbsoluteUri);
-                _logger.Debug(e);
+                Log.Logger.Debug("Error occurred requesting url [{0}] {@Exception}", uri.AbsoluteUri, e);
             }
             finally
             {
@@ -113,14 +109,13 @@ namespace Abot2.Core
                         }
                         else
                         {
-                            _logger.DebugFormat("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
+                            Log.Logger.Debug("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    _logger.DebugFormat("Error occurred finalizing requesting url [{0}]", uri.AbsoluteUri);
-                    _logger.Debug(e);
+                    Log.Logger.Debug("Error occurred finalizing requesting url [{0}] {@Exception}", uri.AbsoluteUri, e);
                 }
             }
 
