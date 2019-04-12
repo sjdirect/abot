@@ -20,7 +20,6 @@
   <ItemGroup>
     <Folder Include="Crawler\" />
     <Folder Include="Util\" />
-    <Folder Include="Poco\" />
   </ItemGroup>
 
 </Project>

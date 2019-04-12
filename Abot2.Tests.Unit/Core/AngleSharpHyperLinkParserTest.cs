@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Abot2.Tests.Unit.Core
 {
-    [TestClass]
+    [TestClass, Ignore]
     public class AngleSharpHyperLinkParserTest : HyperLinkParserTest
     {
         protected override HyperLinkParser GetInstance(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanUrlDelegate, bool isRespectUrlNamedAnchorOrHashbangEnabled, bool isHttpXRobotsTagHeaderNoFollowEnabled)
