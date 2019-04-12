@@ -163,7 +163,9 @@ namespace Abot2.Tests.Unit.Core
             Assert.IsNotNull(result.Bytes);
             Assert.AreNotEqual(0, result.Bytes.Length);
             Assert.AreEqual(expectedCharset, result.Charset);
-            //Assert.AreEqual(expectedEncodingString, result.Encoding.ToString());// Different between local and build server... Expected:<System.Text.UTF8Encoding+UTF8EncodingSealed>. Actual:<System.Text.DBCSCodePageEncoding>
+
+            // Different between local and build server... Expected:<System.Text.UTF8Encoding+UTF8EncodingSealed>. Actual:<System.Text.DBCSCodePageEncoding>
+            //Assert.AreEqual(expectedEncodingString, result.Encoding.ToString());
             //Assert.AreEqual(Encoding.UTF8, encoding ?? Encoding.UTF8);
         }
     }
