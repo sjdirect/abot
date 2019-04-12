@@ -22,6 +22,7 @@ namespace Abot2.Demo
                 new PageRequester(new CrawlConfiguration(), new WebContentExtractor(), new HttpClient());
 
             var result = await pageRequester.MakeRequestAsync(new Uri("http://google.com"));
+            Log.Logger.Information("{result}", new { url = result.Uri, status = Convert.ToInt32(result.HttpResponseMessage.StatusCode)});
             
             Console.ReadKey();
         }
