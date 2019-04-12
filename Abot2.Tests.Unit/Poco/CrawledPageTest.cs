@@ -3,6 +3,7 @@ using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Abot2.Tests.Unit.Poco
@@ -62,37 +63,37 @@ namespace Abot2.Tests.Unit.Poco
             Assert.AreEqual("", unitUnderTest.AngleSharpHtmlDocument.Body.TextContent);
         }
 
-        //[TestMethod]
-        //public void AngleSharpHtmlDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
-        //{
-        //    //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
-        //    var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
-        //    {
-        //        Content = new PageContent
-        //        {
-        //            Text = GetFileContent("HtmlAgilityPackStackOverflow1.html")
-        //        }
-        //    };
+        [TestMethod]
+        public void AngleSharpHtmlDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
+        {
+            //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
+            var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
+            {
+                Content = new PageContent
+                {
+                    Text = GetFileContent("HtmlAgilityPackStackOverflow1.html")
+                }
+            };
 
-        //    Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
-        //    Assert.AreEqual("", unitUnderTest.AngleSharpHtmlDocument.TextContent);
-        //}
+            Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
+            Assert.IsTrue(unitUnderTest.AngleSharpHtmlDocument.Body.TextContent.Length > 0);
+        }
 
-        //[TestMethod]
-        //public void AngleSharpHtmlDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
-        //{
-        //    //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
-        //    var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
-        //    {
-        //        Content = new PageContent
-        //        {
-        //            Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
-        //        }
-        //    };
+        [TestMethod]
+        public void AngleSharpHtmlDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
+        {
+            //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
+            var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
+            {
+                Content = new PageContent
+                {
+                    Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
+                }
+            };
 
-        //    Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
-        //    Assert.AreEqual("", unitUnderTest.AngleSharpHtmlDocument.TextContent);
-        //}
+            Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
+            Assert.IsTrue(unitUnderTest.AngleSharpHtmlDocument.Body.TextContent.Length > 0);
+        }
 
 
         [TestMethod]
@@ -109,35 +110,35 @@ namespace Abot2.Tests.Unit.Poco
             Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
         }
 
-        //[TestMethod]
-        //public void AngleSharpDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
-        //{
-        //    var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
-        //    {
-        //        Content = new PageContent
-        //        {
-        //            Text = GetFileContent("HtmlAgilityPackStackOverflow1.html")
-        //        }
-        //    };
+        [TestMethod]
+        public void AngleSharpDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
+        {
+            var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
+            {
+                Content = new PageContent
+                {
+                    Text = GetFileContent("HtmlAgilityPackStackOverflow1.html")
+                }
+            };
 
-        //    Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
-        //    Assert.IsTrue(unitUnderTest.AngleSharpHtmlDocument.ToString().Length > 1);
-        //}
+            Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
+            Assert.IsTrue(unitUnderTest.AngleSharpHtmlDocument.ToString().Length > 1);
+        }
 
-        //[TestMethod]
-        //public void AngleSharpDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
-        //{
-        //    var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
-        //    {
-        //        Content = new PageContent
-        //        {
-        //            Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
-        //        }
-        //    };
+        [TestMethod]
+        public void AngleSharpDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
+        {
+            var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
+            {
+                Content = new PageContent
+                {
+                    Text = GetFileContent("HtmlAgilityPackStackOverflow2.html")
+                }
+            };
 
-        //    Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
-        //    Assert.IsTrue(unitUnderTest.AngleSharpHtmlDocument.ToString().Length > 1);
-        //}
+            Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument);
+            Assert.IsTrue(unitUnderTest.AngleSharpHtmlDocument.ToString().Length > 1);
+        }
 
         [TestMethod]
         public void AngleSharp_EncodingChangedTwice_IsLoaded()
@@ -183,13 +184,15 @@ namespace Abot2.Tests.Unit.Poco
             Assert.IsTrue(uut.Elapsed >= 5000, "Expected >= 5000 but was " + uut.Elapsed);
         }
 
-        //private string GetFileContent(string fileName)
-        //{
-        //    var testFile = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName));
-        //    if (!File.Exists(testFile))
-        //        throw new ApplicationException("Cannot find file " + fileName);
+        private string GetFileContent(string fileName)
+        {
+            //var testFile = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory, fileName));
+            var testFile = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), fileName));
+            
+            if (!File.Exists(testFile))
+                throw new ApplicationException("Cannot find file " + fileName);
 
-        //    return File.ReadAllText(testFile);
-        //}
+            return File.ReadAllText(testFile);
+        }
     }
 }

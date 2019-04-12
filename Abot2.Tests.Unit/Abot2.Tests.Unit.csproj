@@ -22,4 +22,13 @@
     <Folder Include="Util\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="HtmlAgilityPackStackOverflow1.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="HtmlAgilityPackStackOverflow2.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
