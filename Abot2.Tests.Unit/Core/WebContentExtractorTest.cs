@@ -1,9 +1,8 @@
-﻿using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using Abot2.Core;
+﻿using Abot2.Core;
 using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Abot2.Tests.Unit.Core
 {
@@ -164,7 +163,7 @@ namespace Abot2.Tests.Unit.Core
             Assert.AreNotEqual(0, result.Bytes.Length);
             Assert.AreEqual(expectedCharset, result.Charset);
 
-            // Different between local and build server... Expected:<System.Text.UTF8Encoding+UTF8EncodingSealed>. Actual:<System.Text.DBCSCodePageEncoding>
+            // Different between local and build server... Expected:<System.Text.UTF8Encoding+UTF8EncodingSealed> (local machine). Actual:<System.Text.DBCSCodePageEncoding> (Build server)
             //Assert.AreEqual(expectedEncodingString, result.Encoding.ToString());
             //Assert.AreEqual(Encoding.UTF8, encoding ?? Encoding.UTF8);
         }
