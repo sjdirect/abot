@@ -55,19 +55,19 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void GetNext_MultiplePages_ReturnsInFifoOrder()
         {
-            PageToCrawl page3 = new PageToCrawl(new Uri("http://abc/"));
-            PageToCrawl page4 = new PageToCrawl(new Uri("http://abcd/"));
+            var page3 = new PageToCrawl(new Uri("http://abc/"));
+            var page4 = new PageToCrawl(new Uri("http://abcd/"));
             
             _unitUnderTest.Add(_page1);
             _unitUnderTest.Add(_page2);
             _unitUnderTest.Add(page3);
             _unitUnderTest.Add(page4);
 
-            PageToCrawl result1 = _unitUnderTest.GetNext();
-            PageToCrawl result2 = _unitUnderTest.GetNext();
-            PageToCrawl result3 = _unitUnderTest.GetNext();
-            PageToCrawl result4 = _unitUnderTest.GetNext();
-            PageToCrawl result5 = _unitUnderTest.GetNext();//should be null
+            var result1 = _unitUnderTest.GetNext();
+            var result2 = _unitUnderTest.GetNext();
+            var result3 = _unitUnderTest.GetNext();
+            var result4 = _unitUnderTest.GetNext();
+            var result5 = _unitUnderTest.GetNext();//should be null
 
             Assert.AreSame(_page1, result1);
             Assert.AreSame(_page2, result2);
