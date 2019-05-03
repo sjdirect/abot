@@ -139,7 +139,7 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void ShouldCrawlPage_ZeroMaxPageToCrawlLimit_ReturnsTrue()
         {
-            CrawlContext crawlContext = new CrawlContext
+            var crawlContext = new CrawlContext
             {
                 CrawlConfiguration = new CrawlConfiguration
                 {
@@ -231,9 +231,9 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void ShouldCrawlPage_OverMaxPagesToCrawlPerDomain_ReturnsFalse()
         {
-            Uri uri = new Uri("http://a.com/");
+            var uri = new Uri("http://a.com/");
 
-            ConcurrentDictionary<string,int> countByDomain = new ConcurrentDictionary<string,int>();
+            var countByDomain = new ConcurrentDictionary<string,int>();
             countByDomain.TryAdd(uri.Authority, 100);
 
             _crawlContext.CrawlStartDate = DateTime.Now;
@@ -256,14 +256,14 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void ShouldCrawlPage_OverMaxPagesToCrawlPerDomain_IsRetry_ReturnsTrue()
         {
-            Uri uri = new Uri("http://a.com/");
-            CrawlConfiguration config = new CrawlConfiguration
+            var uri = new Uri("http://a.com/");
+            var config = new CrawlConfiguration
             {
                 MaxPagesToCrawlPerDomain = 100
             };
-            ConcurrentDictionary<string, int> countByDomain = new ConcurrentDictionary<string, int>();
+            var countByDomain = new ConcurrentDictionary<string, int>();
             countByDomain.TryAdd(uri.Authority, 100);
-            CrawlContext crawlContext = new CrawlContext
+            var crawlContext = new CrawlContext
             {
                 CrawlConfiguration = config,
                 CrawlStartDate = DateTime.Now,
@@ -286,7 +286,7 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void ShouldCrawlPage_OverMaxCrawlDepth_ReturnsFalse()
         {
-            CrawlContext crawlContext = new CrawlContext
+            var crawlContext = new CrawlContext
             {
                 CrawlConfiguration = new CrawlConfiguration
                 {
@@ -687,7 +687,7 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void ShouldDownloadPageContent_DownloadableContenttypesWithSpaces_TrimsSpaces_ReturnsTrue()
         {
-            CrawlConfiguration crawlConfiguration = new CrawlConfiguration
+            var crawlConfiguration = new CrawlConfiguration
             {
                 UserAgentString = "aaa",
                 DownloadableContentTypes = "text/html  , application/pdf, ,somethingelse"

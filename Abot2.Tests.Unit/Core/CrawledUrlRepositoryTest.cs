@@ -39,7 +39,7 @@ namespace Abot2.Tests.Unit.Core
         {
             _unitUnderTest.AddIfNew(_uri1);//Add first time
 
-            bool result = _unitUnderTest.AddIfNew(_uri1);
+            var result = _unitUnderTest.AddIfNew(_uri1);
 
             Assert.IsFalse(result);
         }
@@ -59,17 +59,17 @@ namespace Abot2.Tests.Unit.Core
         public void NoFalseNegativesTest()
         {
             // create input collection
-            List<Uri> inputs = GenerateRandomDataList(10000);
+            var inputs = GenerateRandomDataList(10000);
 
             // instantiate filter and populate it with the inputs
-            using (ICrawledUrlRepository uut = GetInstance())
+            using (var uut = GetInstance())
             {
                 //If all were unique then they should all return "true" for Contains()
-                foreach (Uri input in inputs)
+                foreach (var input in inputs)
                     Assert.IsTrue(uut.AddIfNew(input));
 
                 //If all were added successfully then they should all return "true" for Contains()
-                foreach (Uri input in inputs)
+                foreach (var input in inputs)
                 {
                     if (!uut.Contains(input))
                         Assert.Fail("False negative: {0}", input);
@@ -79,8 +79,8 @@ namespace Abot2.Tests.Unit.Core
 
         private List<Uri> GenerateRandomDataList(int capacity)
         {
-            List<Uri> uris = new List<Uri>(capacity);
-            for (int i = 0; i < capacity; i++)
+            var uris = new List<Uri>(capacity);
+            for (var i = 0; i < capacity; i++)
             {
                 uris.Add(new Uri("http://" + Guid.NewGuid().ToString()));
             }
