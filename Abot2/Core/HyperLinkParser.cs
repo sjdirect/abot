@@ -18,7 +18,6 @@ namespace Abot2.Core
         IEnumerable<HyperLink> GetLinks(CrawledPage crawledPage);
     }
 
-    [Serializable]
     public abstract class HyperLinkParser : IHtmlParser
     {
         protected CrawlConfiguration Config;

@@ -32,7 +32,6 @@ namespace Abot2.Core
         CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext);
     }
 
-    [Serializable]
     public class CrawlDecisionMaker : ICrawlDecisionMaker
     {
         public virtual CrawlDecision ShouldCrawlPage(PageToCrawl pageToCrawl, CrawlContext crawlContext)

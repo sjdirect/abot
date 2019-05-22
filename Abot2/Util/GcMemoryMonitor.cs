@@ -9,7 +9,6 @@ namespace Abot2.Util
         int GetCurrentUsageInMb();
     }
 
-    [Serializable]
     public class GcMemoryMonitor : IMemoryMonitor
     {
         public virtual int GetCurrentUsageInMb()

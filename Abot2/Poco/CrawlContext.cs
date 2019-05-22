@@ -6,7 +6,6 @@ using System.Threading;
 
 namespace Abot2.Poco
 {
-    [Serializable]
     public class CrawlContext
     {
         public CrawlContext()

@@ -13,7 +13,6 @@ namespace Abot2.Core
 
     }
 
-    [Serializable]
     public class FifoPagesToCrawlRepository : IPagesToCrawlRepository
     {
         internal ConcurrentQueue<PageToCrawl> UrlQueue = new ConcurrentQueue<PageToCrawl>();

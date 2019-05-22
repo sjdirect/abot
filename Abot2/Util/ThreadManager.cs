@@ -15,9 +15,8 @@ namespace Abot2.Util
         int MaxThreads { get; set; }
 
         /// <summary>
-        /// Will perform the action asynchrously on a seperate thread
+        /// Will perform the action in parallel on a separate thread
         /// </summary>
-        /// <param name="action">The action to perform</param>
         void DoWork(Action action);
 
         /// <summary>
@@ -31,7 +30,6 @@ namespace Abot2.Util
         void AbortAll();
     }
 
-    [Serializable]
     public abstract class ThreadManager : IThreadManager
     {
         protected bool _abortAllCalled = false;
@@ -58,7 +56,7 @@ namespace Abot2.Util
         }
 
         /// <summary>
-        /// Will perform the action asynchrously on a seperate thread
+        /// Will perform the action in parallel on a separate thread
         /// </summary>
         public virtual void DoWork(Action action)
         {
