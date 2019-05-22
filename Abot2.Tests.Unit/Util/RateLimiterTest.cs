@@ -48,9 +48,9 @@ namespace Abot2.Tests.Unit.Util
         }
 
         [TestMethod]
-        public void WaitToProceed_OneSecWait_Waits()
+        public void WaitToProceed_ValidWaitTime_Waits()
         {
-            _unitUnderTest = new RateLimiter(1, TimeSpan.FromSeconds(2));
+            _unitUnderTest = new RateLimiter(1, TimeSpan.FromMilliseconds(700));
 
             var timer = Stopwatch.StartNew();
 
@@ -60,23 +60,7 @@ namespace Abot2.Tests.Unit.Util
 
             timer.Stop();
 
-            Assert.IsTrue(timer.Elapsed.TotalSeconds > 2);
-        }
-
-        [TestMethod]
-        public void WaitToProceed_PartialSecWait_Waits()
-        {
-            _unitUnderTest = new RateLimiter(1, TimeSpan.FromSeconds(1.5));
-
-            var timer = Stopwatch.StartNew();
-
-            _unitUnderTest.WaitToProceed();//will not wait for first call
-            _unitUnderTest.WaitToProceed();
-            _unitUnderTest.WaitToProceed();
-
-            timer.Stop();
-
-            Assert.IsTrue(timer.Elapsed.TotalSeconds > 1.5);
+            Assert.IsTrue(timer.Elapsed.TotalSeconds > 1);
         }
 
         [TestMethod]

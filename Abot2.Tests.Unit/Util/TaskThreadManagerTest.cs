@@ -24,12 +24,17 @@ namespace Abot2.Tests.Unit.Util
             uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
             uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
             uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
 
             //cancellationTokenSource.Cancel();
             uut.AbortAll();
 
-            System.Threading.Thread.Sleep(500);
-            Assert.IsTrue(count < 5);
+            System.Threading.Thread.Sleep(600);
+            Assert.IsTrue(count < 10, "Completed all 10 tasks but should not have");
         }
 
         [TestMethod]
@@ -44,11 +49,16 @@ namespace Abot2.Tests.Unit.Util
             uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
             uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
             uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
+            uut.DoWork(() => { System.Threading.Thread.Sleep(50); Interlocked.Increment(ref count); });
 
             cancellationTokenSource.Cancel();
 
-            System.Threading.Thread.Sleep(250);
-            Assert.IsTrue(count < 5);
+            System.Threading.Thread.Sleep(600);
+            Assert.IsTrue(count < 10, "Completed all 10 tasks but should not have");
         }
     }
 }
