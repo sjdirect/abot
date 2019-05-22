@@ -35,7 +35,7 @@ namespace Abot2.Core
                 throw new ArgumentNullException(nameof(rootUri));
 
             var robotsUri = new Uri(rootUri, "/robots.txt");
-            var page = await _pageRequester.MakeRequestAsync(robotsUri);
+            var page = await _pageRequester.MakeRequestAsync(robotsUri).ConfigureAwait(false);
             if (page == null || 
                 page.HttpRequestException != null || 
                 page.HttpResponseMessage == null || 

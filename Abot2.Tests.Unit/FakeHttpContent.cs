@@ -18,7 +18,7 @@ namespace Abot2.Tests.Unit
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
         {
             var byteArray = Encoding.ASCII.GetBytes(Content);
-            await stream.WriteAsync(byteArray, 0, Content.Length);
+            await stream.WriteAsync(byteArray, 0, Content.Length).ConfigureAwait(false);
         }
 
         protected override bool TryComputeLength(out long length)

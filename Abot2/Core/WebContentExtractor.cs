@@ -21,8 +21,8 @@ namespace Abot2.Core
         {
             var pageContent = new PageContent
             {
-                Bytes = await response.Content.ReadAsByteArrayAsync(),
-                Text = await response.Content.ReadAsStringAsync()
+                Bytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false),
+                Text = await response.Content.ReadAsStringAsync().ConfigureAwait(false)
             };
 
             pageContent.Charset = GetCharset(response.Content.Headers, pageContent.Text);

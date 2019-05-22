@@ -59,7 +59,7 @@ namespace Abot2.Core
         /// </summary>
         public virtual async Task<CrawledPage> MakeRequestAsync(Uri uri)
         {
-            return await MakeRequestAsync(uri, (x) => new CrawlDecision { Allow = true });
+            return await MakeRequestAsync(uri, (x) => new CrawlDecision { Allow = true }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Abot2.Core
                 crawledPage.RequestStarted = DateTime.Now;
                 using (var requestMessage = BuildHttpRequestMessage(uri))
                 {
-                    response = await _httpClient.SendAsync(requestMessage, CancellationToken.None);
+                    response = await _httpClient.SendAsync(requestMessage, CancellationToken.None).ConfigureAwait(false);
                 }
             }
             catch (HttpRequestException hre)
@@ -104,7 +104,7 @@ namespace Abot2.Core
                         if (shouldDownloadContentDecision.Allow)
                         {
                             crawledPage.DownloadContentStarted = DateTime.Now;
-                            crawledPage.Content = await _contentExtractor.GetContentAsync(response);
+                            crawledPage.Content = await _contentExtractor.GetContentAsync(response).ConfigureAwait(false);
                             crawledPage.DownloadContentCompleted = DateTime.Now;
                         }
                         else
