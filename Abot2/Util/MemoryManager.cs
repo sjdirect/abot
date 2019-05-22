@@ -20,7 +20,6 @@ namespace Abot2.Util
         bool IsSpaceAvailable(int sizeInMb);
     }
 
-    [Serializable]
     public class MemoryManager : IMemoryManager
     {
         IMemoryMonitor _memoryMonitor;

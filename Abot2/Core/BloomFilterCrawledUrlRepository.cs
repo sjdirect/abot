@@ -3,7 +3,6 @@ using System;
 
 namespace Abot2.Core
 {
-    [Serializable]
     public class BloomFilterCrawledUrlRepository : ICrawledUrlRepository
     {
         protected IBloomFilter<string> BloomFilter { get; set; }

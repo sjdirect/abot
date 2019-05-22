@@ -2,7 +2,6 @@
 
 namespace Abot2.Poco
 {
-    [Serializable]
     public class CrawlResult
     {
         public CrawlResult()

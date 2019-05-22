@@ -47,7 +47,6 @@ namespace Abot2.Core
         bool IsUriKnown(Uri uri);
     }
 
-    [Serializable]
     public class Scheduler : IScheduler
     {
         ICrawledUrlRepository _crawledUrlRepo;

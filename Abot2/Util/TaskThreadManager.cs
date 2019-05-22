@@ -9,7 +9,6 @@ namespace Abot2.Util
     /// <summary>
     /// A ThreadManager implementation that will use tpl Tasks to handle concurrency.
     /// </summary>
-    [Serializable]
     public class TaskThreadManager : ThreadManager
     {
         readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();

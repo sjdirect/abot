@@ -32,7 +32,6 @@ namespace Abot2.Core
         void RemoveDomain(Uri uri);
     }
 
-    [Serializable]
     public class DomainRateLimiter : IDomainRateLimiter
     {
         protected ConcurrentDictionary<string, IRateLimiter> _rateLimiterLookup = new ConcurrentDictionary<string, IRateLimiter>();

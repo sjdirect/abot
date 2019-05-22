@@ -9,7 +9,6 @@ namespace Abot2.Core
     /// <summary>
     /// Parser that uses AngleSharp https://github.com/AngleSharp/AngleSharp to parse page links
     /// </summary>
-    [Serializable]
     public class AngleSharpHyperlinkParser : HyperLinkParser
     {
         public AngleSharpHyperlinkParser()

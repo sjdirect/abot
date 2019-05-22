@@ -4,7 +4,6 @@ using Serilog;
 
 namespace Abot2.Util
 {
-    [Serializable]
     public class CachedMemoryMonitor : IMemoryMonitor, IDisposable
     {
         IMemoryMonitor _memoryMonitor;
