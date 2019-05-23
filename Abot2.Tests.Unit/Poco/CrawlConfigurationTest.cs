@@ -35,7 +35,7 @@ namespace Abot2.Tests.Unit.Poco
             Assert.AreEqual(true, unitUnderTest.IsHttpRequestAutoRedirectsEnabled);
             Assert.AreEqual(false, unitUnderTest.IsHttpRequestAutomaticDecompressionEnabled);
             Assert.AreEqual(false, unitUnderTest.IsSendingCookiesEnabled);
-            Assert.AreEqual(true, unitUnderTest.IsSslCertificateValidationEnabled);
+            Assert.AreEqual(false, unitUnderTest.IsSslCertificateValidationEnabled);
             Assert.AreEqual(false, unitUnderTest.IsRespectUrlNamedAnchorOrHashbangEnabled);
             Assert.AreEqual(0, unitUnderTest.MaxMemoryUsageCacheTimeInSeconds);
             Assert.AreEqual(0, unitUnderTest.MaxMemoryUsageInMb);
