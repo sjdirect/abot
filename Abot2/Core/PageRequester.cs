@@ -38,11 +38,7 @@ namespace Abot2.Core
 
             if (_config.HttpServicePointConnectionLimit > 0)
                 ServicePointManager.DefaultConnectionLimit = _config.HttpServicePointConnectionLimit;
-
-            if (!_config.IsSslCertificateValidationEnabled)
-                ServicePointManager.ServerCertificateValidationCallback +=
-                    (sender, certificate, chain, sslPolicyErrors) => true;
-
+            
             if (httpClient == null)
             {
                 _httpClientHandler = BuildHttpClientHandler();
@@ -174,6 +170,10 @@ namespace Abot2.Core
 
             if (_config.IsSendingCookiesEnabled)
                 httpClientHandler.CookieContainer = _cookieContainer;
+
+            if (!_config.IsSslCertificateValidationEnabled)
+                httpClientHandler.ServerCertificateCustomValidationCallback +=
+                    (sender, certificate, chain, sslPolicyErrors) => true;
 
             return httpClientHandler;
         }

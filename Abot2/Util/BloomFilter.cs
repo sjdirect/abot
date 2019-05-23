@@ -138,11 +138,11 @@ namespace Abot2.Util
 		public void Add(T item)
 		{
 			// start flipping bits for each hash of item
-			int primaryHash = item.GetHashCode();
-			int secondaryHash = this._getHashSecondary(item);
-			for (int i = 0; i < this._hashFunctionCount; i++)
+			var primaryHash = item.GetHashCode();
+			var secondaryHash = this._getHashSecondary(item);
+			for (var i = 0; i < this._hashFunctionCount; i++)
 			{
-				int hash = this.ComputeHash(primaryHash, secondaryHash, i);
+				var hash = this.ComputeHash(primaryHash, secondaryHash, i);
 				this._hashBits[hash] = true;
 			}
 		}
@@ -154,11 +154,11 @@ namespace Abot2.Util
 		/// <returns> The <see cref="bool"/>. </returns>
 		public bool Contains(T item)
 		{
-			int primaryHash = item.GetHashCode();
-			int secondaryHash = this._getHashSecondary(item);
-			for (int i = 0; i < this._hashFunctionCount; i++)
+			var primaryHash = item.GetHashCode();
+			var secondaryHash = this._getHashSecondary(item);
+			for (var i = 0; i < this._hashFunctionCount; i++)
 			{
-				int hash = this.ComputeHash(primaryHash, secondaryHash, i);
+				var hash = this.ComputeHash(primaryHash, secondaryHash, i);
 				if (this._hashBits[hash] == false)
 				{
 					return false;
@@ -197,7 +197,7 @@ namespace Abot2.Util
 		/// <returns> The <see cref="float"/>. </returns>
 		private static float BestErrorRate(int capacity)
 		{
-			float c = (float)(1.0 / capacity);
+			var c = (float)(1.0 / capacity);
 			if (c != 0)
 			{
 				return c;
@@ -216,7 +216,7 @@ namespace Abot2.Util
 		/// <returns>The hashed result.</returns>
 		private static int HashInt32(T input)
 		{
-			uint? x = input as uint?;
+			var x = input as uint?;
 			unchecked
 			{
 				x = ~x + (x << 15); // x = (x << 15) - x- 1, as (~x) + y is equivalent to y - x - 1 in two's complement representation
@@ -237,10 +237,10 @@ namespace Abot2.Util
 		/// <returns>The hashed result.</returns>
 		private static int HashString(T input)
 		{
-			string s = input as string;
-			int hash = 0;
+			var s = input as string;
+			var hash = 0;
  
-			for (int i = 0; i < s.Length; i++)
+			for (var i = 0; i < s.Length; i++)
 			{
 				hash += s[i];
 				hash += (hash << 10);
@@ -259,7 +259,7 @@ namespace Abot2.Util
 		/// <returns> The <see cref="int"/>. </returns>
 		private int TrueBits()
 		{
-			int output = 0;
+			var output = 0;
 			foreach (bool bit in this._hashBits)
 			{
 				if (bit == true)
@@ -280,7 +280,7 @@ namespace Abot2.Util
 		/// <returns> The <see cref="int"/>. </returns>
 		private int ComputeHash(int primaryHash, int secondaryHash, int i)
 		{
-			int resultingHash = (primaryHash + (i * secondaryHash)) % this._hashBits.Count;
+			var resultingHash = (primaryHash + (i * secondaryHash)) % this._hashBits.Count;
 			return Math.Abs((int)resultingHash);
 		}
 	}

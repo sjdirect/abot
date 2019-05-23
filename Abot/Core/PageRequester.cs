@@ -40,10 +40,7 @@ namespace Abot.Core
 
         public PageRequester(CrawlConfiguration config, IWebContentExtractor contentExtractor)
         {
-            if (config == null)
-                throw new ArgumentNullException("config");
-
-            _config = config;
+            _config = config ?? throw new ArgumentNullException("config");
 
             if (_config.HttpServicePointConnectionLimit > 0)
                 ServicePointManager.DefaultConnectionLimit = _config.HttpServicePointConnectionLimit;

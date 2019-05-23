@@ -109,15 +109,15 @@ namespace Abot2.Core
             if (crawledPage.HttpResponseMessage.StatusCode != HttpStatusCode.OK)
                 return new CrawlDecision { Allow = false, Reason = "HttpStatusCode is not 200" };
             
-            string pageContentType = crawledPage.HttpResponseMessage.Content.Headers.ContentType.ToString().ToLower().Trim();
-            bool isDownloadable = false;
-            List<string> cleanDownloadableContentTypes = crawlContext.CrawlConfiguration.DownloadableContentTypes
+            var pageContentType = crawledPage.HttpResponseMessage.Content.Headers.ContentType.ToString().ToLower().Trim();
+            var isDownloadable = false;
+            var cleanDownloadableContentTypes = crawlContext.CrawlConfiguration.DownloadableContentTypes
                 .Split(',')
                 .Select(t => t.Trim())
                 .Where(t => !string.IsNullOrEmpty(t))
                 .ToList();
 
-            foreach (string downloadableContentType in cleanDownloadableContentTypes)
+            foreach (var downloadableContentType in cleanDownloadableContentTypes)
             {
                 if (pageContentType.Contains(downloadableContentType.ToLower().Trim()))
                 {

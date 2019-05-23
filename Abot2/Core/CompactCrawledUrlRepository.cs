@@ -34,10 +34,10 @@ namespace Abot2.Core
 
         protected long ComputeNumericId(string p_Uri)
         {
-            byte[] md5 = ToMd5Bytes(p_Uri);
+            var md5 = ToMd5Bytes(p_Uri);
 
             long numericId = 0;
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
                 numericId += (long)md5[i] << (i * 8);
             }
@@ -47,7 +47,7 @@ namespace Abot2.Core
 
         protected byte[] ToMd5Bytes(string p_String)
         {
-            using (MD5 md5 = MD5.Create())
+            using (var md5 = MD5.Create())
             {
                 return md5.ComputeHash(Encoding.Default.GetBytes(p_String));
             }

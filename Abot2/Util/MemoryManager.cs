@@ -42,7 +42,7 @@ namespace Abot2.Util
             if (sizeInMb < 1)
                 return true;
 
-            bool isAvailable = true;
+            var isAvailable = true;
 
             MemoryFailPoint _memoryFailPoint = null;
             try

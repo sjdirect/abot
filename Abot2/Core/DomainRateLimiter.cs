@@ -51,11 +51,11 @@ namespace Abot2.Core
             if (uri == null)
                 throw new ArgumentNullException("uri");
 
-            IRateLimiter rateLimiter = GetRateLimiter(uri, _defaultMinCrawlDelayInMillisecs);
+            var rateLimiter = GetRateLimiter(uri, _defaultMinCrawlDelayInMillisecs);
             if (rateLimiter == null)
                 return;
 
-            Stopwatch timer = Stopwatch.StartNew();
+            var timer = Stopwatch.StartNew();
             rateLimiter.WaitToProceed();
             timer.Stop();
 

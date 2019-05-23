@@ -52,7 +52,7 @@ namespace Abot2.Poco
         /// <summary>
         /// Links parsed from page. This value is set by the WebCrawler.SchedulePageLinks() method only If the "ShouldCrawlPageLinks" rules return true or if the IsForcedLinkParsingEnabled config value is set to true.
         /// </summary>
-        public IEnumerable<Uri> ParsedLinks { get; set; }
+        public IEnumerable<HyperLink> ParsedLinks { get; set; }
 
         /// <summary>
         /// The content of page request

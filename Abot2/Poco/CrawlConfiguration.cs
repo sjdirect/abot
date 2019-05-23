@@ -18,7 +18,7 @@ namespace Abot2.Poco
             MaxCrawlDepth = 100;
             HttpServicePointConnectionLimit = 200;
             HttpRequestTimeoutInSeconds = 15;
-            IsSslCertificateValidationEnabled = true;
+            IsSslCertificateValidationEnabled = false;
         }
 
         #region crawlBehavior

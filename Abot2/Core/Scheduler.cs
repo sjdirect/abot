@@ -91,7 +91,7 @@ namespace Abot2.Core
             if (pages == null)
                 throw new ArgumentNullException("pages");
 
-            foreach (PageToCrawl page in pages)
+            foreach (var page in pages)
                 Add(page);
         }
 

@@ -29,7 +29,7 @@ namespace Abot2.Util
 
         protected virtual void UpdateCurrentUsageValue()
         {
-            int oldUsage = _cachedCurrentUsageInMb;
+            var oldUsage = _cachedCurrentUsageInMb;
             _cachedCurrentUsageInMb = _memoryMonitor.GetCurrentUsageInMb();
             Log.Debug("Updated cached memory usage value from [{0}mb] to [{1}mb]", oldUsage, _cachedCurrentUsageInMb);
         }

@@ -167,7 +167,7 @@ namespace Abot2.Util
             // While there are exit times that are passed due still in the queue,
             // exit the semaphore and dequeue the exit time.
             int exitTime;
-            bool exitTimeValid = _exitTimes.TryPeek(out exitTime);
+            var exitTimeValid = _exitTimes.TryPeek(out exitTime);
             while (exitTimeValid)
             {
                 if (unchecked(exitTime - Environment.TickCount) > 0)
