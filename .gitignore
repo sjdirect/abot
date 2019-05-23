@@ -26,7 +26,7 @@ x64/
 *.pdb
 *.pgc
 *.pgd
-*.rsp
+# *.rsp # Needed for Appveyor to pass msbuild parameters
 *.sbr
 *.tlb
 *.tli
