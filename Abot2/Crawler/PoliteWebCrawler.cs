@@ -16,23 +16,20 @@ namespace Abot2.Crawler
     public interface IPoliteWebCrawler : IWebCrawler
     {
         /// <summary>
-        /// Event occur after robots txt is parsed asynchroniously
-        /// </summary>
-        event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompletedAsync;
-        /// <summary>
-        /// Event occur after robots txt is parsed synchroniously
+        /// Event occur after robots txt is parsed synchronously
         /// </summary>
         event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompleted;
     }
     /// <summary>
     /// Extends the WebCrawler class and added politeness features like crawl delays and respecting robots.txt files. 
     /// </summary>
-
     public class PoliteWebCrawler : WebCrawler, IPoliteWebCrawler
     {
         protected IDomainRateLimiter _domainRateLimiter;
         protected IRobotsDotTextFinder _robotsDotTextFinder;
         protected IRobotsDotText _robotsDotText;
+
+        #region Constructors
 
         public PoliteWebCrawler()
             : this(null, null, null, null, null, null, null, null, null)
@@ -60,6 +57,8 @@ namespace Abot2.Crawler
             _robotsDotTextFinder = robotsDotTextFinder ?? new RobotsDotTextFinder(new PageRequester(_crawlContext.CrawlConfiguration, new WebContentExtractor()));
         }
 
+        #endregion
+
         /// <inheritdoc />
         public override async Task<CrawlResult> CrawlAsync(Uri uri, CancellationTokenSource cancellationTokenSource)
         {
@@ -73,7 +72,6 @@ namespace Abot2.Crawler
 
                 if (_robotsDotText != null)
                 {
-                    FireRobotsDotTextParseCompletedAsync(_robotsDotText.Robots);
                     FireRobotsDotTextParseCompleted(_robotsDotText.Robots);
 
                     robotsDotTextCrawlDelayInSecs = _robotsDotText.GetCrawlDelay(_crawlContext.CrawlConfiguration.RobotsDotTextUserAgentString);
@@ -100,6 +98,10 @@ namespace Abot2.Crawler
 
             return await base.CrawlAsync(uri, cancellationTokenSource).ConfigureAwait(false);
         }
+
+        /// <inheritdoc />
+        public event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompleted;
+
 
         protected override bool ShouldCrawlPage(PageToCrawl pageToCrawl)
         {
@@ -139,7 +141,6 @@ namespace Abot2.Crawler
                 var message = string.Format("Page [{0}] not crawled, [Disallowed by robots.txt file], set IsRespectRobotsDotText=false in config file if you would like to ignore robots.txt files.", pageToCrawl.Uri.AbsoluteUri);
                 Log.Debug(message);
 
-                FirePageCrawlDisallowedEventAsync(pageToCrawl, message);
                 FirePageCrawlDisallowedEvent(pageToCrawl, message);
 
                 return false;
@@ -148,36 +149,6 @@ namespace Abot2.Crawler
             return allowedByRobots && base.ShouldCrawlPage(pageToCrawl);
         }
 
-        /// <summary>
-        /// Event occur after robots txt is parsed asynchroniously
-        /// </summary>
-        public event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompletedAsync;
-
-        /// <summary>
-        /// Event occur after robots txt is parsed synchroniously
-        /// </summary>
-        public event EventHandler<RobotsDotTextParseCompletedArgs> RobotsDotTextParseCompleted;
-
-        /// <summary>
-        /// Fire robots txt parsed completed async
-        /// </summary>
-        /// <param name="robots"></param>
-        protected virtual void FireRobotsDotTextParseCompletedAsync(IRobots robots)
-        {
-            var threadSafeEvent = RobotsDotTextParseCompletedAsync;
-            if (threadSafeEvent == null) return;
-            //Fire each subscribers delegate async
-            foreach (var @delegate in threadSafeEvent.GetInvocationList())
-            {
-                var del = (EventHandler<RobotsDotTextParseCompletedArgs>) @delegate;
-                del.BeginInvoke(this, new RobotsDotTextParseCompletedArgs(_crawlContext, robots), null, null);
-            }
-        }
-
-        /// <summary>
-        /// Fire robots txt parsed completed
-        /// </summary>
-        /// <param name="robots"></param>
         protected virtual void FireRobotsDotTextParseCompleted(IRobots robots)
         {
             try
