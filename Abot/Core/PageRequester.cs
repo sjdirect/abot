@@ -159,8 +159,8 @@ namespace Abot.Core
                 //Added to handle redirects clearing auth headers which result in 401...
                 //https://stackoverflow.com/questions/13159589/how-to-handle-authenticatication-with-httpwebrequest-allowautoredirect
                 CredentialCache cache = new CredentialCache();
-                cache.Add(new Uri($"http://{uri.Host}"), "Basic", new NetworkCredential(_config.LoginUser, _config.LoginPassword));
-                cache.Add(new Uri($"https://{uri.Host}"), "Basic", new NetworkCredential(_config.LoginUser, _config.LoginPassword));
+                cache.Add(new Uri("http://" + uri.Host), "Basic", new NetworkCredential(_config.LoginUser, _config.LoginPassword));
+                cache.Add(new Uri("https://" + uri.Host), "Basic", new NetworkCredential(_config.LoginUser, _config.LoginPassword));
                 request.Credentials = cache;
             }
 
