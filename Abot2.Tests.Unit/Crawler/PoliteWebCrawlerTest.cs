@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Abot2.Tests.Unit.Crawler
 {
@@ -59,7 +60,7 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_MinCrawlDelayDelayZero_StillCallsDomainRateLimiter()
         {
-            CrawledPage homePage = new CrawledPage(_rootUri)
+            var homePage = new CrawledPage(_rootUri)
             {
                 Content = new PageContent 
                 { 
@@ -81,20 +82,20 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_MinCrawlDelayGreaterThanZero_CallsDomainRateLimiter()
         {
-            Uri uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
-            Uri uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
+            var uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
+            var uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
 
-            CrawledPage homePage = new CrawledPage(_rootUri)
+            var homePage = new CrawledPage(_rootUri)
             {
                 Content = new PageContent
                 {
                     Text = "content here"
                 }
             };
-            CrawledPage page1 = new CrawledPage(uri1);
-            CrawledPage page2 = new CrawledPage(uri2);
+            var page1 = new CrawledPage(uri1);
+            var page2 = new CrawledPage(uri2);
 
-            List<Uri> links = new List<Uri> { uri1, uri2 };
+            var links = new List<Uri> { uri1, uri2 };
 
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(_rootUri, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(homePage);
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(uri1, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page1);
@@ -115,20 +116,20 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_ZeroCrawlDelay_StillCallsDomainRateLimiter()
         {
-            Uri uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
-            Uri uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
+            var uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
+            var uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
 
-            CrawledPage homePage = new CrawledPage(_rootUri) 
+            var homePage = new CrawledPage(_rootUri) 
             { 
                 Content = new PageContent
                 {
                     Text = "content here"
                 }
             };
-            CrawledPage page1 = new CrawledPage(uri1);
-            CrawledPage page2 = new CrawledPage(uri2);
+            var page1 = new CrawledPage(uri1);
+            var page2 = new CrawledPage(uri2);
 
-            List<Uri> links = new List<Uri> { uri1, uri2 };
+            var links = new List<Uri> { uri1, uri2 };
 
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(_rootUri, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(homePage);
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(uri1, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page1);
@@ -158,20 +159,20 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_CrawlDelayAboveZero_CallsDomainRateLimiter()
         {
-            Uri uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
-            Uri uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
+            var uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
+            var uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
 
-            CrawledPage homePage = new CrawledPage(_rootUri)
+            var homePage = new CrawledPage(_rootUri)
             {
                 Content = new PageContent
                 {
                     Text = "content here"
                 }
             };
-            CrawledPage page1 = new CrawledPage(uri1);
-            CrawledPage page2 = new CrawledPage(uri2);
+            var page1 = new CrawledPage(uri1);
+            var page2 = new CrawledPage(uri2);
 
-            List<Uri> links = new List<Uri> { uri1, uri2 };
+            var links = new List<Uri> { uri1, uri2 };
 
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(_rootUri, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(homePage);
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(uri1, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page1);
@@ -201,20 +202,20 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_CrawlDelayAboveMinDomainCrawlDelay_CallsDomainRateLimiter()
         {
-            Uri uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
-            Uri uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
+            var uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
+            var uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
 
-            CrawledPage homePage = new CrawledPage(_rootUri)
+            var homePage = new CrawledPage(_rootUri)
             {
                 Content = new PageContent
                 {
                     Text = "content here"
                 }
             };
-            CrawledPage page1 = new CrawledPage(uri1);
-            CrawledPage page2 = new CrawledPage(uri2);
+            var page1 = new CrawledPage(uri1);
+            var page2 = new CrawledPage(uri2);
 
-            List<Uri> links = new List<Uri> { uri1, uri2 };
+            var links = new List<Uri> { uri1, uri2 };
 
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(_rootUri, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(homePage);
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(uri1, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page1);
@@ -245,20 +246,20 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_PageIsDisallowed_DoesNotCallHttpRequester()
         {
-            Uri uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
-            Uri uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
+            var uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
+            var uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
 
-            CrawledPage homePage = new CrawledPage(_rootUri) 
+            var homePage = new CrawledPage(_rootUri) 
             { 
                 Content = new PageContent
                 {
                     Text = "content here" 
                 }
             };
-            CrawledPage page1 = new CrawledPage(uri1);
-            CrawledPage page2 = new CrawledPage(uri2);
+            var page1 = new CrawledPage(uri1);
+            var page2 = new CrawledPage(uri2);
 
-            List<Uri> links = new List<Uri> { uri1, uri2 };
+            var links = new List<Uri> { uri1, uri2 };
 
             _fakeRobotsDotText.Setup(f => f.GetCrawlDelay(It.IsAny<string>())).Returns(0);
             _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
@@ -279,14 +280,14 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_PageIsDisallowed_IsIgnoreRobotsDotTextIfRootDisallowedEnabledTrue_CallsHttpRequester()
         {
-            CrawledPage homePage = new CrawledPage(_rootUri)
+            var homePage = new CrawledPage(_rootUri)
             {
                 Content = new PageContent
                 {
                     Text = "content here"
                 }
             };
-            CrawledPage page1 = new CrawledPage(_rootUri);
+            var page1 = new CrawledPage(_rootUri);
 
             _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
             _fakeRobotsDotTextFinder.Setup(f => f.Find(It.IsAny<Uri>())).Returns(_fakeRobotsDotText.Object);
@@ -307,14 +308,14 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_RootPageIsAllowed_AllPagesBelowDisallowed_IsIgnoreRobotsDotTextIfRootDisallowedEnabledTrue_CallsHttpRequester()
         {
-            CrawledPage homePage = new CrawledPage(_rootUri)
+            var homePage = new CrawledPage(_rootUri)
             {
                 Content = new PageContent
                 {
                     Text = "content here"
                 }
             };
-            CrawledPage page1 = new CrawledPage(_rootUri);
+            var page1 = new CrawledPage(_rootUri);
 
             _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(_rootUri.AbsoluteUri, It.IsAny<string>())).Returns(true);
             _fakeRobotsDotText.Setup(f => f.IsUrlAllowed(_rootUri.AbsoluteUri + "aaaaa", It.IsAny<string>())).Returns(false);
@@ -336,20 +337,20 @@ namespace Abot2.Tests.Unit.Crawler
         [TestMethod]
         public async Task Crawl_IsRespectRobotsDotTextTrue_RobotsDotTextFound_UsesCorrectUserAgentString()
         {
-            Uri uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
-            Uri uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
+            var uri1 = new Uri(_rootUri.AbsoluteUri + "a.html");
+            var uri2 = new Uri(_rootUri.AbsoluteUri + "b.html");
 
-            CrawledPage homePage = new CrawledPage(_rootUri)
+            var homePage = new CrawledPage(_rootUri)
             {
                 Content = new PageContent
                 {
                     Text = "content here"
                 }
             };
-            CrawledPage page1 = new CrawledPage(uri1);
-            CrawledPage page2 = new CrawledPage(uri2);
+            var page1 = new CrawledPage(uri1);
+            var page2 = new CrawledPage(uri2);
 
-            List<Uri> links = new List<Uri> { uri1, uri2 };
+            var links = new List<Uri> { uri1, uri2 };
 
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(_rootUri, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(homePage);
             _fakeHttpRequester.Setup(f => f.MakeRequestAsync(uri1, It.IsAny<Func<CrawledPage, CrawlDecision>>())).Returns(page1);
