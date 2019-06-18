@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Abot2.Core
 {
@@ -12,45 +8,24 @@ namespace Abot2.Core
     /// </summary>
     public class CompactCrawledUrlRepository : ICrawledUrlRepository
     {
-        private ConcurrentDictionary<long, byte> m_UrlRepository = new ConcurrentDictionary<long, byte>();
+        private ConcurrentDictionary<long, byte> _mUrlRepository = new ConcurrentDictionary<long, byte>();
 
         /// <inheritDoc />
         public bool Contains(Uri uri)
         {
-            return m_UrlRepository.ContainsKey(ComputeNumericId(uri.AbsoluteUri));
+            return _mUrlRepository.ContainsKey(uri.GetHashCode());
         }
 
         /// <inheritDoc />
         public bool AddIfNew(Uri uri)
         {
-            return m_UrlRepository.TryAdd(ComputeNumericId(uri.AbsoluteUri), 0);
+            return _mUrlRepository.TryAdd(uri.GetHashCode(), 0);
         }
 
         /// <inheritDoc />
         public virtual void Dispose()
         {
-            m_UrlRepository = null;
-        }
-
-        protected long ComputeNumericId(string p_Uri)
-        {
-            var md5 = ToMd5Bytes(p_Uri);
-
-            long numericId = 0;
-            for (var i = 0; i < 8; i++)
-            {
-                numericId += (long)md5[i] << (i * 8);
-            }
-
-            return numericId;
-        }
-
-        protected byte[] ToMd5Bytes(string p_String)
-        {
-            using (var md5 = MD5.Create())
-            {
-                return md5.ComputeHash(Encoding.Default.GetBytes(p_String));
-            }
+            _mUrlRepository = null;
         }
     }
 }
