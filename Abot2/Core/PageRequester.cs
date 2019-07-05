@@ -27,8 +27,8 @@ namespace Abot2.Core
         private readonly CrawlConfiguration _config;
         private readonly IWebContentExtractor _contentExtractor;
         private readonly CookieContainer _cookieContainer = new CookieContainer();
-        private readonly HttpClientHandler _httpClientHandler;
-        private readonly HttpClient _httpClient;
+        private HttpClientHandler _httpClientHandler;
+        private HttpClient _httpClient;
 
         public PageRequester(CrawlConfiguration config, IWebContentExtractor contentExtractor, HttpClient httpClient = null)
         {
@@ -38,16 +38,8 @@ namespace Abot2.Core
 
             if (_config.HttpServicePointConnectionLimit > 0)
                 ServicePointManager.DefaultConnectionLimit = _config.HttpServicePointConnectionLimit;
-            
-            if (httpClient == null)
-            {
-                _httpClientHandler = BuildHttpClientHandler();
-                _httpClient = BuildHttpClient(_httpClientHandler);
-            }
-            else
-            {
-                _httpClient = httpClient;
-            }
+
+            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -65,6 +57,12 @@ namespace Abot2.Core
         {
             if (uri == null)
                 throw new ArgumentNullException(nameof(uri));
+
+            if (_httpClient == null)
+            {
+                _httpClientHandler = BuildHttpClientHandler(uri);
+                _httpClient = BuildHttpClient(_httpClientHandler);
+            }
 
             var crawledPage = new CrawledPage(uri);
             HttpResponseMessage response = null;
@@ -128,9 +126,9 @@ namespace Abot2.Core
         protected virtual HttpRequestMessage BuildHttpRequestMessage(Uri uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-
+            
             request.Version = GetEquivalentHttpProtocolVersion();
-
+            
             return request;
         }
 
@@ -154,8 +152,11 @@ namespace Abot2.Core
             return httpClient;
         }
 
-        private HttpClientHandler BuildHttpClientHandler()
+        private HttpClientHandler BuildHttpClientHandler(Uri rootUri)
         {
+            if(rootUri == null)
+                throw new ArgumentNullException(nameof(rootUri));
+
             var httpClientHandler = new HttpClientHandler
             {
                 MaxAutomaticRedirections = _config.HttpRequestMaxAutoRedirects,
@@ -174,6 +175,17 @@ namespace Abot2.Core
             if (!_config.IsSslCertificateValidationEnabled)
                 httpClientHandler.ServerCertificateCustomValidationCallback +=
                     (sender, certificate, chain, sslPolicyErrors) => true;
+
+            if (_config.IsAlwaysLogin && rootUri != null)
+            {
+                //Added to handle redirects clearing auth headers which result in 401...
+                //https://stackoverflow.com/questions/13159589/how-to-handle-authenticatication-with-httpwebrequest-allowautoredirect
+                var cache = new CredentialCache();
+                cache.Add(new Uri($"http://{rootUri.Host}"), "Basic", new NetworkCredential(_config.LoginUser, _config.LoginPassword));
+                cache.Add(new Uri($"https://{rootUri.Host}"), "Basic", new NetworkCredential(_config.LoginUser, _config.LoginPassword));
+
+                httpClientHandler.Credentials = cache;
+            }
 
             return httpClientHandler;
         }

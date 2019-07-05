@@ -13,6 +13,7 @@
     <PackageReference Include="AngleSharp" Version="0.12.1" />
     <PackageReference Include="NRobotsCore" Version="1.1.2" />
     <PackageReference Include="Serilog" Version="2.8.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -692,7 +692,7 @@ namespace Abot2.Crawler
                 // Look for the Retry-After header in the response.
                 crawledPage.RetryAfter = null;
 
-                var value = crawledPage.HttpResponseMessage?.Headers?.RetryAfter?.Date.ToString();
+                var value = crawledPage.HttpResponseMessage?.Headers?.RetryAfter?.ToString();
                 if (!String.IsNullOrEmpty(value))
                 {
                     // Try to convert to DateTime first, then in double.
