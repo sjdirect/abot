@@ -599,7 +599,7 @@ namespace Abot2.Tests.Unit.Crawler
 
             _unitUnderTest.ShouldCrawlPageLinksDecisionMaker = ((x, y) => new CrawlDecision { Allow = false, Reason = "aaa" });
 
-            _unitUnderTest.CrawlAsync(_rootUri);
+            await _unitUnderTest.CrawlAsync(_rootUri);
 
             _fakeHttpRequester.Verify(f => f.MakeRequestAsync(It.IsAny<Uri>(), It.IsAny<Func<CrawledPage, CrawlDecision>>()), Times.Once());
             _fakeHtmlParser.Verify(f => f.GetLinks(It.IsAny<CrawledPage>()), Times.Never());
