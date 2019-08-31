@@ -476,5 +476,5 @@ public interface IRobotsDotTextFinder
 <br /><br /><br />
 <hr />
 
-###### Fiddler Core
+## Fiddler Core
 Just a note that Fiddler.Core is started and stopped during unit and integration tests. This allows replaying predictable http requests. Read more about [Fiddler Core here](http://www.telerik.com/fiddler/fiddlercore)
