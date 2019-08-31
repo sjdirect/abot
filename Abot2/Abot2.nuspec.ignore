@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Abot</id>
+    <version>$version$-alpha</version>
+    <title>Abot Web Crawler</title>
+    <authors>Steven Jones</authors>
+    <owners>SHARPDEV LLC</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/sjdirect/abot</projectUrl>
+    <iconUrl>http://abotx.org/Content/images/logoicon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process.</description>
+    <summary>Open source C# web crawler built for speed, flexibility and extensibility.</summary>
+    <releaseNotes>$version$ release notes may be found on https://github.com/sjdirect/abot</releaseNotes>
+    <copyright>Copyright 2012 SHARPDEV LLC</copyright>
+    <tags>crawler robot spider</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\Abot2.dll" target="lib\netstandard2.0\Abot2.dll" />
+    <file src="bin\Release\Abot2.xml" target="lib\netstandard2.0\Abot2.xml" />
+  </files>
+</package>

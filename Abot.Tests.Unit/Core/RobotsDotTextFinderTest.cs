@@ -14,7 +14,7 @@ namespace Abot.Tests.Unit.Core
         CrawledPage _goodPageResult;
         CrawledPage _badPageResult;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TestFixtureSetup()
         {
             PageRequester pageRequster = new PageRequester(new CrawlConfiguration { UserAgentString = "aaa" });

@@ -168,10 +168,6 @@
     <Compile Include="Poco\CrawlResultTest.cs" />
     <Compile Include="Poco\CrawledPageTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SiteSimulator\Controllers\HomeControllerTest.cs" />
-    <Compile Include="SiteSimulator\Controllers\HttpResponseControllerTest.cs" />
-    <Compile Include="SiteSimulator\Controllers\PageGeneratorControllerTest.cs" />
-    <Compile Include="SiteSimulator\Controllers\ThrottlingControllerTest.cs" />
     <Compile Include="Util\BloomFilterTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -183,10 +179,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Abot.SiteSimulator\Abot.SiteSimulator.csproj">
-      <Project>{48CBD934-4E30-4F48-ABD4-BC10EEA239A3}</Project>
-      <Name>Abot.SiteSimulator</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Abot\Abot.csproj">
       <Project>{0CDCD537-4B0E-4514-966F-F425CDC92BA4}</Project>
       <Name>Abot</Name>

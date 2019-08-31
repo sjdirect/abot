@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.0.0</Version>
+    <PackageId>Abot</PackageId>
+    <Authors>Steven Jones</Authors>
+    <Company>SHARPDEV LLC</Company>
+    <Product>Abot Web Crawler</Product>
+    <Description>Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process.</Description>
+    <Copyright>Copyright 2012 SHARPDEV LLC</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageIconUrl>http://abotx.org/Content/images/logoicon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/sjdirect/abot</RepositoryUrl>
+    <PackageTags>crawler robot spider .net dotnet</PackageTags>
+    <PackageProjectUrl>https://github.com/sjdirect/abot</PackageProjectUrl>
+    <PackageReleaseNotes>$version$ release notes may be found on https://github.com/sjdirect/abot</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Poco\HttpRequest.cs" />
+    <Compile Remove="Poco\HttpResponse.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.12.1" />
+    <PackageReference Include="NRobotsCore" Version="1.1.2" />
+    <PackageReference Include="Serilog" Version="2.8.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Microsoft.CSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
