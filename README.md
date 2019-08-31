@@ -40,7 +40,6 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
 
 ###### Installing Abot
   * Install Abot using [Nuget](https://www.nuget.org/packages/Abot/)
-  * If you prefer to build from source yourself see the [Working With The Source Code section](#working-with-the-source-code) below
 
 ###### Using Abot 
 ```c#
