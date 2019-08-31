@@ -58,6 +58,7 @@ namespace Abot2.Tests.Unit.Crawler
         public void Constructor_BuildsInstanceWithoutError()
         {
             var unused = new PoliteWebCrawler();
+            unused.Dispose();
         }
 
         [TestMethod]
@@ -719,6 +720,8 @@ namespace Abot2.Tests.Unit.Crawler
             Assert.IsFalse(result.CrawlContext.IsCrawlStopRequested);
             Assert.IsTrue(result.CrawlContext.IsCrawlHardStopRequested);
             Assert.IsTrue(result.CrawlContext.CancellationTokenSource.IsCancellationRequested);
+
+            timer.Dispose();
         }
 
         [TestMethod]
