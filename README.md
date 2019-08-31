@@ -4,7 +4,7 @@
 
 ###### C# web crawler built for speed and flexibility.
 
-Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process. Abot targets .NET version 4.0 which makes it highly compatible with many .net framework implementations.
+Abot is an open source C# web crawler built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process. Abot targets Dotnet Standard 2.0 with nuget package version greater than 2.0 and .NET version 4.0 using any nuget package version below 2.0 which makes it highly compatible with many .net framework implementations.
 
 ###### What's So Great About It?
   * Open Source (Free for commercial and personal use)
@@ -16,14 +16,12 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
 
 ###### Links of Interest
 
-  * [No more free support](https://github.com/sjdirect/abot/wiki/Support), sorry guys/gals :(
   * [Ask a question](http://groups.google.com/group/abot-web-crawler), please search for similar questions first!!!
   * [Report a bug](https://github.com/sjdirect/abot/issues)
   * [Learn how you can contribute](https://github.com/sjdirect/abot/wiki/Contribute)
   * [Need expert Abot customization?](https://github.com/sjdirect/abot/wiki/Custom-Development)
   * [Take the usage survey](https://www.surveymonkey.com/s/JS5826F) to help prioritize features/improvements
   * [Consider making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ)
-  * [Unofficial Chinese Documentation](https://github.com/zixiliuyue/abot)
 
 ###### Use [AbotX](http://abotx.org) for powerful extensions/wrappers
 
@@ -45,93 +43,79 @@ Abot is an open source C# web crawler built for speed and flexibility. It takes 
   * If you prefer to build from source yourself see the [Working With The Source Code section](#working-with-the-source-code) below
 
 ###### Using Abot
-1: Add the following using statements to the host class... 
+1: Create a .Net Core Console App Similar to the following to get started quickley... 
 ```c#
-using Abot.Crawler;
-using Abot.Poco;
-```
-2: Configure Abot using any of the options below. You can see what effect each config value has on the crawl by looking at the [code comments ](https://github.com/sjdirect/abot/blob/master/Abot/Poco/CrawlConfiguration.cs).
-    
-**Option 1:** Add the following to the app.config or web.config file of the assembly using the library. Nuget will NOT add this for you. *NOTE: The gcServer or gcConcurrent entry may help memory usage in your specific use of abot.*
-```xml
-<configuration>
-  <configSections>
-    <section name="abot" type="Abot.Core.AbotConfigurationSectionHandler, Abot"/>
-  </configSections>
-  
-  <runtime>
-    <!-- Experiment with these to see if it helps your memory usage, USE ONLY ONE OF THE FOLLOWING -->
-    <!--<gcServer enabled="true"/>-->
-    <!--<gcConcurrent enabled="true"/>-->
-  </runtime>
+using System;
+using System.Threading.Tasks;
+using Abot2.Core;
+using Abot2.Crawler;
+using Abot2.Poco;
+using Serilog;
 
-  <abot>
-    <crawlBehavior 
-      maxConcurrentThreads="10" 
-      maxPagesToCrawl="1000" 
-      maxPagesToCrawlPerDomain="0" 
-      maxPageSizeInBytes="0"
-      userAgentString="Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko" 
-      crawlTimeoutSeconds="0" 
-      downloadableContentTypes="text/html, text/plain" 
-      isUriRecrawlingEnabled="false" 
-      isExternalPageCrawlingEnabled="false" 
-      isExternalPageLinksCrawlingEnabled="false"
-      httpServicePointConnectionLimit="200"  
-      httpRequestTimeoutInSeconds="15" 
-      httpRequestMaxAutoRedirects="7" 
-      isHttpRequestAutoRedirectsEnabled="true" 
-      isHttpRequestAutomaticDecompressionEnabled="false"
-      isSendingCookiesEnabled="false"
-      isSslCertificateValidationEnabled="false"
-      isRespectUrlNamedAnchorOrHashbangEnabled="false"
-      minAvailableMemoryRequiredInMb="0"
-      maxMemoryUsageInMb="0"
-      maxMemoryUsageCacheTimeInSeconds="0"
-      maxCrawlDepth="1000"
-	  maxLinksPerPage="1000"
-      isForcedLinkParsingEnabled="false"
-      maxRetryCount="0"
-      minRetryDelayInMilliseconds="0"
-      />
-    <authorization
-      isAlwaysLogin="false"
-      loginUser=""
-      loginPassword="" />	  
-    <politeness 
-      isRespectRobotsDotTextEnabled="false"
-      isRespectMetaRobotsNoFollowEnabled="false"
-	  isRespectHttpXRobotsTagHeaderNoFollowEnabled="false"
-      isRespectAnchorRelNoFollowEnabled="false"
-      isIgnoreRobotsDotTextIfRootDisallowedEnabled="false"
-      robotsDotTextUserAgentString="abot"
-      maxRobotsDotTextCrawlDelayInSeconds="5" 
-      minCrawlDelayPerDomainMilliSeconds="0"/>
-    <extensionValues>
-      <add key="key1" value="value1"/>
-      <add key="key2" value="value2"/>
-    </extensionValues>
-  </abot>  
-</configuration>    
+namespace TestAbotUse
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .CreateLogger();
+
+            Log.Logger.Information("Demo starting up!");
+
+            await DemoSimpleCrawler();
+            await DemoSinglePageRequest();
+        }
+
+        private static async Task DemoSimpleCrawler()
+        {
+            var config = new CrawlConfiguration
+            {
+                MaxPagesToCrawl = 10, //Only crawl 10 pages
+                MinCrawlDelayPerDomainMilliSeconds = 3000 //Wait this many millisecs between requests
+            };
+            var crawler = new PoliteWebCrawler(config);
+
+            crawler.PageCrawlCompleted += PageCrawlCompleted;//Several events available...
+
+            var crawlResult = await crawler.CrawlAsync(new Uri("http://!!!!!!!!YOURSITEHERE!!!!!!!!!.com"));
+        }
+
+        private static void PageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
+        {
+            var crawledPage = e.CrawledPage;
+            var rawPageText = crawledPage.Content.Text;
+        }
+
+        private static async Task DemoSinglePageRequest()
+        {
+            var pageRequester = new PageRequester(new CrawlConfiguration(), new WebContentExtractor());
+
+            var crawledPage = await pageRequester.MakeRequestAsync(new Uri("http://google.com"));
+            Log.Logger.Information("{result}", new
+            {
+                url = crawledPage.Uri,
+                status = Convert.ToInt32(crawledPage.HttpResponseMessage.StatusCode)
+            });
+        }
+    }
+}
+
 ```
-**Option 2:** Create an instance of the Abot.Poco.CrawlConfiguration class manually. This approach ignores the app.config values completely. 
+2: Configure Abot by using an instance of the Abot2.Poco.CrawlConfiguration class. You can see what effect each config value has on the crawl by looking at the [code comments ](https://github.com/sjdirect/abot/blob/master/Abot2/Poco/CrawlConfiguration.cs).
+    
 ```c#
 CrawlConfiguration crawlConfig = new CrawlConfiguration();
 crawlConfig.CrawlTimeoutSeconds = 100;
 crawlConfig.MaxConcurrentThreads = 10;
 crawlConfig.MaxPagesToCrawl = 1000;
-crawlConfig.UserAgentString = "abot v1.0 http://code.google.com/p/abot";
+crawlConfig.UserAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36";
 crawlConfig.ConfigurationExtensions.Add("SomeCustomConfigValue1", "1111");
 crawlConfig.ConfigurationExtensions.Add("SomeCustomConfigValue2", "2222");
 etc...
 ```
-**Option 3:** Both!! Load from app.config then tweek   
-```c#
-CrawlConfiguration crawlConfig = AbotConfigurationSectionHandler.LoadFromXml().Convert();
-crawlConfig.MaxConcurrentThreads = 5;//this overrides the config value
-etc...
-```
-
 3: Create an instance of Abot.Crawler.PoliteWebCrawler
 ```c#
 //Will use app.config for configuration
