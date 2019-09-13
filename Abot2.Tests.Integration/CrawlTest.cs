@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Abot2.Core;
 using Abot2.Crawler;
 using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,9 +9,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Abot2.Tests.Integration
 {
     [TestClass]
-    public class CrawlSiteSimulator : CrawlTestBase
+    public class CrawlTest : CrawlTestBase
     {
-        public CrawlSiteSimulator()
+        public CrawlTest()
             :base(new Uri("http://localhost.fiddler:1111/"), 25)
         {
 
@@ -166,10 +165,11 @@ namespace Abot2.Tests.Integration
             CrawlConfiguration configuration = new CrawlConfiguration
             {
                 MaxRetryCount = 3,
-                MinRetryDelayInMilliseconds = 2000
+                MinRetryDelayInMilliseconds = 2000,
+                IsExternalPageCrawlingEnabled = true
             };
 
-            base.CrawlAndAssert(new PoliteWebCrawler(configuration));
+            await base.CrawlAndAssert(new PoliteWebCrawler(configuration));
         }
 
         protected override List<PageResult> GetExpectedCrawlResult()
