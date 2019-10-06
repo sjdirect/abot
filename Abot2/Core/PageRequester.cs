@@ -73,6 +73,10 @@ namespace Abot2.Core
                 {
                     response = await _httpClient.SendAsync(requestMessage, CancellationToken.None).ConfigureAwait(false);
                 }
+
+                var statusCode = Convert.ToInt32(response.StatusCode);
+                if (statusCode < 200 || statusCode > 399)
+                    throw new HttpRequestException($"Server response was unsuccessful, returned [http {statusCode}]");
             }
             catch (HttpRequestException hre)
             {
@@ -89,6 +93,7 @@ namespace Abot2.Core
                 crawledPage.HttpRequestMessage = response?.RequestMessage;
                 crawledPage.RequestCompleted = DateTime.Now;
                 crawledPage.HttpResponseMessage = response;
+                crawledPage.HttpClientHandler = _httpClientHandler;
 
                 try
                 {
@@ -119,7 +124,7 @@ namespace Abot2.Core
         public void Dispose()
         {
             _httpClient?.Dispose();
-            _httpClientHandler.Dispose();
+            _httpClientHandler?.Dispose();
         }
 
 
@@ -170,7 +175,10 @@ namespace Abot2.Core
                 httpClientHandler.AllowAutoRedirect = _config.IsHttpRequestAutoRedirectsEnabled;
 
             if (_config.IsSendingCookiesEnabled)
+            {
                 httpClientHandler.CookieContainer = _cookieContainer;
+                httpClientHandler.UseCookies = true;
+            }
 
             if (!_config.IsSslCertificateValidationEnabled)
                 httpClientHandler.ServerCertificateCustomValidationCallback +=

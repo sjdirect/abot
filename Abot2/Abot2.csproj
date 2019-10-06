@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0.0</Version>
+    <Version>2.0.0.6</Version>
     <PackageId>Abot</PackageId>
     <Authors>Steven Jones</Authors>
     <Company>SHARPDEV LLC</Company>
@@ -15,7 +15,9 @@
     <RepositoryUrl>https://github.com/sjdirect/abot</RepositoryUrl>
     <PackageTags>crawler robot spider .net dotnet</PackageTags>
     <PackageProjectUrl>https://github.com/sjdirect/abot</PackageProjectUrl>
-    <PackageReleaseNotes>$version$ release notes may be found on https://github.com/sjdirect/abot</PackageReleaseNotes>
+    <PackageReleaseNotes>Release notes may be found on https://github.com/sjdirect/abot</PackageReleaseNotes>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

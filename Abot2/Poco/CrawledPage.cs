@@ -41,6 +41,11 @@ namespace Abot2.Poco
         /// </summary>
         public HttpRequestException HttpRequestException { get; set; }
 
+        /// <summary>
+        /// The HttpClientHandler that was used to make the request to server
+        /// </summary>
+        public HttpClientHandler HttpClientHandler { get; set; }
+        
         public override string ToString()
         {
             if(HttpResponseMessage == null)

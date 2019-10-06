@@ -114,3 +114,4 @@ Settings.StyleCop
 
 \.vs/
 /.idea
+/Abot2/Properties/launchSettings.json
