@@ -254,7 +254,7 @@ namespace Abot2.Crawler
             _crawlResult.Elapsed = timer.Elapsed;
             Log.Information("Crawl complete for site [{0}]: Crawled [{1}] pages in [{2}]", _crawlResult.RootUri.AbsoluteUri, _crawlResult.CrawlContext.CrawledCount, _crawlResult.Elapsed);
 
-            return _crawlResult;
+            return await Task.FromResult(_crawlResult);
         }
 
         /// <inheritdoc />
