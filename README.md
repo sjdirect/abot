@@ -104,7 +104,7 @@ namespace TestAbotUse
 ```
 
 ## Abot Configuration
-Abot's Abot2.Poco.CrawlConfiguration class class has a ton of configuration options. You can see what effect each config value has on the crawl by looking at the [code comments ](https://github.com/sjdirect/abot/blob/master/Abot2/Poco/CrawlConfiguration.cs).
+Abot's Abot2.Poco.CrawlConfiguration class has a ton of configuration options. You can see what effect each config value has on the crawl by looking at the [code comments ](https://github.com/sjdirect/abot/blob/master/Abot2/Poco/CrawlConfiguration.cs).
     
 ```c#
 var crawlConfig = new CrawlConfiguration();
