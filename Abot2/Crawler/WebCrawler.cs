@@ -226,7 +226,7 @@ namespace Abot2.Crawler
                     _scheduler.Add(rootPage);
 
                 VerifyRequiredAvailableMemory();
-                await CrawlSite().ConfigureAwait(false);
+                CrawlSite();
             }
             catch (Exception e)
             {
@@ -358,7 +358,7 @@ namespace Abot2.Crawler
 
         #region Procected Async Methods
 
-        protected virtual async Task CrawlSite()
+        protected virtual void CrawlSite()
         {
             while (!_crawlComplete)
             {
