@@ -375,7 +375,9 @@ namespace Abot2.Crawler
                 else
                 {
                     Log.Debug("Waiting for links to be scheduled...");
-                    await Task.Delay(2500).ConfigureAwait(false);
+
+                    //Cant await Task.Delay due to https://github.com/sjdirect/abot/issues/203
+                    Thread.Sleep(2500);
                 }
             }
         }
