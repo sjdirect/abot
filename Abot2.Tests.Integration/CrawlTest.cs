@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Abot2.Crawler;
 using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 
 namespace Abot2.Tests.Integration
 {
@@ -172,6 +173,31 @@ namespace Abot2.Tests.Integration
             await base.CrawlAndAssert(new PoliteWebCrawler(configuration));
         }
 
+        [TestMethod]
+        public async Task CrawlAsync_SlowLoadingSite_CrawlsAllPages_Zalahat()
+        {
+            await AssertSlowSiteIsCrawledAsExpected(25, new Uri("http://zalahat.com"));
+        }
+
+        [TestMethod, Ignore("Zalahat test above covers this test, just leaving in case the slow loading site crawl becomes an issue again")]
+        public async Task CrawlAsync_SlowLoadingSite_CrawlsAllPages_Gamble1x2()
+        {
+            await AssertSlowSiteIsCrawledAsExpected(5, new Uri("https://gamble1x2.com"));
+        }
+
+        [TestMethod, Ignore("Zalahat test above covers this test, just leaving in case the slow loading site crawl becomes an issue again")]
+        public async Task CrawlAsync_SlowLoadingSite_CrawlsAllPages_Casinosms()
+        {
+            await AssertSlowSiteIsCrawledAsExpected(25, new Uri("https://casinosms.pl"));
+        }
+
+        [TestMethod, Ignore("Zalahat test above covers this test, just leaving in case the slow loading site crawl becomes an issue again")]
+        public async Task CrawlAsync_SlowLoadingSite_CrawlsAllPages_Centrodeapostas()
+        {
+            await AssertSlowSiteIsCrawledAsExpected(25, new Uri("https://centrodeapostas.com"));
+        }
+
+
         protected override List<PageResult> GetExpectedCrawlResult()
         {
             var expectedCrawlResult = new List<PageResult>
@@ -246,6 +272,29 @@ namespace Abot2.Tests.Integration
             };
 
             return expectedCrawlResult;
+        }
+
+        private async Task AssertSlowSiteIsCrawledAsExpected(int maxPagesToCrawl, Uri uri)
+        {
+            var configuration = new CrawlConfiguration
+            {
+                IsExternalPageCrawlingEnabled = false,
+                MaxPagesToCrawl = maxPagesToCrawl,
+                MaxConcurrentThreads = 10
+            };
+
+            var pagesCrawledCount = 0;
+
+            var crawler = new PoliteWebCrawler(configuration);
+            crawler.PageCrawlCompleted += (a, b) =>
+            {
+                Interlocked.Increment(ref pagesCrawledCount);
+            };
+            
+
+            await crawler.CrawlAsync(uri);
+
+            Assert.AreEqual(maxPagesToCrawl, pagesCrawledCount);
         }
     }
 }

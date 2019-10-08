@@ -23,6 +23,7 @@
   <ItemGroup>
     <Compile Remove="Poco\HttpRequest.cs" />
     <Compile Remove="Poco\HttpResponse.cs" />
+    <Compile Remove="Util\LimitedConcurrencyTaskScheduler.cs" />
   </ItemGroup>
 
   <ItemGroup>

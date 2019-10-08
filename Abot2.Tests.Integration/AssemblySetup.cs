@@ -10,7 +10,7 @@ namespace Abot2.Tests.Integration
         public static void AssemblyInit(TestContext context)
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Debug()
                 .WriteTo.Console()
                 //.WriteTo.Sink(new RollingFileSink(
                 //        @"C:\logs",

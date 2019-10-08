@@ -88,7 +88,7 @@ namespace Abot2.Poco
         public bool IsRespectUrlNamedAnchorOrHashbangEnabled { get; set; }
 
         /// <summary>
-        /// A comma seperated string that has content types that should have their page content downloaded. For each page, the content type is checked to see if it contains any of the values defined here.
+        /// A comma separated string that has content types that should have their page content downloaded. For each page, the content type is checked to see if it contains any of the values defined here.
         /// </summary>
         public string DownloadableContentTypes { get; set; }
 

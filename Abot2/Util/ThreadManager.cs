@@ -141,7 +141,7 @@ namespace Abot2.Util
         }
 
         /// <summary>
-        /// Runs the action on a seperate thread
+        /// Runs the action on a separate thread
         /// </summary>
         protected abstract void RunActionOnDedicatedThread(Action action);
     }

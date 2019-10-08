@@ -51,7 +51,7 @@ namespace Abot2.Core
             if (!pageToCrawl.Uri.Scheme.StartsWith("http"))
                 return new CrawlDecision { Allow = false, Reason = "Scheme does not begin with http" };
 
-            //TODO Do we want to ignore redirect chains (ie.. do not treat them as seperate page crawls)?
+            //TODO Do we want to ignore redirect chains (ie.. do not treat them as separate page crawls)?
             if (!pageToCrawl.IsRetry &&
                 crawlContext.CrawlConfiguration.MaxPagesToCrawl > 0 &&
                 crawlContext.CrawledCount + crawlContext.Scheduler.Count + 1 > crawlContext.CrawlConfiguration.MaxPagesToCrawl)
