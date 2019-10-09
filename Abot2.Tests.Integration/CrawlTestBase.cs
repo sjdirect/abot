@@ -46,7 +46,7 @@ namespace Abot2.Tests.Integration
         {
             if (allDescrepancies.Count < 1)
             {
-                Log.Logger.Information("No discrepancies between expected and actual results");
+                Log.Information("No discrepancies between expected and actual results");
                 return;
             }
 
@@ -56,15 +56,15 @@ namespace Abot2.Tests.Integration
 
             foreach (Discrepancy discrepancy in missingPages)
             {
-                Log.Logger.Information("Missing:[{0}][{1}]", discrepancy.Expected.Url, discrepancy.Expected.HttpStatusCode);
+                Log.Information("Missing:[{0}][{1}]", discrepancy.Expected.Url, discrepancy.Expected.HttpStatusCode);
             }
             foreach (Discrepancy discrepancy in unexpectedHttpStatusPages)
             {
-                Log.Logger.Information("Unexpected Http Status: [{0}] Expected:[{1}] Actual:[{2}]", discrepancy.Actual.Url, discrepancy.Expected.HttpStatusCode, discrepancy.Actual.HttpStatusCode);
+                Log.Information("Unexpected Http Status: [{0}] Expected:[{1}] Actual:[{2}]", discrepancy.Actual.Url, discrepancy.Expected.HttpStatusCode, discrepancy.Actual.HttpStatusCode);
             }
             foreach(Discrepancy discrepancy in unexpectedPages)
             {
-                Log.Logger.Information("Unexpected Page:[{0}][{1}]", discrepancy.Actual.Url, discrepancy.Actual.HttpStatusCode);
+                Log.Information("Unexpected Page:[{0}][{1}]", discrepancy.Actual.Url, discrepancy.Actual.HttpStatusCode);
             }
         }
 

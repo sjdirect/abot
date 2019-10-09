@@ -109,7 +109,7 @@ namespace Abot2.Poco
             {
                 document = _angleSharpHtmlParser.ParseDocument("");
 
-                Log.Logger.Error("Error occurred while loading AngularSharp object for Url [{0}] {@Exception}", Uri, e);
+                Log.Error("Error occurred while loading AngularSharp object for Url [{0}] {@Exception}", Uri, e);
             }
 
             return document;

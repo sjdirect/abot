@@ -49,7 +49,7 @@ namespace Abot2.Core
                 .ToList();
             
             timer.Stop();
-            Log.Logger.Debug("{0} parsed links from [{1}] in [{2}] milliseconds", ParserType, crawledPage.Uri, timer.ElapsedMilliseconds);
+            Log.Debug("{0} parsed links from [{1}] in [{2}] milliseconds", ParserType, crawledPage.Uri, timer.ElapsedMilliseconds);
 
             return links;
         }
@@ -119,7 +119,7 @@ namespace Abot2.Core
                 }
                 catch (Exception e)
                 {
-                    Log.Logger.Debug("Could not parse link [{0}] on page [{1}] {@Exception}", hrefValue, crawledPage.Uri, e);
+                    Log.Debug("Could not parse link [{0}] on page [{1}] {@Exception}", hrefValue, crawledPage.Uri, e);
                 }
             }
 
@@ -140,7 +140,7 @@ namespace Abot2.Core
                     (xRobotsTagHeader.ToLower().Contains("nofollow") ||
                      xRobotsTagHeader.ToLower().Contains("none")))
                 {
-                    Log.Logger.Information("Http header X-Robots-Tag nofollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+                    Log.Information("Http header X-Robots-Tag nofollow detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
                     return true;
                 }   
             }
@@ -153,7 +153,7 @@ namespace Abot2.Core
                     (robotsMeta.ToLower().Contains("nofollow") ||
                      robotsMeta.ToLower().Contains("none")))
                 {
-                    Log.Logger.Information("Meta Robots nofollow tag detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
+                    Log.Information("Meta Robots nofollow tag detected on uri [{0}], will not crawl links on this page.", crawledPage.Uri);
                     return true;
                 }                
                 

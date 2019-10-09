@@ -1,5 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
+
+[assembly: InternalsVisibleTo("Abot2.Tests.Unit")]
 
 namespace Abot2.Tests.Integration
 {

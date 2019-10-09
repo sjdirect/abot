@@ -14,19 +14,17 @@ namespace Abot2.Demo
         public static async Task Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.Console()
-                //.WriteTo.Sink(new RollingFileSink(
-                //        @"C:\logs",
-                //        new JsonFormatter(renderMessage: true))
+                .MinimumLevel.Debug()
+                .Enrich.WithThreadId()
+                .WriteTo.Console(outputTemplate: Constants.LogFormatTemplate)
                 .CreateLogger();
 
-            Log.Logger.Information("Demo starting up!");
+            Log.Information("Demo starting up!");
 
             //await DemoPageRequester();
             await DemoSimpleCrawler();
 
-            Log.Logger.Information("Demo done!");
+            Log.Information("Demo done!");
             Console.ReadKey();
         }
 
@@ -56,7 +54,7 @@ namespace Abot2.Demo
 
             //var result = await pageRequester.MakeRequestAsync(new Uri("http://google.com"));
             var result = await pageRequester.MakeRequestAsync(new Uri("http://wvtesting2.com"));
-            Log.Logger.Information("{result}", new { url = result.Uri, status = Convert.ToInt32(result.HttpResponseMessage.StatusCode) });
+            Log.Information("{result}", new { url = result.Uri, status = Convert.ToInt32(result.HttpResponseMessage.StatusCode) });
 
         }
     }

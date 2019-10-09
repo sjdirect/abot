@@ -85,7 +85,7 @@ namespace Abot2.Core
             }
             catch
             {
-                Log.Logger.Warning("Could not get Encoding for charset string [0]", charset);
+                Log.Warning("Could not get Encoding for charset string [0]", charset);
             }
 
             return e;

@@ -82,11 +82,11 @@ namespace Abot2.Core
             {
                 crawledPage.HttpRequestException = hre;
 
-                Log.Logger.Debug("Error occurred requesting url [{0}] {@Exception}", uri.AbsoluteUri, hre);
+                Log.Debug("Error occurred requesting url [{0}] {@Exception}", uri.AbsoluteUri, hre);
             }
             catch (Exception e)
             {
-                Log.Logger.Debug("Error occurred requesting url [{0}] {@Exception}", uri.AbsoluteUri, e);
+                Log.Debug("Error occurred requesting url [{0}] {@Exception}", uri.AbsoluteUri, e);
             }
             finally
             {
@@ -108,13 +108,13 @@ namespace Abot2.Core
                         }
                         else
                         {
-                            Log.Logger.Debug("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
+                            Log.Debug("Links on page [{0}] not crawled, [{1}]", crawledPage.Uri.AbsoluteUri, shouldDownloadContentDecision.Reason);
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    Log.Logger.Debug("Error occurred finalizing requesting url [{0}] {@Exception}", uri.AbsoluteUri, e);
+                    Log.Debug("Error occurred finalizing requesting url [{0}] {@Exception}", uri.AbsoluteUri, e);
                 }
             }
 
