@@ -131,7 +131,47 @@ namespace Abot2.Tests.Unit.Core
         }
 
         [TestMethod]
-        public async Task MakeRequestAsync_HttpRequestResponseThrowsException_ReturnsExpectedCrawledPageObject()
+        public async Task MakeRequestAsync_HttpRequestResponseTimesOut_ReturnsExpectedCrawledPageObject()
+        {
+            //Arrange
+            _fakeHttpClient.Setup(f =>
+                    f.SendAsync(
+                        It.IsAny<HttpRequestMessage>(),
+                        It.IsAny<CancellationToken>()))
+                .ThrowsAsync(
+                    new TaskCanceledException("Oh no timeout"));
+
+            //Act
+            var result = await _unitUnderTest.MakeRequestAsync(_validUri);
+
+            //Assert
+            _fakeHttpClient.VerifyAll();
+            _fakeWebContentExtractor.VerifyNoOtherCalls();
+
+            Assert.AreSame(_validUri, result.Uri);
+
+            Assert.IsNull(result.HttpRequestMessage);
+            Assert.IsNull(result.HttpResponseMessage);
+            Assert.IsNull(result.DownloadContentStarted);
+            Assert.IsNull(result.DownloadContentCompleted);
+
+            Assert.IsNotNull(result.Content);
+            Assert.IsNull(result.Content.Bytes);
+            Assert.IsNull(result.Content.Charset);
+            Assert.AreEqual("", result.Content.Text);
+            Assert.IsNull(result.Content.Encoding);
+
+            Assert.IsNotNull(result.HttpRequestException);
+            Assert.IsTrue(result.HttpRequestException.Message.StartsWith("Request timeout occurred"));
+            Assert.IsNotNull(result.HttpRequestException.InnerException);
+            Assert.AreEqual("Oh no timeout", result.HttpRequestException.InnerException.Message);
+            Assert.IsNotNull(result.RequestStarted);
+            Assert.IsNotNull(result.RequestCompleted);
+            Assert.IsTrue(result.RequestStarted < result.RequestCompleted);
+        }
+
+        [TestMethod]
+        public async Task MakeRequestAsync_HttpRequestResponseThrowsGenericException_ReturnsExpectedCrawledPageObject()
         {
             //Arrange
             _fakeHttpClient.Setup(f =>
@@ -161,7 +201,9 @@ namespace Abot2.Tests.Unit.Core
             Assert.AreEqual("", result.Content.Text);
             Assert.IsNull(result.Content.Encoding);
 
-            Assert.IsNull(result.HttpRequestException);
+            Assert.IsNotNull(result.HttpRequestException);
+            Assert.IsTrue(result.HttpRequestException.Message.StartsWith("Unknown error occurred"));
+            Assert.AreEqual("Oh no", result.HttpRequestException.InnerException.Message);
             Assert.IsNotNull(result.RequestStarted);
             Assert.IsNotNull(result.RequestCompleted);
             Assert.IsTrue(result.RequestStarted < result.RequestCompleted);
