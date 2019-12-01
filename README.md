@@ -129,7 +129,7 @@ crawler.PageLinksCrawlDisallowedAsync += crawler_PageLinksCrawlDisallowed;
 void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
 {
 	PageToCrawl pageToCrawl = e.PageToCrawl;
-	Console.WriteLine("About to crawl link {0} which was found on page {1}", pageToCrawl.Uri.AbsoluteUri,   pageToCrawl.ParentUri.AbsoluteUri);
+	Console.WriteLine($"About to crawl link {pageToCrawl.Uri.AbsoluteUri} which was found on page {pageToCrawl.ParentUri.AbsoluteUri}");
 }
 
 void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
@@ -137,12 +137,12 @@ void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
 	CrawledPage crawledPage = e.CrawledPage;
 
 	if (crawledPage.WebException != null || crawledPage.HttpWebResponse.StatusCode != HttpStatusCode.OK)
-		Console.WriteLine("Crawl of page failed {0}", crawledPage.Uri.AbsoluteUri);
+		Console.WriteLine($"Crawl of page failed {crawledPage.Uri.AbsoluteUri}");
 	else
-		Console.WriteLine("Crawl of page succeeded {0}", crawledPage.Uri.AbsoluteUri);
+		Console.WriteLine($"Crawl of page succeeded {crawledPage.Uri.AbsoluteUri}");
 
 	if (string.IsNullOrEmpty(crawledPage.Content.Text))
-		Console.WriteLine("Page had no content {0}", crawledPage.Uri.AbsoluteUri);
+		Console.WriteLine($"Page had no content {crawledPage.Uri.AbsoluteUri}");
 	
 	var htmlAgilityPackDocument = crawledPage.HtmlDocument; //Html Agility Pack parser
 	var angleSharpHtmlDocument = crawledPage.AngleSharpHtmlDocument; //AngleSharp parser
@@ -151,13 +151,13 @@ void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
 void crawler_PageLinksCrawlDisallowed(object sender, PageLinksCrawlDisallowedArgs e)
 {
 	CrawledPage crawledPage = e.CrawledPage;
-	Console.WriteLine("Did not crawl the links on page {0} due to {1}", crawledPage.Uri.AbsoluteUri, e.DisallowedReason);
+	Console.WriteLine($"Did not crawl the links on page {crawledPage.Uri.AbsoluteUri} due to {e.DisallowedReason}");
 }
 
 void crawler_PageCrawlDisallowed(object sender, PageCrawlDisallowedArgs e)
 {
 	PageToCrawl pageToCrawl = e.PageToCrawl;
-	Console.WriteLine("Did not crawl page {0} due to {1}", pageToCrawl.Uri.AbsoluteUri, e.DisallowedReason);
+	Console.WriteLine($"Did not crawl page {pageToCrawl.Uri.AbsoluteUri} due to {e.DisallowedReason}");
 }
 ```
 
@@ -475,6 +475,3 @@ public interface IRobotsDotTextFinder
 
 <br /><br /><br />
 <hr />
-
-## Fiddler Core
-Just a note that Fiddler.Core is started and stopped during unit and integration tests. This allows replaying predictable http requests. Read more about [Fiddler Core here](http://www.telerik.com/fiddler/fiddlercore)
