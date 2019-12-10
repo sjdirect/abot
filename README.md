@@ -118,12 +118,12 @@ etc...
 ```
 
 ## Abot Events
-Register for events and create processing methods (both synchronous and asynchronous versions available)
+Register for events and create processing methods
 ```c#
-crawler.PageCrawlStartingAsync += crawler_ProcessPageCrawlStarting;
-crawler.PageCrawlCompletedAsync += crawler_ProcessPageCrawlCompleted;
-crawler.PageCrawlDisallowedAsync += crawler_PageCrawlDisallowed;
-crawler.PageLinksCrawlDisallowedAsync += crawler_PageLinksCrawlDisallowed;
+crawler.PageCrawlStarting += crawler_ProcessPageCrawlStarting;
+crawler.PageCrawlCompleted += crawler_ProcessPageCrawlCompleted;
+crawler.PageCrawlDisallowed += crawler_PageCrawlDisallowed;
+crawler.PageLinksCrawlDisallowed += crawler_PageLinksCrawlDisallowed;
 ```
 ```c#
 void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
@@ -167,7 +167,7 @@ Add any number of custom objects to the dynamic crawl bag or page bag. These obj
 var crawler crawler = new PoliteWebCrawler();
 crawler.CrawlBag.MyFoo1 = new Foo();
 crawler.CrawlBag.MyFoo2 = new Foo();
-crawler.PageCrawlStartingAsync += crawler_ProcessPageCrawlStarting;
+crawler.PageCrawlStarting += crawler_ProcessPageCrawlStarting;
 ...
 ```
 ```c#
