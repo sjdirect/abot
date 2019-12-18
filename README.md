@@ -144,7 +144,6 @@ void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
 	if (string.IsNullOrEmpty(crawledPage.Content.Text))
 		Console.WriteLine($"Page had no content {crawledPage.Uri.AbsoluteUri}");
 	
-	var htmlAgilityPackDocument = crawledPage.HtmlDocument; //Html Agility Pack parser
 	var angleSharpHtmlDocument = crawledPage.AngleSharpHtmlDocument; //AngleSharp parser
 }
 
