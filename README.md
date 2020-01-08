@@ -118,18 +118,18 @@ etc...
 ```
 
 ## Abot Events
-Register for events and create processing methods (both synchronous and asynchronous versions available)
+Register for events and create processing methods
 ```c#
-crawler.PageCrawlStartingAsync += crawler_ProcessPageCrawlStarting;
-crawler.PageCrawlCompletedAsync += crawler_ProcessPageCrawlCompleted;
-crawler.PageCrawlDisallowedAsync += crawler_PageCrawlDisallowed;
-crawler.PageLinksCrawlDisallowedAsync += crawler_PageLinksCrawlDisallowed;
+crawler.PageCrawlStarting += crawler_ProcessPageCrawlStarting;
+crawler.PageCrawlCompleted += crawler_ProcessPageCrawlCompleted;
+crawler.PageCrawlDisallowed += crawler_PageCrawlDisallowed;
+crawler.PageLinksCrawlDisallowed += crawler_PageLinksCrawlDisallowed;
 ```
 ```c#
 void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
 {
 	PageToCrawl pageToCrawl = e.PageToCrawl;
-	Console.WriteLine("About to crawl link {0} which was found on page {1}", pageToCrawl.Uri.AbsoluteUri,   pageToCrawl.ParentUri.AbsoluteUri);
+	Console.WriteLine($"About to crawl link {pageToCrawl.Uri.AbsoluteUri} which was found on page {pageToCrawl.ParentUri.AbsoluteUri}");
 }
 
 void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
@@ -137,27 +137,26 @@ void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
 	CrawledPage crawledPage = e.CrawledPage;
 
 	if (crawledPage.WebException != null || crawledPage.HttpWebResponse.StatusCode != HttpStatusCode.OK)
-		Console.WriteLine("Crawl of page failed {0}", crawledPage.Uri.AbsoluteUri);
+		Console.WriteLine($"Crawl of page failed {crawledPage.Uri.AbsoluteUri}");
 	else
-		Console.WriteLine("Crawl of page succeeded {0}", crawledPage.Uri.AbsoluteUri);
+		Console.WriteLine($"Crawl of page succeeded {crawledPage.Uri.AbsoluteUri}");
 
 	if (string.IsNullOrEmpty(crawledPage.Content.Text))
-		Console.WriteLine("Page had no content {0}", crawledPage.Uri.AbsoluteUri);
+		Console.WriteLine($"Page had no content {crawledPage.Uri.AbsoluteUri}");
 	
-	var htmlAgilityPackDocument = crawledPage.HtmlDocument; //Html Agility Pack parser
 	var angleSharpHtmlDocument = crawledPage.AngleSharpHtmlDocument; //AngleSharp parser
 }
 
 void crawler_PageLinksCrawlDisallowed(object sender, PageLinksCrawlDisallowedArgs e)
 {
 	CrawledPage crawledPage = e.CrawledPage;
-	Console.WriteLine("Did not crawl the links on page {0} due to {1}", crawledPage.Uri.AbsoluteUri, e.DisallowedReason);
+	Console.WriteLine($"Did not crawl the links on page {crawledPage.Uri.AbsoluteUri} due to {e.DisallowedReason}");
 }
 
 void crawler_PageCrawlDisallowed(object sender, PageCrawlDisallowedArgs e)
 {
 	PageToCrawl pageToCrawl = e.PageToCrawl;
-	Console.WriteLine("Did not crawl page {0} due to {1}", pageToCrawl.Uri.AbsoluteUri, e.DisallowedReason);
+	Console.WriteLine($"Did not crawl page {pageToCrawl.Uri.AbsoluteUri} due to {e.DisallowedReason}");
 }
 ```
 
@@ -167,7 +166,7 @@ Add any number of custom objects to the dynamic crawl bag or page bag. These obj
 var crawler crawler = new PoliteWebCrawler();
 crawler.CrawlBag.MyFoo1 = new Foo();
 crawler.CrawlBag.MyFoo2 = new Foo();
-crawler.PageCrawlStartingAsync += crawler_ProcessPageCrawlStarting;
+crawler.PageCrawlStarting += crawler_ProcessPageCrawlStarting;
 ...
 ```
 ```c#
@@ -475,6 +474,3 @@ public interface IRobotsDotTextFinder
 
 <br /><br /><br />
 <hr />
-
-## Fiddler Core
-Just a note that Fiddler.Core is started and stopped during unit and integration tests. This allows replaying predictable http requests. Read more about [Fiddler Core here](http://www.telerik.com/fiddler/fiddlercore)
