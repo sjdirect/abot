@@ -1,4 +1,4 @@
-# Abot [![Build Status](https://ci.appveyor.com/api/projects/status/nr84t6dpneg5tmb6?svg=true)](https://ci.appveyor.com/project/sjdirect/abot) [![NuGet](https://img.shields.io/nuget/v/Abot.svg)](https://www.nuget.org/packages/Abot/)
+# Abot [![Build Status](https://ci.appveyor.com/api/projects/status/nr84t6dpneg5tmb6?svg=true)](https://ci.appveyor.com/project/sjdirect/abot2) [![NuGet](https://img.shields.io/nuget/v/Abot.svg)](https://www.nuget.org/packages/Abot/)
 
 *Please star this project!!* Contact me with exciting opportunities!!
 
