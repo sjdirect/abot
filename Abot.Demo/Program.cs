@@ -9,6 +9,10 @@ namespace Abot.Demo
     {
         static void Main(string[] args)
         {
+            /*
+             * !!!!!!!!!NOTICE!!!!!!!!: This code exercises Abot versions < 2.0.  
+             * The newer versions > 2.0 have a demo in the Abot2.Demo project
+             */
             log4net.Config.XmlConfigurator.Configure();
             PrintDisclaimer();
 
