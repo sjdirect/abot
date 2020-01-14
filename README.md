@@ -204,7 +204,7 @@ Sometimes you don't want to create a class and go through the ceremony of extend
 ```c#
 var crawler = new PoliteWebCrawler();
 
-crawler.ShouldCrawlPage((pageToCrawl, crawlContext) => 
+crawler.ShouldCrawlPageDecisionMaker((pageToCrawl, crawlContext) => 
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if(pageToCrawl.Uri.Authority == "google.com")
@@ -213,7 +213,7 @@ crawler.ShouldCrawlPage((pageToCrawl, crawlContext) =>
 	return decision;
 });
 
-crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
+crawler.ShouldDownloadPageContentDecisionMaker((crawledPage, crawlContext) =>
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if (!crawledPage.Uri.AbsoluteUri.Contains(".com"))
@@ -222,7 +222,7 @@ crawler.ShouldDownloadPageContent((crawledPage, crawlContext) =>
 	return decision;
 });
 
-crawler.ShouldCrawlPageLinks((crawledPage, crawlContext) =>
+crawler.ShouldCrawlPageLinksDecisionMaker((crawledPage, crawlContext) =>
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if (crawledPage.Content.Bytes.Length < 100)
