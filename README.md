@@ -23,15 +23,15 @@ Abot is an open source C# web crawler framework built for speed and flexibility.
   * [Take the usage survey](https://www.surveymonkey.com/s/JS5826F) to help prioritize features/improvements
   * [Consider making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=G6ZY6BZNBFVQJ)
 
-###### Use [AbotX](http://abotx.org) for more powerful extensions/wrappers
+###### Use [AbotX](https://github.com/sjdirect/abotx/blob/master/README.md) for more powerful extensions/wrappers
 
-  * [Crawl multiple sites concurrently](http://abotx.org/Learn/ParallelCrawlerEngine)
-  * [Execute/Render Javascript](http://abotx.org/Learn/JavascriptRendering)
-  * [Avoid getting blocked by sites](http://abotx.org/Learn/AutoThrottling)
-  * [Auto Tuning](http://abotx.org/Learn/AutoTuning)
-  * [Auto Throttling](http://abotx.org/Learn/AutoThrottling)
-  * [Pause/Resume live crawls](http://abotx.org/Learn/CrawlerX#crawlerx-pause-resume)
-  * [Simplified pluggability/extensibility](https://abotx.org/Learn/CrawlerX#easy-override)
+  * [Crawl multiple sites concurrently](https://github.com/sjdirect/abotx/blob/master/README.md#parallel-crawler-engine)
+  * [Execute/Render Javascript](https://github.com/sjdirect/abotx/blob/master/README.md#javascript-rendering)
+  * [Avoid getting blocked by sites](https://github.com/sjdirect/abotx/blob/master/README.md#auto-throttling)
+  * [Auto Tuning](https://github.com/sjdirect/abotx/blob/master/README.md#auto-tuning)
+  * [Auto Throttling](https://github.com/sjdirect/abotx/blob/master/README.md#auto-throttling)
+  * [Pause/Resume live crawls](https://github.com/sjdirect/abotx/blob/master/README.md#pause-and-resume)
+  * [Simplified pluggability/extensibility](https://github.com/sjdirect/abotx/blob/master/README.md#easy-override)
 
 <br /><br />
 <hr />
