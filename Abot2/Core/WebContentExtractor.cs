@@ -22,14 +22,19 @@ namespace Abot2.Core
             var pageContent = new PageContent
             {
                 Bytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false),
-                Text = await response.Content.ReadAsStringAsync().ConfigureAwait(false)
             };
+            var contentText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            pageContent.Charset = GetCharset(response.Content.Headers, pageContent.Text);
+            pageContent.Charset = GetCharset(response.Content.Headers, contentText);
             pageContent.Encoding = GetEncoding(pageContent.Charset);
 
-            return pageContent;
+            var contentStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using (StreamReader sr = new StreamReader(contentStream, pageContent.Encoding))
+            {
+                pageContent.Text = sr.ReadToEnd();
+            }
 
+            return pageContent;
         }
 
         protected virtual string GetCharset(HttpContentHeaders headers, string body)
@@ -39,7 +44,7 @@ namespace Abot2.Core
             {
                 charset = GetCharsetFromBody(body);
             }
-            
+
             return CleanCharset(charset);
         }
 
