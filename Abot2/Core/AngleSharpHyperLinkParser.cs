@@ -57,6 +57,32 @@ namespace Abot2.Core
             return baseTagValue.Value.Trim();
         }
 
+        protected override string GetMetaRedirectUrl(CrawledPage crawledPage)
+        {
+            var metaRedirect = crawledPage.AngleSharpHtmlDocument
+                .QuerySelectorAll("meta[http-equiv]")
+                .FirstOrDefault();
+
+            if (metaRedirect == null)
+                return "";
+
+            var content = metaRedirect.GetAttribute("content");
+
+            string metaUrl = "";
+            if (content?.ToLower().Contains("url=") == true)
+            {
+                int index = content.IndexOf("url=");
+                if (index > 0)
+                {
+                    metaUrl = content.Substring(index + 4);
+                    if (!metaUrl.Contains(crawledPage.Uri.Host))
+                        metaUrl = $"{crawledPage.Uri.Scheme}://{crawledPage.Uri.Host}/{metaUrl.TrimStart('/')}";
+                }
+            }
+
+            return metaUrl;
+        }
+
         protected override string GetMetaRobotsValue(CrawledPage crawledPage)
         {
             var robotsMeta = crawledPage.AngleSharpHtmlDocument

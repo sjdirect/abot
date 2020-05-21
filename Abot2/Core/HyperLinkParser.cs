@@ -44,9 +44,17 @@ namespace Abot2.Core
 
             var timer = Stopwatch.StartNew();
 
-            var links = GetUris(crawledPage, GetHrefValues(crawledPage))
-                .Select(hrv => new HyperLink(){ HrefValue = hrv})
-                .ToList();
+            List<HyperLink> links = new List<HyperLink>();
+
+            if (Config.FollowMetaRedirects)
+            {
+                string metaRedirectLink = GetMetaRedirectUrl(crawledPage);
+                if (!string.IsNullOrEmpty(metaRedirectLink))
+                    links.Add(new HyperLink() { HrefValue = new Uri(metaRedirectLink) });
+            }
+
+            links.AddRange(GetUris(crawledPage, GetHrefValues(crawledPage))
+                .Select(hrv => new HyperLink(){ HrefValue = hrv}));
             
             timer.Stop();
             Log.Debug("{0} parsed links from [{1}] in [{2}] milliseconds", ParserType, crawledPage.Uri, timer.ElapsedMilliseconds);
@@ -63,6 +71,8 @@ namespace Abot2.Core
         protected abstract string GetBaseHrefValue(CrawledPage crawledPage);
 
         protected abstract string GetMetaRobotsValue(CrawledPage crawledPage);
+
+        protected abstract string GetMetaRedirectUrl(CrawledPage crawledPage);
 
         #endregion
 

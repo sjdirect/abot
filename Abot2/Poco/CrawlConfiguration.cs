@@ -19,6 +19,7 @@ namespace Abot2.Poco
             HttpServicePointConnectionLimit = 200;
             HttpRequestTimeoutInSeconds = 15;
             IsSslCertificateValidationEnabled = false;
+            FollowMetaRedirects = false;
         }
 
         #region crawlBehavior
@@ -222,6 +223,11 @@ namespace Abot2.Poco
         /// If zero, will use whatever the robots.txt crawl delay requests no matter how high the value is.
         /// </summary>
         public int MaxRobotsDotTextCrawlDelayInSeconds { get; set; }
+
+        /// <summary>
+        /// If true, will follow through on URLs found in meta tags.
+        /// </summary>
+        public bool FollowMetaRedirects { get; set; }
 
         #endregion
 
