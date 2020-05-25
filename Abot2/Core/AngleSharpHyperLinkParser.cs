@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Dom;
+using System.Text.RegularExpressions;
 
 namespace Abot2.Core
 {
@@ -59,25 +60,29 @@ namespace Abot2.Core
 
         protected override string GetMetaRedirectUrl(CrawledPage crawledPage)
         {
-            var metaRedirect = crawledPage.AngleSharpHtmlDocument
-                .QuerySelectorAll("meta[http-equiv]")
-                .FirstOrDefault();
+            var body = crawledPage.Content.Text;
 
-            if (metaRedirect == null)
-                return "";
+            bool metaMatches = Regex.IsMatch(body, @"http-equiv\W*?refresh\W*?""", RegexOptions.IgnoreCase);
+            if (!metaMatches)
+                return null;
 
-            var content = metaRedirect.GetAttribute("content");
+            var contentMatches = Regex.Matches(body, @"<meta.*?url\s*=\s*([^""']+)", RegexOptions.IgnoreCase);
 
-            string metaUrl = "";
-            if (content?.ToLower().Contains("url=") == true)
+            string metaUrl = null;
+            if (contentMatches.Count == 0)
+                return null;
+            
+            if (contentMatches[0].Groups.Count > 1)
+                metaUrl = contentMatches[0].Groups[1].Value;
+
+            //append http or https to the url
+            if (!metaUrl.Contains(crawledPage.Uri.Scheme))
             {
-                int index = content.IndexOf("url=");
-                if (index > 0)
-                {
-                    metaUrl = content.Substring(index + 4);
-                    if (!metaUrl.Contains(crawledPage.Uri.Host))
-                        metaUrl = $"{crawledPage.Uri.Scheme}://{crawledPage.Uri.Host}/{metaUrl.TrimStart('/')}";
-                }
+                //if no host, add the crawled page host
+                if (string.IsNullOrEmpty(crawledPage.Uri.Host))
+                    metaUrl = $"{crawledPage.Uri.Scheme}://{crawledPage.Uri.Host}/{metaUrl.TrimStart('/')}";
+                else
+                    metaUrl = $"{crawledPage.Uri.Scheme}://{metaUrl}";
             }
 
             return metaUrl;
