@@ -77,13 +77,7 @@ namespace Abot2.Core
 
             //append http or https to the url
             if (!metaUrl.Contains(crawledPage.Uri.Scheme))
-            {
-                //if no host, add the crawled page host
-                if (string.IsNullOrEmpty(crawledPage.Uri.Host))
-                    metaUrl = $"{crawledPage.Uri.Scheme}://{crawledPage.Uri.Host}/{metaUrl.TrimStart('/')}";
-                else
-                    metaUrl = $"{crawledPage.Uri.Scheme}://{metaUrl}";
-            }
+                metaUrl = $"{crawledPage.Uri.Scheme}://{crawledPage.Uri.Host}/{metaUrl.TrimStart('/')}";
 
             return metaUrl;
         }
