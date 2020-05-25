@@ -60,13 +60,15 @@ namespace Abot2.Core
 
         protected override string GetMetaRedirectUrl(CrawledPage crawledPage)
         {
-            var body = crawledPage.Content.Text;
+            var metaMatch = crawledPage.AngleSharpHtmlDocument
+                .QuerySelectorAll("meta[http-equiv]")
+                .FirstOrDefault(d => d.GetAttribute("http-equiv").ToLowerInvariant() == "refresh");
 
-            bool metaMatches = Regex.IsMatch(body, @"http-equiv\W*?refresh\W*?""", RegexOptions.IgnoreCase);
-            if (!metaMatches)
-                return null;
+            if (metaMatch == null)
+                return "";
 
-            var contentMatches = Regex.Matches(body, @"<meta.*?url\s*=\s*([^""']+)", RegexOptions.IgnoreCase);
+            var content = metaMatch.GetAttribute("content");
+            var contentMatches = Regex.Matches(content, @".*?url\s*=\s*([^""']+)", RegexOptions.IgnoreCase);
 
             string metaUrl = null;
             if (contentMatches.Count == 0)
