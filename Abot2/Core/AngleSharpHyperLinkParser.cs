@@ -58,31 +58,6 @@ namespace Abot2.Core
             return baseTagValue.Value.Trim();
         }
 
-        protected override string GetMetaRedirectUrl(CrawledPage crawledPage)
-        {
-            var metaMatch = crawledPage.AngleSharpHtmlDocument
-                .QuerySelectorAll("meta[http-equiv]")
-                .FirstOrDefault(d => d.GetAttribute("http-equiv").ToLowerInvariant() == "refresh");
-
-            if (metaMatch == null)
-                return "";
-
-            var content = metaMatch.GetAttribute("content");
-            var contentMatches = Regex.Matches(content, @".*?url\s*=\s*([^""']+)", RegexOptions.IgnoreCase);
-
-            string metaUrl = null;
-            if (contentMatches.Count == 0)
-                return null;
-            
-            if (contentMatches[0].Groups.Count > 1)
-                metaUrl = contentMatches[0].Groups[1].Value;
-
-            //append http or https to the url
-            if (!metaUrl.Contains(crawledPage.Uri.Scheme))
-                metaUrl = $"{crawledPage.Uri.Scheme}://{crawledPage.Uri.Host}/{metaUrl.TrimStart('/')}";
-
-            return metaUrl;
-        }
 
         protected override string GetMetaRobotsValue(CrawledPage crawledPage)
         {

@@ -90,6 +90,11 @@ namespace Abot2.Poco
         public PageToCrawl RedirectedTo { get; set; }
 
         /// <summary>
+        /// The URL obtained from a meta redirect element
+        /// </summary>
+        public string MetaRedirectURL { get; set; }
+
+        /// <summary>
         /// Time it took from RequestStarted to RequestCompleted in milliseconds
         /// </summary>
         public double Elapsed => (RequestCompleted - RequestStarted).TotalMilliseconds;

@@ -19,7 +19,7 @@ namespace Abot2.Poco
             HttpServicePointConnectionLimit = 200;
             HttpRequestTimeoutInSeconds = 15;
             IsSslCertificateValidationEnabled = false;
-            FollowMetaRedirects = false;
+            IsFollowMetaRedirectsEnabled = false;
         }
 
         #region crawlBehavior
@@ -227,7 +227,7 @@ namespace Abot2.Poco
         /// <summary>
         /// If true, will follow through on URLs found in meta tags.
         /// </summary>
-        public bool FollowMetaRedirects { get; set; }
+        public bool IsFollowMetaRedirectsEnabled { get; set; }
 
         #endregion
 
