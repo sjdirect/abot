@@ -208,32 +208,32 @@ Sometimes you don't want to create a class and go through the ceremony of extend
 ```c#
 var crawler = new PoliteWebCrawler();
 
-crawler.ShouldCrawlPageDecisionMaker((pageToCrawl, crawlContext) => 
+crawler.ShouldCrawlPageDecisionMaker = (pageToCrawl, crawlContext) => 
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if(pageToCrawl.Uri.Authority == "google.com")
 		return new CrawlDecision{ Allow = false, Reason = "Dont want to crawl google pages" };
 	
 	return decision;
-});
+};
 
-crawler.ShouldDownloadPageContentDecisionMaker((crawledPage, crawlContext) =>
+crawler.ShouldDownloadPageContentDecisionMaker = (crawledPage, crawlContext) =>
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if (!crawledPage.Uri.AbsoluteUri.Contains(".com"))
 		return new CrawlDecision { Allow = false, Reason = "Only download raw page content for .com tlds" };
 
 	return decision;
-});
+};
 
-crawler.ShouldCrawlPageLinksDecisionMaker((crawledPage, crawlContext) =>
+crawler.ShouldCrawlPageLinksDecisionMaker = (crawledPage, crawlContext) =>
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if (crawledPage.Content.Bytes.Length < 100)
 		return new CrawlDecision { Allow = false, Reason = "Just crawl links in pages that have at least 100 bytes" };
 
 	return decision;
-});
+};
 ```
 
 #### Custom Implementations
