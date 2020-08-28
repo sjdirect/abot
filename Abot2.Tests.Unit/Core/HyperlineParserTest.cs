@@ -30,6 +30,20 @@ namespace Abot2.Tests.Unit.Core
         }
 
         [TestMethod]
+        public void GetLinks_AnchorTags_ReturnsLinksAndText()
+        {
+            _crawledPage.Content.Text = "<a href=\"http://aaa.com/\" >text1</a><a href=\"/aaa/a.html\" />text2</a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("text1", result.ElementAt(0).RawHrefText);
+            Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+            Assert.AreEqual("text2", result.ElementAt(1).RawHrefText);
+        }
+
+        [TestMethod]
         public void GetLinks_AnchorTags_ReturnsLinks()
         {
             _crawledPage.Content.Text = "<a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
