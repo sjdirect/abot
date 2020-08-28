@@ -40,6 +40,10 @@ Abot is an open source C# web crawler framework built for speed and flexibility.
 
 ###### Installing Abot
   * Install Abot using [Nuget](https://www.nuget.org/packages/Abot/)
+  
+```command
+PM> Install-Package Abot
+```
 
 ###### Using Abot 
 ```c#
@@ -204,32 +208,32 @@ Sometimes you don't want to create a class and go through the ceremony of extend
 ```c#
 var crawler = new PoliteWebCrawler();
 
-crawler.ShouldCrawlPageDecisionMaker((pageToCrawl, crawlContext) => 
+crawler.ShouldCrawlPageDecisionMaker = (pageToCrawl, crawlContext) => 
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if(pageToCrawl.Uri.Authority == "google.com")
 		return new CrawlDecision{ Allow = false, Reason = "Dont want to crawl google pages" };
 	
 	return decision;
-});
+};
 
-crawler.ShouldDownloadPageContentDecisionMaker((crawledPage, crawlContext) =>
+crawler.ShouldDownloadPageContentDecisionMaker = (crawledPage, crawlContext) =>
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if (!crawledPage.Uri.AbsoluteUri.Contains(".com"))
 		return new CrawlDecision { Allow = false, Reason = "Only download raw page content for .com tlds" };
 
 	return decision;
-});
+};
 
-crawler.ShouldCrawlPageLinksDecisionMaker((crawledPage, crawlContext) =>
+crawler.ShouldCrawlPageLinksDecisionMaker = (crawledPage, crawlContext) =>
 {
 	var decision = new CrawlDecision{ Allow = true };
 	if (crawledPage.Content.Bytes.Length < 100)
 		return new CrawlDecision { Allow = false, Reason = "Just crawl links in pages that have at least 100 bytes" };
 
 	return decision;
-});
+};
 ```
 
 #### Custom Implementations
@@ -375,24 +379,24 @@ The IPageRequester interface deals with making the raw http requests.
 [PageRequester.cs](https://github.com/sjdirect/abot/blob/master/Abot2/Core/PageRequester.cs) is the default IPageRequester used by the crawler. 
 
 ```c#
-public interface IPageRequester
+public interface IPageRequester : IDisposable
 {
 	/// <summary>
 	/// Make an http web request to the url and download its content
 	/// </summary>
-	CrawledPage MakeRequest(Uri uri);
+	Task<CrawledPage> MakeRequestAsync(Uri uri);
 
 	/// <summary>
 	/// Make an http web request to the url and download its content based on the param func decision
 	/// </summary>
-	CrawledPage MakeRequest(Uri uri, Func<CrawledPage, CrawlDecision> shouldDownloadContent);
+	Task<CrawledPage> MakeRequestAsync(Uri uri, Func<CrawledPage, CrawlDecision> shouldDownloadContent);
 }
 ```
 
 ###### IHyperLinkParser
 The IHyperLinkParser interface deals with parsing the links out of raw html.
 
-[HapHyperlinkParser.cs](https://github.com/sjdirect/abot/blob/master/Abot2/Core/HapHyperLinkParser.cs) is the default IHyperLinkParser used by the crawler. It uses the well known parsing library [Html Agility Pack](http://htmlagilitypack.codeplex.com/). There is also an alternative implementation [AngleSharpHyperLinkParser.cs](https://github.com/sjdirect/abot/blob/master/Abot2/Core/AngleSharpHyperLinkParser.cs) which uses [AngleSharp](https://github.com/AngleSharp/AngleSharp) to do the parsing. AngleSharp uses a css style selector like jquery but all in c#. 
+[AngleSharpHyperLinkParser.cs](https://github.com/sjdirect/abot/blob/master/Abot2/Core/AngleSharpHyperLinkParser.cs) is the default IHyperLinkParser used by the crawler. It uses the well known [AngleSharp](https://github.com/AngleSharp/AngleSharp) to do the html parsing. AngleSharp uses a css style selector like jquery but all in c#. 
 
 ```c#
 /// <summary>
@@ -433,7 +437,7 @@ public interface IMemoryManager : IMemoryMonitor, IDisposable
 ###### IDomainRateLimiter
 The IDomainRateLimiter handles domain rate limiting. It will handle determining how much time needs to elapse before it is ok to make another http request to the domain.
 
-[DomainRateLimiter.cs](https://github.com/sjdirect/abot/blob/master/Abot/Core2/DomainRateLimiter.cs) is the default implementation used by the crawler. 
+[DomainRateLimiter.cs](https://github.com/sjdirect/abot/blob/master/Abot2/Core/DomainRateLimiter.cs) is the default implementation used by the crawler. 
 
 ```c#
 /// <summary>
