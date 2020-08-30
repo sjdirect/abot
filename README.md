@@ -138,16 +138,15 @@ void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
 
 void crawler_ProcessPageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
 {
-	CrawledPage crawledPage = e.CrawledPage;
-
-	if (crawledPage.WebException != null || crawledPage.HttpWebResponse.StatusCode != HttpStatusCode.OK)
+	CrawledPage crawledPage = e.CrawledPage;	
+	if (crawledPage.HttpRequestException != null || crawledPage.HttpResponseMessage.StatusCode != HttpStatusCode.OK)
 		Console.WriteLine($"Crawl of page failed {crawledPage.Uri.AbsoluteUri}");
 	else
 		Console.WriteLine($"Crawl of page succeeded {crawledPage.Uri.AbsoluteUri}");
 
 	if (string.IsNullOrEmpty(crawledPage.Content.Text))
 		Console.WriteLine($"Page had no content {crawledPage.Uri.AbsoluteUri}");
-	
+
 	var angleSharpHtmlDocument = crawledPage.AngleSharpHtmlDocument; //AngleSharp parser
 }
 
