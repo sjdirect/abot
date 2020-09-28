@@ -179,12 +179,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Abot\Abot.csproj">
-      <Project>{0CDCD537-4B0E-4514-966F-F425CDC92BA4}</Project>
-      <Name>Abot</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="HtmlAgilityPackStackOverflow1.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

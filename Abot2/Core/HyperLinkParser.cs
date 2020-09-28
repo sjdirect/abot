@@ -44,6 +44,8 @@ namespace Abot2.Core
 
             var timer = Stopwatch.StartNew();
 
+            var links = GetHyperLinks(crawledPage, GetRawHyperLinks(crawledPage));
+
             var links = new List<HyperLink>();
 
             if (Config.IsFollowMetaRedirectsEnabled)
@@ -65,7 +67,7 @@ namespace Abot2.Core
 
         protected abstract string ParserType { get; }
 
-        protected abstract IEnumerable<string> GetHrefValues(CrawledPage crawledPage);
+        protected abstract IEnumerable<HyperLink> GetRawHyperLinks(CrawledPage crawledPage);
 
         protected abstract string GetBaseHrefValue(CrawledPage crawledPage);
 
@@ -79,15 +81,13 @@ namespace Abot2.Core
                 throw new ArgumentNullException("crawledPage");
         }
 
-        protected virtual List<Uri> GetUris(CrawledPage crawledPage, IEnumerable<string> hrefValues)
+        protected virtual IEnumerable<HyperLink> GetHyperLinks(CrawledPage crawledPage, IEnumerable<HyperLink> rawLinks)
         {
-            var uris = new List<Uri>();
-
-            if (hrefValues == null || !hrefValues.Any())
-                return uris;
+            var finalList = new List<HyperLink>();
+            if (rawLinks == null || !rawLinks.Any())
+                return finalList;
 
             //Use the uri of the page that actually responded to the request instead of crawledPage.Uri (Issue 82).
-            //Using HttpWebRequest.Address instead of HttpWebResonse.ResponseUri since this is the best practice and mentioned on http://msdn.microsoft.com/en-us/library/system.net.httpwebresponse.responseuri.aspx
             var uriToUse = crawledPage.HttpRequestMessage.RequestUri ?? crawledPage.Uri;
 
             //If html base tag exists use it instead of page uri for relative links
@@ -107,30 +107,34 @@ namespace Abot2.Core
                 }
             }
 
-            foreach (var hrefValue in hrefValues)
+            foreach (var rawLink in rawLinks)
             {
                 try
                 {
                     // Remove the url fragment part of the url if needed.
                     // This is the part after the # and is often not useful.
                     var href = Config.IsRespectUrlNamedAnchorOrHashbangEnabled
-                        ? hrefValue
-                        : hrefValue.Split('#')[0];
-                    var newUri = new Uri(uriToUse, href);
+                        ? rawLink.RawHrefValue
+                        : rawLink.RawHrefValue.Split('#')[0];
 
-                    if (CleanUrlFunc != null)
-                        newUri = new Uri(CleanUrlFunc(newUri.AbsoluteUri));
-
-                    if (!uris.Exists(u => u.AbsoluteUri == newUri.AbsoluteUri))
-                        uris.Add(newUri);
+                    var uriValueToUse = (CleanUrlFunc != null) ? new Uri(CleanUrlFunc(new Uri(uriToUse, href).AbsoluteUri)) : new Uri(uriToUse, href);
+                    
+                    //rawLink is copied and setting its value directly is not reflected in the collection, must create another object
+                    finalList.Add(
+                        new HyperLink
+                        {
+                            RawHrefValue = rawLink.RawHrefValue,
+                            RawHrefText = rawLink.RawHrefText,
+                            HrefValue = uriValueToUse
+                        });
                 }
                 catch (Exception e)
                 {
-                    Log.Debug("Could not parse link [{0}] on page [{1}] {@Exception}", hrefValue, crawledPage.Uri, e);
+                    Log.Debug("Could not parse link [{0}] on page [{1}] {@Exception}", rawLink.RawHrefValue, crawledPage.Uri, e);
                 }
             }
 
-            return uris;
+            return finalList.Distinct();
         }
 
         protected virtual bool HasRobotsNoFollow(CrawledPage crawledPage)

@@ -27,20 +27,20 @@ namespace Abot2.Core
             get { return "AngleSharp"; }
         }
 
-        protected override IEnumerable<string> GetHrefValues(CrawledPage crawledPage)
+        protected override IEnumerable<HyperLink> GetRawHyperLinks(CrawledPage crawledPage)
         {
             if (HasRobotsNoFollow(crawledPage))
                 return null;
 
             var hrefValues = crawledPage.AngleSharpHtmlDocument.QuerySelectorAll("a, area")
-            .Where(e => !HasRelNoFollow(e))
-            .Select(y => y.GetAttribute("href"))
-            .Where(a => !string.IsNullOrWhiteSpace(a));
+                .Where(e => !HasRelNoFollow(e))
+                .Select(y => new HyperLink() { RawHrefValue = y.GetAttribute("href"), RawHrefText = y.Text() })
+                .Where(e => !string.IsNullOrWhiteSpace(e.RawHrefValue));
 
             var canonicalHref = crawledPage.AngleSharpHtmlDocument
                 .QuerySelectorAll("link")
                 .Where(e => HasRelCanonicalPointingToDifferentUrl(e, crawledPage.Uri.ToString()))
-                .Select(e => e.GetAttribute("href"));
+                .Select(e => new HyperLink() { RawHrefValue = e.GetAttribute("href"), RawHrefText = e.Text() } );
 
             return hrefValues.Concat(canonicalHref);
         }
