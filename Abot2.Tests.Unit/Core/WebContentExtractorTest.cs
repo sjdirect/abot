@@ -243,7 +243,7 @@ namespace Abot2.Tests.Unit.Core
             var httpResponseMessage = new HttpResponseMessage()
             {
                 RequestMessage = new HttpRequestMessage(),
-                Content = new FakeHttpContent(_contentString + "<meta http-equiv = \"refresh\" content = \"0; url = test.html; charset = Shift_JIS\">")
+                Content = new FakeHttpContent(_contentString + "<meta HTTP-EQUIV = \"refresh\" CONTENT = \"0; URL = test.html; CHARSET = Shift_JIS\">")
             };
             using (var response = httpResponseMessage)
             {
