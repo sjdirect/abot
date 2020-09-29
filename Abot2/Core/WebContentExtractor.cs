@@ -50,7 +50,7 @@ namespace Abot2.Core
                 return "";
 
             var content = metaMatch.GetAttribute("content");
-            var contentMatches = Regex.Matches(content, @".*?url\s*=\s*([^""']+)", RegexOptions.IgnoreCase);
+            var contentMatches = Regex.Matches(content, @".*?url\s*=\s*([^""';]+)", RegexOptions.IgnoreCase);
 
             string metaUrl = null;
             if (contentMatches.Count == 0)

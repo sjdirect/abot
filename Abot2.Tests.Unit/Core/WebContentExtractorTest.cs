@@ -157,6 +157,108 @@ namespace Abot2.Tests.Unit.Core
             Assert.IsTrue(result.Text.StartsWith(_contentString));
         }
 
+        [TestMethod]
+        public async Task GetContent_MetaUrl_RedirectDefinedInMetaTag_ReturnsCompletePageContentObject()
+        {
+            PageContent result;
+            string metaUrl;
+
+            var httpResponseMessage = new HttpResponseMessage()
+            {
+                RequestMessage = new HttpRequestMessage(),
+                Content = new FakeHttpContent(_contentString + "<meta http-equiv=\"refresh\" content=\"1;url=test.html; charset=Shift_JIS\">")
+            };
+            using (var response = httpResponseMessage)
+            {
+                result = await _uut.GetContentAsync(response);
+                var crawledPage = new CrawledPage(new System.Uri("https://www.test.com"));
+                crawledPage.Content = result;
+
+                metaUrl = _uut.GetMetaRedirectUrl(crawledPage);
+            }
+
+            MakeCommonAssertions(result, JapaneseCharset);
+            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.IsTrue(result.Text.Contains("content=\"1;url=test.html;"));
+            Assert.AreEqual("https://www.test.com/test.html", metaUrl);
+        }
+
+        [TestMethod]
+        public async Task GetContent_MetaUrl_NoHttpEquivDefinedInMetaTag_ReturnsCompletePageContentObject()
+        {
+            PageContent result;
+            string metaUrl;
+
+            var httpResponseMessage = new HttpResponseMessage()
+            {
+                RequestMessage = new HttpRequestMessage(),
+                Content = new FakeHttpContent(_contentString + "<meta charset=Shift_JIS>")
+            };
+            using (var response = httpResponseMessage)
+            {
+                result = await _uut.GetContentAsync(response);
+                var crawledPage = new CrawledPage(new System.Uri("https://www.test.com"));
+                crawledPage.Content = result;
+
+                metaUrl = _uut.GetMetaRedirectUrl(crawledPage);
+            }
+
+            MakeCommonAssertions(result, JapaneseCharset);
+            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.AreEqual("", metaUrl);
+        }
+
+        [TestMethod]
+        public async Task GetContent_MetaUrl_NoMetaTag_ReturnsCompletePageContentObject()
+        {
+            PageContent result;
+            string metaUrl;
+
+            var httpResponseMessage = new HttpResponseMessage()
+            {
+                RequestMessage = new HttpRequestMessage(),
+                Content = new FakeHttpContent(_contentString)
+            };
+            using (var response = httpResponseMessage)
+            {
+                result = await _uut.GetContentAsync(response);
+                var crawledPage = new CrawledPage(new System.Uri("https://www.test.com"));
+                crawledPage.Content = result;
+
+                metaUrl = _uut.GetMetaRedirectUrl(crawledPage);
+            }
+
+            MakeCommonAssertions(result, null);
+            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.AreEqual("", metaUrl);
+        }
+
+        [TestMethod]
+        public async Task GetContent_MetaUrl_BadlyFormattedMetaHttpEquiv_ReturnsCompletePageContentObject()
+        {
+            PageContent result;
+            string metaUrl;
+
+            // content with badly spaced attributes, this will still redirect in a browser
+            var httpResponseMessage = new HttpResponseMessage()
+            {
+                RequestMessage = new HttpRequestMessage(),
+                Content = new FakeHttpContent(_contentString + "<meta http-equiv = \"refresh\" content = \"0; url = test.html; charset = Shift_JIS\">")
+            };
+            using (var response = httpResponseMessage)
+            {
+                result = await _uut.GetContentAsync(response);
+                var crawledPage = new CrawledPage(new System.Uri("https://www.test.com"));
+                crawledPage.Content = result;
+
+                metaUrl = _uut.GetMetaRedirectUrl(crawledPage);
+            }
+
+            MakeCommonAssertions(result, JapaneseCharset);
+            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.AreEqual("https://www.test.com/test.html", metaUrl);
+        }
+
         private void MakeCommonAssertions(PageContent result, string expectedCharset, string expectedEncodingString = JapaneseEncodingString)
         {
             Assert.IsNotNull(result.Bytes);
