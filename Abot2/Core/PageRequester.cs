@@ -131,8 +131,8 @@ namespace Abot2.Core
             _httpClient?.Dispose();
             _httpClientHandler?.Dispose();
         }
-
-
+        
+        
         protected virtual HttpRequestMessage BuildHttpRequestMessage(Uri uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -141,9 +141,8 @@ namespace Abot2.Core
             
             return request;
         }
-
-
-        private HttpClient BuildHttpClient(HttpClientHandler clientHandler)
+        
+        protected virtual HttpClient BuildHttpClient(HttpClientHandler clientHandler)
         {
             var httpClient = new HttpClient(clientHandler);
 
@@ -162,7 +161,7 @@ namespace Abot2.Core
             return httpClient;
         }
 
-        private HttpClientHandler BuildHttpClientHandler(Uri rootUri)
+        protected virtual HttpClientHandler BuildHttpClientHandler(Uri rootUri)
         {
             if(rootUri == null)
                 throw new ArgumentNullException(nameof(rootUri));
@@ -203,6 +202,7 @@ namespace Abot2.Core
             return httpClientHandler;
         }
 
+        
         private Version GetEquivalentHttpProtocolVersion()
         {
             if (_config.HttpProtocolVersion == HttpProtocolVersion.Version10)
