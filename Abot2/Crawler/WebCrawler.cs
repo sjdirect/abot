@@ -94,7 +94,6 @@ namespace Abot2.Crawler
         protected Timer _timeoutTimer;
         protected CrawlResult _crawlResult = null;
         protected CrawlContext _crawlContext;
-        protected IThreadManager _threadManager;
         protected IScheduler _scheduler;
         protected IPageRequester _pageRequester;
         protected IHtmlParser _htmlParser;
@@ -136,14 +135,13 @@ namespace Abot2.Crawler
         /// Creates a crawler instance with the default settings and implementations.
         /// </summary>
         public WebCrawler()
-            : this(new CrawlConfiguration(), null, null, null, null, null, null)
+            : this(new CrawlConfiguration(), null, null, null, null, null)
         {
         }
 
         /// <summary>
         /// Creates a crawler instance with custom settings or implementation. Passing in null for all params is the equivalent of the empty constructor.
         /// </summary>
-        /// <param name="threadManager">Distributes http requests over multiple threads</param>
         /// <param name="scheduler">Decides what link should be crawled next</param>
         /// <param name="pageRequester">Makes the raw http requests</param>
         /// <param name="htmlParser">Parses a crawled page for it's hyperlinks</param>
@@ -153,7 +151,6 @@ namespace Abot2.Crawler
         public WebCrawler(
             CrawlConfiguration crawlConfiguration,
             ICrawlDecisionMaker crawlDecisionMaker,
-            IThreadManager threadManager,
             IScheduler scheduler,
             IPageRequester pageRequester,
             IHtmlParser htmlParser,
@@ -165,7 +162,6 @@ namespace Abot2.Crawler
             };
             CrawlBag = _crawlContext.CrawlBag;
 
-            _threadManager = threadManager ?? new TaskThreadManager(_crawlContext.CrawlConfiguration.MaxConcurrentThreads > 0 ? _crawlContext.CrawlConfiguration.MaxConcurrentThreads : Environment.ProcessorCount);
             _scheduler = scheduler ?? new Scheduler(_crawlContext.CrawlConfiguration.IsUriRecrawlingEnabled, null, null);
             _pageRequester = pageRequester ?? new PageRequester(_crawlContext.CrawlConfiguration, new WebContentExtractor());
             _crawlDecisionMaker = crawlDecisionMaker ?? new CrawlDecisionMaker();
@@ -236,10 +232,6 @@ namespace Abot2.Crawler
                 Log.Fatal("An error occurred while crawling site [{0}]", uri);
                 Log.Fatal(e, "Exception details -->");
             }
-            finally
-            {
-                _threadManager?.Dispose();
-            }
 
             _timeoutTimer?.Stop();
 
@@ -260,7 +252,6 @@ namespace Abot2.Crawler
         /// <inheritdoc />
         public virtual void Dispose()
         {
-            _threadManager?.Dispose();
             _scheduler?.Dispose();
             _pageRequester?.Dispose();
             _memoryManager?.Dispose();
@@ -352,9 +343,9 @@ namespace Abot2.Crawler
                 if (linksToScheduleCount > 0)
                 {
                     Log.Debug($"There are [{linksToScheduleCount}] links to schedule...");
-                    _threadManager.DoWork(async () => await ProcessPage(_scheduler.GetNext()));
+                    RunProcessPage(_scheduler.GetNext());
                 }
-                else if (!_threadManager.HasRunningThreads() && _processingPageCount < 1)//Ok that _processingPageCount could be a race condition, will be caught on the next loop iteration
+                else if (_processingPageCount < 1)//Ok that _processingPageCount could be a race condition, will be caught on the next loop iteration
                 {
                     Log.Debug("No links to schedule, no threads/tasks in progress...");
                     _crawlComplete = true;
@@ -366,6 +357,22 @@ namespace Abot2.Crawler
                     //Beware of issues here... https://github.com/sjdirect/abot/issues/203
                     await Task.Delay(2500).ConfigureAwait(false);
                 }
+            }
+        }
+
+        private async void RunProcessPage(PageToCrawl pageToCrawl)
+        {
+            try
+            {
+                await ProcessPage(pageToCrawl);
+            }
+            catch (OperationCanceledException)
+            {
+                Log.Debug("Thread cancelled.");
+            }
+            catch (Exception e)
+            {
+                Log.Error("Error occurred while running action: {0}", e);
             }
         }
 
@@ -447,7 +454,7 @@ namespace Abot2.Crawler
             Log.Debug("About to crawl page [{0}]", pageToCrawl.Uri.AbsoluteUri);
             FirePageCrawlStartingEvent(pageToCrawl);
 
-            if (pageToCrawl.IsRetry) { WaitMinimumRetryDelay(pageToCrawl); }
+            if (pageToCrawl.IsRetry) { await WaitMinimumRetryDelay(pageToCrawl); }
 
             pageToCrawl.LastRequest = DateTime.Now;
 
@@ -534,7 +541,6 @@ namespace Abot2.Crawler
                 }
 
                 _scheduler.Clear();
-                _threadManager.AbortAll();
                 _scheduler.Clear();//to be sure nothing was scheduled since first call to clear()
 
                 //Set all events to null so no more events are fired
@@ -855,13 +861,13 @@ namespace Abot2.Crawler
             }
         }
 
-        protected virtual void WaitMinimumRetryDelay(PageToCrawl pageToCrawl)
+        protected virtual Task WaitMinimumRetryDelay(PageToCrawl pageToCrawl)
         {
             //TODO No unit tests cover these lines
             if (pageToCrawl.LastRequest == null)
             {
                 Log.Warning("pageToCrawl.LastRequest value is null for Url:{0}. Cannot retry without this value.", pageToCrawl.Uri.AbsoluteUri);
-                return;
+                return Task.CompletedTask;
             }
 
             var milliSinceLastRequest = (DateTime.Now - pageToCrawl.LastRequest.Value).TotalMilliseconds;
@@ -873,7 +879,8 @@ namespace Abot2.Crawler
             }
             else
             {
-                if (!(milliSinceLastRequest < _crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds)) return;
+                if (!(milliSinceLastRequest < _crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds))
+                    return Task.CompletedTask;
                 milliToWait = _crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds - milliSinceLastRequest;
             }
 
@@ -883,9 +890,14 @@ namespace Abot2.Crawler
                 pageToCrawl.LastRequest,
                 pageToCrawl.LastRequest.Value.AddMilliseconds(_crawlContext.CrawlConfiguration.MinRetryDelayInMilliseconds));
 
-            //TODO Cannot use RateLimiter since it currently cannot handle dynamic sleep times so using Thread.Sleep in the meantime
             if (milliToWait > 0)
-                Thread.Sleep(TimeSpan.FromMilliseconds(milliToWait));
+            {
+                return Task.Delay(TimeSpan.FromMilliseconds(milliToWait));
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
         }
 
         /// <summary>

@@ -32,26 +32,25 @@ namespace Abot2.Crawler
         #region Constructors
 
         public PoliteWebCrawler()
-            : this(null, null, null, null, null, null, null, null, null)
+            : this(null, null, null, null, null, null, null, null)
         {
         }
 
         public PoliteWebCrawler(CrawlConfiguration crawlConfiguration)
-            : this(crawlConfiguration, null, null, null, null, null, null, null, null)
+            : this(crawlConfiguration, null, null, null, null, null, null, null)
         {
         }
 
         public PoliteWebCrawler(
             CrawlConfiguration crawlConfiguration,
             ICrawlDecisionMaker crawlDecisionMaker,
-            IThreadManager threadManager,
             IScheduler scheduler,
             IPageRequester pageRequester,
             IHtmlParser htmlParser,
             IMemoryManager memoryManager,
             IDomainRateLimiter domainRateLimiter,
             IRobotsDotTextFinder robotsDotTextFinder)
-            : base(crawlConfiguration, crawlDecisionMaker, threadManager, scheduler, pageRequester, htmlParser, memoryManager)
+            : base(crawlConfiguration, crawlDecisionMaker, scheduler, pageRequester, htmlParser, memoryManager)
         {
             _domainRateLimiter = domainRateLimiter ?? new DomainRateLimiter(_crawlContext.CrawlConfiguration.MinCrawlDelayPerDomainMilliSeconds);
             _robotsDotTextFinder = robotsDotTextFinder ?? new RobotsDotTextFinder(new PageRequester(_crawlContext.CrawlConfiguration, new WebContentExtractor()));
