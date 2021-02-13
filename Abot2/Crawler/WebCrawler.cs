@@ -926,7 +926,7 @@ namespace Abot2.Crawler
             else
             {
                 // For manual redirects, we need to look for the location header.
-                var location = crawledPage.HttpResponseMessage?.Headers?.Location?.AbsoluteUri;
+                var location = crawledPage.HttpResponseMessage?.Headers?.Location?.ToString();
 
                 // Check if the location is absolute. If not, create an absolute uri.
                 if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri))
