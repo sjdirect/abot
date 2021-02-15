@@ -237,15 +237,14 @@ Disallow: /category/");
         }
 
         [TestMethod]
-        public void IsUrlAllowed_QuerystringMatch_NotSupported_ReturnsTrue()
+        public void IsUrlAllowed_QuerystringMatch_NotSupported_ReturnsFalse()
         {
-            //IF this test starts failing that is a good thing, it means the robots impl now supports querystrings
             string userAgentString = _userAgentString;
             _unitUnderTest = new RobotsDotText(_rootUri, @"User-Agent: *
 Disallow: /?category=whatever
 Disallow: /?category=another&color=red");
 
-            Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "?category=whatever", userAgentString));
+            Assert.IsFalse(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "?category=whatever", userAgentString));
             Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri + "?category=another&blah=blah", userAgentString));
         }
 
