@@ -11,11 +11,8 @@ namespace Abot2.Tests.Unit.Core
     [TestClass]
     public abstract class HyperLinkParserTest
     {
-        const string HTTP_URI_STRING = "http://a.com/";
-        const string HTTPS_URI_STRING = "https://a.com/";
-
         HyperLinkParser _unitUnderTest;
-        Uri _uri = new Uri(HTTP_URI_STRING);
+        Uri _uri = new Uri("http://a.com/");
         CrawledPage _crawledPage;
 
         protected abstract HyperLinkParser GetInstance(bool isRespectMetaRobotsNoFollowEnabled, bool isRespectAnchorRelNoFollowEnabled, Func<string, string> cleanUrlDelegate, bool isRespectUrlNamedAnchorOrHashbangEnabled, bool isRespectHttpXRobotsTagHeaderNoFollow);
@@ -23,7 +20,12 @@ namespace Abot2.Tests.Unit.Core
         [TestInitialize]
         public void Init()
         {
-            _crawledPage = CreateCrawledPage(_uri);
+            _crawledPage = new CrawledPage(_uri);
+
+            _crawledPage.ParentUri = _uri;
+            _crawledPage.HttpRequestMessage = new HttpRequestMessage(HttpMethod.Get, _uri);
+            _crawledPage.HttpResponseMessage = new HttpResponseMessage();
+
             _unitUnderTest = GetInstance(false, false, null, false, false);
         }
 
@@ -253,89 +255,64 @@ namespace Abot2.Tests.Unit.Core
             Assert.AreEqual(0, result.Count());
         }
 
-        [DataTestMethod]
-        [
-            DataRow(
-                "//bbb.com/",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://bbb.com/aaa/a.html",
-                DisplayName = "Absolute base tag (deferred scheme, http)"
-            ),
-            DataRow(
-                "//bbb.com/",
-                HTTPS_URI_STRING,
-                "http://aaa.com/", "https://bbb.com/aaa/a.html",
-                DisplayName = "Absolute base tag (deferred scheme, https)"
-            ),
-            DataRow(
-                "http://bbb.com/",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://bbb.com/aaa/a.html",
-                DisplayName = "Terminated absolute base tag (no path)"
-            ),
-            DataRow(
-                "http://bbb.com",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://bbb.com/aaa/a.html",
-                DisplayName = "Unterminated absolute base tag (no path)"
-            ),
-            DataRow(
-                "http://bbb.com/images/",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://bbb.com/aaa/a.html", "http://bbb.com/images/aaa/a.html",
-                DisplayName = "Terminated absolute base tag (with path)"
-            ),
-            DataRow(
-                "http://bbb.com/images",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://bbb.com/aaa/a.html",
-                DisplayName = "Unterminated absolute base tag (with path)"
-            ),
-            DataRow(
-                "/images/",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://a.com/aaa/a.html", "http://a.com/images/aaa/a.html",
-                DisplayName = "Terminated root-relative base tag"
-            ),
-            DataRow(
-                "/images",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://a.com/aaa/a.html",
-                DisplayName = "Unterminated root-relative base tag"
-            ),
-            DataRow(
-                "images/",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://a.com/aaa/a.html", "http://a.com/images/aaa/a.html",
-                DisplayName = "Terminated relative base tag"
-            ),
-            DataRow(
-                "images",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://a.com/aaa/a.html",
-                DisplayName = "Unterminated relative base tag"
-            ),
-            DataRow(
-                "////images/",
-                HTTP_URI_STRING,
-                "http://aaa.com/", "http://a.com/aaa/a.html",
-                DisplayName = "Invalid base tag"
-            )
-        ]
-        public void GetLinks_BaseTagPresent_ReturnsExpectedLinks(string baseTagHref, params string[] moreData)
+        [TestMethod]
+        public void GetLinks_ValidBaseTagPresent_ReturnsRelativeLinksUsingBase()
         {
-            var parentPageUri = new Uri(moreData[0]);
-            List<string> expectedLinks = moreData.Skip(1).ToList();
+            _crawledPage.Content.Text = "<base href=\"http://bbb.com\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
 
-            _crawledPage = CreateCrawledPage(parentPageUri);
-            _crawledPage.Content.Text = $"<base href=\"{baseTagHref}\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
-            List<string> actualLinks = _unitUnderTest.GetLinks(_crawledPage).Select(x => x.HrefValue.AbsoluteUri).ToList();
+            var result = _unitUnderTest.GetLinks(_crawledPage);
 
-            Assert.AreEqual(expectedLinks.Count, actualLinks.Count, "Unexpected amount of links returned");
-            for (int i = 0; i < expectedLinks.Count; i++)
-            {
-                Assert.AreEqual(expectedLinks[i], actualLinks[i]);
-            }
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://bbb.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_RelativeBaseTagPresent_ReturnsRelativeLinksPageUri()
+        {
+            _crawledPage.Content.Text = "<base href=\"/images\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_InvalidBaseTagPresent_ReturnsRelativeLinksPageUri()
+        {
+            _crawledPage.Content.Text = "<base href=\"http:http://http:\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_BaseTagNoScheme_ParentPageHttp_AddsParentPageScheme()
+        {
+            _crawledPage.Uri = new Uri("http://aaa.com/");//http
+            _crawledPage.Content.Text = "<base href=\"//aaa.com\"><a href=\"/aaa/a.html\" ></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("http://aaa.com/aaa/a.html", result.ElementAt(0).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_BaseTagNoScheme_ParentPageHttps_AddsParentPageScheme()
+        {
+            _crawledPage.Uri = new Uri("https://aaa.com/");//https
+            _crawledPage.Content.Text = "<base href=\"//aaa.com\"><a href=\"/aaa/a.html\" ></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("https://aaa.com/aaa/a.html", result.ElementAt(0).HrefValue.AbsoluteUri);
         }
 
         [TestMethod]
@@ -594,16 +571,6 @@ namespace Abot2.Tests.Unit.Core
             Assert.AreEqual(2, result.Count());
             Assert.AreEqual("http://a.com/page2", result.ElementAt(0).HrefValue.AbsoluteUri);
             Assert.AreEqual("http://a.com/page1", result.ElementAt(1).HrefValue.AbsoluteUri);
-        }
-
-        private CrawledPage CreateCrawledPage(Uri uri)
-        {
-            var crawledPage = new CrawledPage(uri);
-            crawledPage.ParentUri = uri;
-            crawledPage.HttpRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-            crawledPage.HttpResponseMessage = new HttpResponseMessage();
-
-            return crawledPage;
         }
     }
 }
