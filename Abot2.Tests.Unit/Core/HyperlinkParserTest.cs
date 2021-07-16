@@ -258,7 +258,7 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void GetLinks_ValidBaseTagPresent_ReturnsRelativeLinksUsingBase()
         {
-            _crawledPage.Content.Text = "<base href=\"http://bbb.com\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
+            _crawledPage.Content.Text = "<base href=\"http://bbb.com\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
 
             var result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -270,7 +270,7 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void GetLinks_RelativeBaseTagPresent_ReturnsRelativeLinksPageUri()
         {
-            _crawledPage.Content.Text = "<base href=\"/images\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
+            _crawledPage.Content.Text = "<base href=\"/images\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
 
             var result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -282,7 +282,7 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void GetLinks_InvalidBaseTagPresent_ReturnsRelativeLinksPageUri()
         {
-            _crawledPage.Content.Text = "<base href=\"http:http://http:\"><a href=\"http://aaa.com/\" ></a><a href=\"/aaa/a.html\" /></a>";
+            _crawledPage.Content.Text = "<base href=\"////images/\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
 
             var result = _unitUnderTest.GetLinks(_crawledPage);
 
@@ -295,24 +295,101 @@ namespace Abot2.Tests.Unit.Core
         public void GetLinks_BaseTagNoScheme_ParentPageHttp_AddsParentPageScheme()
         {
             _crawledPage.Uri = new Uri("http://aaa.com/");//http
-            _crawledPage.Content.Text = "<base href=\"//aaa.com\"><a href=\"/aaa/a.html\" ></a>";
+            _crawledPage.Content.Text = "<base href=\"//aaa.com\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
 
             var result = _unitUnderTest.GetLinks(_crawledPage);
 
-            Assert.AreEqual(1, result.Count());
-            Assert.AreEqual("http://aaa.com/aaa/a.html", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://aaa.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
         }
 
         [TestMethod]
         public void GetLinks_BaseTagNoScheme_ParentPageHttps_AddsParentPageScheme()
         {
             _crawledPage.Uri = new Uri("https://aaa.com/");//https
-            _crawledPage.Content.Text = "<base href=\"//aaa.com\"><a href=\"/aaa/a.html\" ></a>";
+            _crawledPage.Content.Text = "<base href=\"//aaa.com\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
 
             var result = _unitUnderTest.GetLinks(_crawledPage);
 
-            Assert.AreEqual(1, result.Count());
-            Assert.AreEqual("https://aaa.com/aaa/a.html", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("https://aaa.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_TerminatedAbsoluteBaseTagWithoutPath_ReturnsRelativeLinksUsingBase()
+        {
+            _crawledPage.Content.Text = "<base href=\"http://bbb.com/\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://bbb.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_TerminatedAbsoluteBaseTagWithPath_ReturnsRelativeLinksUsingBase()
+        {
+            _crawledPage.Content.Text = "<base href=\"http://bbb.com/images/\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(3, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://bbb.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://bbb.com/images/aaa/a.html", result.ElementAt(2).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_UnterminatedAbsoluteBaseTagWithPath_ReturnsRelativeLinksUsingBaseWithoutPath()
+        {
+            _crawledPage.Content.Text = "<base href=\"http://bbb.com/images\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://bbb.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_TerminatedRootRelativeBaseTag_ReturnsRelativeLinksUsingPageUriAndBase()
+        {
+            _crawledPage.Content.Text = "<base href=\"/images/\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(3, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://a.com/images/aaa/a.html", result.ElementAt(2).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_TerminatedRelativeBaseTag_ReturnsRelativeLinksUsingPageUriAndBase()
+        {
+            _crawledPage.Content.Text = "<base href=\"images/\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(3, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://a.com/images/aaa/a.html", result.ElementAt(2).HrefValue.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void GetLinks_UnterminatedRelativeBaseTag_ReturnsRelativeLinksUsingPageUri()
+        {
+            _crawledPage.Content.Text = "<base href=\"images\"><a href=\"http://aaa.com/\"></a><a href=\"/aaa/a.html\"></a><a href=\"aaa/a.html\"></a>";
+
+            var result = _unitUnderTest.GetLinks(_crawledPage);
+
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("http://aaa.com/", result.ElementAt(0).HrefValue.AbsoluteUri);
+            Assert.AreEqual("http://a.com/aaa/a.html", result.ElementAt(1).HrefValue.AbsoluteUri);
         }
 
         [TestMethod]
