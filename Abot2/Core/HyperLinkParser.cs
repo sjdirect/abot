@@ -85,15 +85,13 @@ namespace Abot2.Core
             {
                 if (baseHref.StartsWith("//"))
                     baseHref = crawledPage.Uri.Scheme + ":" + baseHref;
+                else if (baseHref.StartsWith("/"))
+                    // '/' points to the root of the filesystem when running on Linux, and is as such
+                    // considered an absolute URI
+                    baseHref = uriToUse.GetLeftPart(UriPartial.Authority) + baseHref;
 
-                try
-                {
-                    uriToUse = new Uri(baseHref);
-                }
-                catch
-                {
-                    // ignored
-                }
+                if (Uri.TryCreate(uriToUse, baseHref, out Uri baseUri))
+                    uriToUse = baseUri;
             }
 
             foreach (var rawLink in rawLinks)
