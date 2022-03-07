@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0.0.8</Version>
+    <Version>2.0.71</Version>
     <PackageId>Abot</PackageId>
     <Authors>Steven Jones</Authors>
     <Company>SHARPDEV LLC</Company>

@@ -17,6 +17,7 @@ namespace Abot2.Poco
             IsHttpRequestAutoRedirectsEnabled = true;
             MaxCrawlDepth = 100;
             HttpServicePointConnectionLimit = 200;
+            ReUseHttpClientInstance = false;
             HttpRequestTimeoutInSeconds = 15;
             IsSslCertificateValidationEnabled = false;
         }
@@ -97,6 +98,14 @@ namespace Abot2.Poco
         /// If zero, this setting has no effect.
         /// </summary>
         public int HttpServicePointConnectionLimit { get; set; }
+
+        /// <summary>
+        /// Directs classes that use HttpClient to re-use instances when possible rather than creating new HttpClient() instances.
+        /// If this flag is not set, you risk keeping a large number of inactive connections around. This is particularly required
+        /// for resource constrained situations like cloud hosted workers that limit connection counts.
+        /// See: https://docs.microsoft.com/en-us/azure/architecture/antipatterns/improper-instantiation/
+        /// </summary>
+        public bool ReUseHttpClientInstance { get; set; }
 
         /// <summary>
         /// Gets or sets the time-out value in seconds for the System.Net.HttpWebRequest.GetResponse() and System.Net.HttpWebRequest.GetRequestStream() methods.

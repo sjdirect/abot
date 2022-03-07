@@ -253,6 +253,10 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public async Task MakeRequestAsync_RealCall_ReturnsExpectedCrawledPageObject()
         {
+            // Clear re-use settings so the new "real" requester is
+            // used, not the mock.
+
+            PageRequester.DisposeReusedObjects();
             //Arrange
             var unitUnderTest = new PageRequester(
                 new CrawlConfiguration()
@@ -280,5 +284,5 @@ namespace Abot2.Tests.Unit.Core
 
             unitUnderTest.Dispose();
         }
-    }
+   }
 }

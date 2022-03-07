@@ -27,6 +27,13 @@ namespace Abot2.Core
         private readonly CrawlConfiguration _config;
         private readonly IWebContentExtractor _contentExtractor;
         private readonly CookieContainer _cookieContainer = new CookieContainer();
+
+        // State used when re-using HttpClient instances
+        private static bool? _reuseHttpClient = null;
+        private static HttpClient _savedHttpClient = null;
+        private static HttpClientHandler _savedHttpHandler = null;
+        private static object _syncObject = new object();
+
         private HttpClientHandler _httpClientHandler;
         private HttpClient _httpClient;
 
@@ -34,12 +41,40 @@ namespace Abot2.Core
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
 
+            if (_reuseHttpClient.HasValue)
+            {
+                if (config.ReUseHttpClientInstance != _reuseHttpClient.Value)
+                    throw new ArgumentException("Setting reuse of HttpClient instances is global for all PageRequests and cannot be updated after the initial configuration has been set.", nameof(config));
+            }
+            else
+            {
+                _reuseHttpClient = config.ReUseHttpClientInstance;
+            }
+
             _contentExtractor = contentExtractor ?? throw new ArgumentNullException(nameof(contentExtractor));
 
             if (_config.HttpServicePointConnectionLimit > 0)
                 ServicePointManager.DefaultConnectionLimit = _config.HttpServicePointConnectionLimit;
 
             _httpClient = httpClient;
+
+            if (_reuseHttpClient.Value && httpClient != null)
+            {
+                if (_savedHttpClient == null)
+                {
+                    // If this path is taken, we cannot know the httpClientHandler used to construct the given httpClient. There are no public accessors for it
+                    _savedHttpHandler = null;
+                }
+
+                if (_savedHttpClient?.Equals(_httpClient) == false)
+                {
+                    // Note: We don't own the passed in httpClient but it should likely be disposed. This may leak the old httpclient for a while 
+                    // since the caller that owned it is unaware we are no longer referencing it.
+                    Log.Debug($"Reuse of HttpClient is enabled, but a different instance was passed into a PageRequester constructor. Param: {nameof(httpClient)}");
+                }
+
+                _savedHttpClient = httpClient;
+            }
         }
 
         /// <summary>
@@ -58,10 +93,15 @@ namespace Abot2.Core
             if (uri == null)
                 throw new ArgumentNullException(nameof(uri));
 
-            if (_httpClient == null)
+            // If other threads are running page requests we must protect this initialization
+            lock (_syncObject)
             {
-                _httpClientHandler = BuildHttpClientHandler(uri);
-                _httpClient = BuildHttpClient(_httpClientHandler);
+                if (_httpClient == null)
+                {
+                    // If user passed in a preconstructed HttpClient to PageRequester constructor, this _httpClientHandler is NOT the one being used by _httpClient - it's unused.
+                    _httpClientHandler = BuildHttpClientHandler(uri);
+                    _httpClient = BuildHttpClient(_httpClientHandler);
+                }
             }
 
             var crawledPage = new CrawledPage(uri);
@@ -128,8 +168,28 @@ namespace Abot2.Core
 
         public void Dispose()
         {
-            _httpClient?.Dispose();
-            _httpClientHandler?.Dispose();
+            // When re-using httpclient instances, just clear the instance refs, do not dispose
+            if (!_reuseHttpClient.Value)
+            {
+                _httpClient?.Dispose();
+                _httpClientHandler?.Dispose();
+            }
+            _httpClient = null;
+            _httpClientHandler = null;
+        }
+
+        // If PageRequester has re-used an httpclient, these should be cleaned up
+        // If you enable re-use and you do not call this method, your HttpClient will leak
+        public static void DisposeReusedObjects()
+        {
+            if (_reuseHttpClient.HasValue)
+            {
+                _reuseHttpClient = null;
+                _savedHttpHandler?.Dispose();
+                _savedHttpClient?.Dispose();
+                _savedHttpHandler = null;
+                _savedHttpClient = null;
+            }
         }
         
         
@@ -144,6 +204,13 @@ namespace Abot2.Core
         
         protected virtual HttpClient BuildHttpClient(HttpClientHandler clientHandler)
         {
+            // Return the shared httpclient instance if re-using
+            if (_reuseHttpClient.Value)
+            {
+                if (_savedHttpClient != null)
+                    return _savedHttpClient;
+            }
+
             var httpClient = new HttpClient(clientHandler);
 
             httpClient.DefaultRequestHeaders.Add("User-Agent", _config.UserAgentString);
@@ -158,6 +225,9 @@ namespace Abot2.Core
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Basic " + credentials);
             }
 
+            // This instance will be the one to be be shared (when re-use enabled)
+            _savedHttpClient = httpClient;
+
             return httpClient;
         }
 
@@ -165,6 +235,14 @@ namespace Abot2.Core
         {
             if(rootUri == null)
                 throw new ArgumentNullException(nameof(rootUri));
+
+            // If reusing connections, only build new handler if we are building the shared HttpClient instance
+            if (_reuseHttpClient.Value)
+            {
+                // If we already have existing client, no handler is required
+                if (_savedHttpHandler != null)
+                    return _savedHttpHandler;
+            }
 
             var httpClientHandler = new HttpClientHandler
             {
@@ -199,6 +277,7 @@ namespace Abot2.Core
                 httpClientHandler.Credentials = cache;
             }
 
+            _savedHttpHandler = httpClientHandler;
             return httpClientHandler;
         }
 
