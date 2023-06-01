@@ -929,7 +929,7 @@ namespace Abot2.Crawler
                 var location = crawledPage.HttpResponseMessage?.Headers?.Location?.ToString();
 
                 // Check if the location is absolute. If not, create an absolute uri.
-                if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri))
+                if (!Uri.TryCreate(location, UriKind.Absolute, out locationUri) || string.IsNullOrWhiteSpace(locationUri.Authority))
                 {
                     var baseUri = new Uri(crawledPage.Uri.GetLeftPart(UriPartial.Authority));
                     locationUri = new Uri(baseUri, location);
