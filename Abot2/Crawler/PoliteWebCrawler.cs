@@ -1,12 +1,11 @@
 ﻿using Abot2.Core;
 using Abot2.Poco;
 using System;
-using System.Net.Http;
-using Robots;
 using Abot2.Util;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
+using Robots;
 
 namespace Abot2.Crawler
 {

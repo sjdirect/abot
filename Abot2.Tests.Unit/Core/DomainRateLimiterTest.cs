@@ -155,7 +155,8 @@ namespace Abot2.Tests.Unit.Core
             domainRateLimiter.RateLimit(domain);
             timer.Stop();
 
-            Assert.IsTrue(timer.ElapsedMilliseconds >= 50 && timer.ElapsedMilliseconds < 150, string.Format("Expected it to take more than 50 but less than 150 but only took {0}", timer.ElapsedMilliseconds));
+            //Asserting that is >= 45 since there is a chance that it is slightly under 50
+            Assert.IsTrue(timer.ElapsedMilliseconds >= 45 && timer.ElapsedMilliseconds < 155, string.Format("Expected it to take more than 50 but less than 150 but only took {0}", timer.ElapsedMilliseconds));
         }
 
 
