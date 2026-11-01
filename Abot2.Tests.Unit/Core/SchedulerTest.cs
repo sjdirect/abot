@@ -46,11 +46,10 @@ namespace Abot2.Tests.Unit.Core
 
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Add_NullPage()
         {
             PageToCrawl nullPage = null;
-            _unitUnderTest.Add(nullPage);
+            Assert.ThrowsExactly<ArgumentNullException>(() => _unitUnderTest.Add(nullPage));
         }
 
         [TestMethod]
@@ -100,11 +99,10 @@ namespace Abot2.Tests.Unit.Core
 
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Add_NullPages()
         {
             IEnumerable<PageToCrawl> nullPages = null;
-            _unitUnderTest.Add(nullPages);
+            Assert.ThrowsExactly<ArgumentNullException>(() => _unitUnderTest.Add(nullPages));
         }
 
         [TestMethod]
@@ -246,5 +244,29 @@ namespace Abot2.Tests.Unit.Core
 
         //    //Assert.AreEqual(0, _unitUnderTest.Count);
         //}
+
+        [TestMethod]
+        public void Dispose_DoesNotDisposeRepositoriesPassedIn()
+        {
+            _unitUnderTest.Dispose();
+
+            _fakeCrawledUrlRepo.Verify(f => f.Dispose(), Times.Never);
+            _fakePagesToCrawlRepo.Verify(f => f.Dispose(), Times.Never);
+        }
+
+        [TestMethod]
+        public void Dispose_ThenGetNext_ThrowsObjectDisposedException()
+        {
+            _unitUnderTest.Dispose();
+
+            Assert.ThrowsExactly<ObjectDisposedException>(() => _unitUnderTest.GetNext());
+        }
+
+        [TestMethod]
+        public void Dispose_CalledTwice_DoesNotThrow()
+        {
+            _unitUnderTest.Dispose();
+            _unitUnderTest.Dispose();
+        }
     }
 }

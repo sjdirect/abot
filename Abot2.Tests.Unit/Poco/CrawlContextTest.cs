@@ -11,13 +11,13 @@ namespace Abot2.Tests.Unit.Poco
         public void Constructor_ValidUri_CreatesInstance()
         {
             var unitUnderTest = new CrawlContext();
-            Assert.AreEqual(null, unitUnderTest.RootUri);
+            Assert.IsNull(unitUnderTest.RootUri);
             Assert.AreEqual(0, unitUnderTest.CrawledCount);
             Assert.IsNotNull(unitUnderTest.CrawlCountByDomain);
-            Assert.AreEqual(0, unitUnderTest.CrawlCountByDomain.Count);
+            Assert.IsEmpty(unitUnderTest.CrawlCountByDomain);
             Assert.IsNull(unitUnderTest.CrawlConfiguration);
             Assert.IsNotNull(unitUnderTest.CrawlBag);
-            Assert.AreEqual(false, unitUnderTest.IsCrawlStopRequested);
+            Assert.IsFalse(unitUnderTest.IsCrawlStopRequested);
             Assert.IsNotNull(unitUnderTest.CancellationTokenSource);
         }
 

@@ -10,7 +10,7 @@ namespace Abot2.Tests.Unit.Poco
         public void Constructor_ValidUri_CreatesInstance()
         {
             var unitUnderTest = new CrawlDecision();
-            Assert.AreEqual(false, unitUnderTest.Allow);
+            Assert.IsFalse(unitUnderTest.Allow);
             Assert.AreEqual("", unitUnderTest.Reason);
             Assert.IsFalse(unitUnderTest.ShouldHardStopCrawl);
             Assert.IsFalse(unitUnderTest.ShouldStopCrawl);

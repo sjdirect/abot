@@ -12,10 +12,10 @@ namespace Abot2.Tests.Unit.Poco
         {
             var unitUnderTest = new CrawlResult();
             Assert.AreEqual(default(TimeSpan), unitUnderTest.Elapsed);
-            Assert.AreEqual(null, unitUnderTest.ErrorException);
-            Assert.AreEqual(false, unitUnderTest.ErrorOccurred);
-            Assert.AreEqual(null, unitUnderTest.RootUri);
-            Assert.AreEqual(null, unitUnderTest.CrawlContext);
+            Assert.IsNull(unitUnderTest.ErrorException);
+            Assert.IsFalse(unitUnderTest.ErrorOccurred);
+            Assert.IsNull(unitUnderTest.RootUri);
+            Assert.IsNull(unitUnderTest.CrawlContext);
         }
 
         [TestMethod]

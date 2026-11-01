@@ -1,6 +1,4 @@
 ﻿using Abot2.Core;
-using Abot2.Poco;
-using Moq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -49,15 +47,13 @@ Sitemap: http://b.com/sitemap.xml
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_NullRootUri() => new RobotsDotText(null, _robotsContent);
+        public void Constructor_NullRootUri() => Assert.ThrowsExactly<ArgumentNullException>(() => new RobotsDotText(null, _robotsContent));
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_NullContent()
         {
             string nullContent = null;
-            _unitUnderTest = new RobotsDotText(_rootUri, nullContent);
+            Assert.ThrowsExactly<ArgumentNullException>(() => _unitUnderTest = new RobotsDotText(_rootUri, nullContent));
         }
 
         [TestMethod]
@@ -160,8 +156,7 @@ Sitemap: http://b.com/sitemap.xml
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void IsUrlAllowed_NullRobotsContent() => new RobotsDotText(_rootUri, null);
+        public void IsUrlAllowed_NullRobotsContent() => Assert.ThrowsExactly<ArgumentNullException>(() => new RobotsDotText(_rootUri, null));
         
 
         [TestMethod]
@@ -225,7 +220,7 @@ Disallow: /?category=another&color=red");
             Assert.IsTrue(_unitUnderTest.IsUrlAllowed(_rootUri.AbsoluteUri, userAgentString));
         }
 
-        [TestMethod, Ignore("This is a bug and needs to be fixed")]
+        [TestMethod]
         public void IsUrlAllowed_QuerystringOnRoot2_ReturnsTrue()
         {
             string userAgentString = _userAgentString;

@@ -15,17 +15,29 @@ namespace Abot2.Core
 
         public bool Contains(Uri uri)
         {
-            return _urlRepository.ContainsKey(uri.AbsoluteUri);
+            return GetRepository().ContainsKey(uri.AbsoluteUri);
         }
 
         public bool AddIfNew(Uri uri)
         {
-            return _urlRepository.TryAdd(uri.AbsoluteUri, 0);
+            return GetRepository().TryAdd(uri.AbsoluteUri, 0);
         }
 
-        public virtual void Dispose()
+        public void Dispose()
         {
-            _urlRepository = null;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                _urlRepository = null;
+        }
+
+        private ConcurrentDictionary<string, byte> GetRepository()
+        {
+            return _urlRepository ?? throw new ObjectDisposedException(GetType().FullName);
         }
     }
 }

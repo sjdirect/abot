@@ -13,6 +13,9 @@ namespace Abot2.Tests.Unit.Core
     [TestClass]
     public class CrawlDecisionMakerTest
     {
+        //The decision maker never reads the crawl start date, so any fixed value will do
+        static readonly DateTime CrawlStartDate = new DateTime(2026, 1, 1, 12, 0, 0);
+
         CrawlDecisionMaker _unitUnderTest;
         CrawlContext _crawlContext;
         CrawledPage _validCrawledPage;
@@ -56,7 +59,7 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void ShouldCrawlPage_NonDuplicate_ReturnsTrue()
         {
-            _crawlContext.CrawlStartDate = DateTime.Now;
+            _crawlContext.CrawlStartDate = CrawlStartDate;
 
             var result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
@@ -156,7 +159,7 @@ namespace Abot2.Tests.Unit.Core
         [TestMethod]
         public void ShouldCrawlPage_IsExternalPageCrawlingEnabledFalse_PageIsExternal_ReturnsFalse()
         {
-            _crawlContext.CrawlStartDate = DateTime.Now.AddSeconds(-100);
+            _crawlContext.CrawlStartDate = CrawlStartDate.AddSeconds(-100);
             _crawlContext.CrawlConfiguration.CrawlTimeoutSeconds = 0;
             var result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
@@ -175,7 +178,7 @@ namespace Abot2.Tests.Unit.Core
         public void ShouldCrawlPage_IsExternalPageCrawlingEnabledTrue_PageIsExternal_ReturnsTrue()
         {
             _crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled = true;
-            _crawlContext.CrawlStartDate = DateTime.Now;
+            _crawlContext.CrawlStartDate = CrawlStartDate;
 
             var result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
@@ -194,7 +197,7 @@ namespace Abot2.Tests.Unit.Core
         public void ShouldCrawlPage_IsExternalPageCrawlingEnabledFalse_PageIsInternal_ReturnsTrue()
         {
             _crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled = false;
-            _crawlContext.CrawlStartDate = DateTime.Now;
+            _crawlContext.CrawlStartDate = CrawlStartDate;
 
             var result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
@@ -213,7 +216,7 @@ namespace Abot2.Tests.Unit.Core
         public void ShouldCrawlPage_IsExternalPageCrawlingEnabledTrue_PageIsInternal_ReturnsTrue()
         {
             _crawlContext.CrawlConfiguration.IsExternalPageCrawlingEnabled = true;
-            _crawlContext.CrawlStartDate = DateTime.Now;
+            _crawlContext.CrawlStartDate = CrawlStartDate;
 
             var result = _unitUnderTest.ShouldCrawlPage(
                 new PageToCrawl(new Uri("http://a.com/"))
@@ -236,7 +239,7 @@ namespace Abot2.Tests.Unit.Core
             var countByDomain = new ConcurrentDictionary<string,int>();
             countByDomain.TryAdd(uri.Authority, 100);
 
-            _crawlContext.CrawlStartDate = DateTime.Now;
+            _crawlContext.CrawlStartDate = CrawlStartDate;
             _crawlContext.CrawlCountByDomain = countByDomain;
             _crawlContext.CrawlConfiguration.MaxPagesToCrawlPerDomain = 100;
 
@@ -266,7 +269,7 @@ namespace Abot2.Tests.Unit.Core
             var crawlContext = new CrawlContext
             {
                 CrawlConfiguration = config,
-                CrawlStartDate = DateTime.Now,
+                CrawlStartDate = CrawlStartDate,
                 CrawlCountByDomain = countByDomain
             };
 
@@ -481,7 +484,7 @@ namespace Abot2.Tests.Unit.Core
                         IsExternalPageLinksCrawlingEnabled = false
                     }
                 });
-            Assert.AreEqual(false, result.Allow);
+            Assert.IsFalse(result.Allow);
             Assert.AreEqual("Link is external", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -507,7 +510,7 @@ namespace Abot2.Tests.Unit.Core
                         IsExternalPageLinksCrawlingEnabled = true
                     }
                 });
-            Assert.AreEqual(true, result.Allow);
+            Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -533,7 +536,7 @@ namespace Abot2.Tests.Unit.Core
                         IsExternalPageLinksCrawlingEnabled = false
                     }
                 });
-            Assert.AreEqual(true, result.Allow);
+            Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -560,7 +563,7 @@ namespace Abot2.Tests.Unit.Core
                         MaxCrawlDepth = 2
                     }
                 });
-            Assert.AreEqual(false, result.Allow);
+            Assert.IsFalse(result.Allow);
             Assert.AreEqual("Crawl depth is above max", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -587,7 +590,7 @@ namespace Abot2.Tests.Unit.Core
                         MaxCrawlDepth = 2
                     }
                 });
-            Assert.AreEqual(false, result.Allow);
+            Assert.IsFalse(result.Allow);
             Assert.AreEqual("Crawl depth is above max", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -599,7 +602,7 @@ namespace Abot2.Tests.Unit.Core
         {
             var result = _unitUnderTest.ShouldDownloadPageContent(_validCrawledPage, _crawlContext);
 
-            Assert.AreEqual(true, result.Allow);
+            Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -609,7 +612,7 @@ namespace Abot2.Tests.Unit.Core
         public void ShouldDownloadPageContent_NullCrawledPage_ReturnsFalse()
         {
             var result = _unitUnderTest.ShouldDownloadPageContent(null, new CrawlContext());
-            Assert.AreEqual(false, result.Allow);
+            Assert.IsFalse(result.Allow);
             Assert.AreEqual("Null crawled page", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -638,7 +641,7 @@ namespace Abot2.Tests.Unit.Core
                 {
                     RootUri = new Uri("http://a.com/ ")
                 });
-            Assert.AreEqual(false, result.Allow);
+            Assert.IsFalse(result.Allow);
             Assert.AreEqual("Null HttpWebResponse", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -651,7 +654,7 @@ namespace Abot2.Tests.Unit.Core
 
             var result = _unitUnderTest.ShouldDownloadPageContent(_validCrawledPage, _crawlContext);
 
-            Assert.AreEqual(false, result.Allow);
+            Assert.IsFalse(result.Allow);
             Assert.AreEqual("HttpStatusCode is not 200", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -664,7 +667,7 @@ namespace Abot2.Tests.Unit.Core
 
             var result = _unitUnderTest.ShouldDownloadPageContent(_validCrawledPage, _crawlContext);
 
-            Assert.AreEqual(false, result.Allow);
+            Assert.IsFalse(result.Allow);
             Assert.AreEqual("Content type is not any of the following: text/html", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -678,7 +681,7 @@ namespace Abot2.Tests.Unit.Core
             _crawlContext.CrawlConfiguration.DownloadableContentTypes = "text/hmtl, ,    , application/pdf";
             var result = _unitUnderTest.ShouldDownloadPageContent(_validCrawledPage, _crawlContext);
 
-            Assert.AreEqual(false, result.Allow);
+            Assert.IsFalse(result.Allow);
             Assert.AreEqual("Content type is not any of the following: text/hmtl,application/pdf", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -696,7 +699,7 @@ namespace Abot2.Tests.Unit.Core
 
             var result = _unitUnderTest.ShouldDownloadPageContent(_validCrawledPage, _crawlContext);
 
-            Assert.AreEqual(true, result.Allow);
+            Assert.IsTrue(result.Allow);
             Assert.AreEqual("", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
@@ -716,8 +719,8 @@ namespace Abot2.Tests.Unit.Core
 
             Assert.IsFalse(result.Allow);
             //Assert.AreEqual("Page size of [1298] bytes is above the max allowable of [5] bytes", result.Reason); //This fluctuates depending on the .net version runtime installed
-            Assert.IsTrue(result.Reason.StartsWith("Page size of ["));
-            Assert.IsTrue(result.Reason.EndsWith("] bytes is above the max allowable of [5] bytes"));
+            Assert.StartsWith("Page size of [", result.Reason);
+            Assert.EndsWith("] bytes is above the max allowable of [5] bytes", result.Reason);
             Assert.IsFalse(result.ShouldHardStopCrawl);
             Assert.IsFalse(result.ShouldStopCrawl);
         }

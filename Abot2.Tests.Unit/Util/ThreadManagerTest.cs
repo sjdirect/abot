@@ -3,13 +3,19 @@ using System;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+//The thread managers are obsolete but still supported, so they keep their tests
+#pragma warning disable CS0618
+
 namespace Abot2.Tests.Unit.Util
 {
-    [TestClass]
+    //Tests wait on signals instead of sleeping: work that must stay running waits on a gate the test opens,
+    //and the thread manager under test reports each finished work item, so results never depend on timing.
     public abstract class ThreadManagerTest
     {
         IThreadManager _unitUnderTest;
         const int MAXTHREADS = 10;
+        public TestContext TestContext { get; set; }
+
         protected abstract IThreadManager GetInstance(int maxThreads);
 
         [TestInitialize]
@@ -33,37 +39,44 @@ namespace Abot2.Tests.Unit.Util
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void Constructor_OverMax_ThrowsException()
         {
-            GetInstance(101);
+            Assert.ThrowsExactly<ArgumentException>(() => GetInstance(101));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void Constructor_BelowMinimum()
         {
-            GetInstance(0);
+            Assert.ThrowsExactly<ArgumentException>(() => GetInstance(0));
         }
 
         [TestMethod]
         public void HasRunningThreads()
         {
-            //No threads should be running
-            Assert.IsFalse(_unitUnderTest.HasRunningThreads());
+            using (var workStarted = new ManualResetEventSlim())
+            using (var finishWork = new ManualResetEventSlim())
+            {
+                //No threads should be running
+                Assert.IsFalse(_unitUnderTest.HasRunningThreads());
 
-            //Add word to be run on a thread
-            _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(300));
-            System.Threading.Thread.Sleep(20);
+                //Add work to be run on a thread
+                _unitUnderTest.DoWork(() =>
+                {
+                    workStarted.Set();
+                    finishWork.Wait(TestContext.CancellationToken);
+                });
+                workStarted.Wait(TestContext.CancellationToken);
 
-            //Should have 1 running thread
-            Assert.IsTrue(_unitUnderTest.HasRunningThreads());
+                //Should have 1 running thread
+                Assert.IsTrue(_unitUnderTest.HasRunningThreads());
 
-            //Wait for the 1 running thread to finish
-            System.Threading.Thread.Sleep(400);
+                //Let the 1 running thread finish
+                finishWork.Set();
+                WaitForCompletedWork(1);
 
-            //Should have 0 threads running since the thread should have completed by now
-            Assert.IsFalse(_unitUnderTest.HasRunningThreads());
+                //Should have 0 threads running since the thread has completed
+                Assert.IsFalse(_unitUnderTest.HasRunningThreads());
+            }
         }
 
         [TestMethod]
@@ -71,18 +84,24 @@ namespace Abot2.Tests.Unit.Util
         {
             var count = 0;
 
-            for (var i = 0; i < MAXTHREADS; i++)
+            using (var finishWork = new ManualResetEventSlim())
             {
-                _unitUnderTest.DoWork(() =>
+                for (var i = 0; i < MAXTHREADS; i++)
                 {
-                    System.Threading.Thread.Sleep(5);
-                    Interlocked.Increment(ref count);
-                });
-            }
+                    _unitUnderTest.DoWork(() =>
+                    {
+                        finishWork.Wait(TestContext.CancellationToken);
+                        Interlocked.Increment(ref count);
+                    });
+                }
 
-            Assert.IsTrue(count < MAXTHREADS);
-            System.Threading.Thread.Sleep(80);//was 20 but had to bump it up or the TaskThreadManager would fail, its way slower
-            Assert.AreEqual(MAXTHREADS, count);
+                //DoWork returned while all the work is still waiting, so it runs asynchronously
+                Assert.AreEqual(0, count);
+
+                finishWork.Set();
+                WaitForCompletedWork(MAXTHREADS);
+                Assert.AreEqual(MAXTHREADS, count);
+            }
         }
 
         [TestMethod]
@@ -91,15 +110,10 @@ namespace Abot2.Tests.Unit.Util
             var count = 0;
             for (var i = 0; i < 2 * MAXTHREADS; i++)
             {
-                _unitUnderTest.DoWork(() =>
-                {
-                    System.Threading.Thread.Sleep(5);
-                    Interlocked.Increment(ref count);
-                });
+                _unitUnderTest.DoWork(() => Interlocked.Increment(ref count));
             }
 
-            //Assert.IsTrue(count < MAXTHREADS);//Manual has completed more then the thread count by the time it gets here
-            System.Threading.Thread.Sleep(80);//was 20 but had to bump it up or the TaskThreadManager would fail, its way slower
+            WaitForCompletedWork(2 * MAXTHREADS);
             Assert.AreEqual(2 * MAXTHREADS, count);
         }
 
@@ -111,30 +125,24 @@ namespace Abot2.Tests.Unit.Util
             var count = 0;
             for (var i = 0; i < MAXTHREADS; i++)
             {
-                _unitUnderTest.DoWork(() =>
-                {
-                    System.Threading.Thread.Sleep(5);
-                    Interlocked.Increment(ref count);
-                });
+                _unitUnderTest.DoWork(() => Interlocked.Increment(ref count));
             }
 
             Assert.AreEqual(MAXTHREADS, count);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void DoWork_ActionIsNull_ThrowsException()
         {
-            _unitUnderTest.DoWork(null);
+            Assert.ThrowsExactly<ArgumentNullException>(() => _unitUnderTest.DoWork(null));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void DoWork_CalledAfterAbortAll_ThrowsException()
         {
             _unitUnderTest.AbortAll();
 
-            _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(10));
+            Assert.ThrowsExactly<InvalidOperationException>(() => _unitUnderTest.DoWork(() => { }));
         }
 
         [TestMethod]
@@ -146,13 +154,82 @@ namespace Abot2.Tests.Unit.Util
         [TestMethod]
         public void Abort_SetsHasRunningThreadsToZero()
         {
-            for (var i = 0; i < 2 * MAXTHREADS; i++)
+            using (var workStarted = new CountdownEvent(MAXTHREADS))
+            using (var finishWork = new ManualResetEventSlim())
             {
-                _unitUnderTest.DoWork(() => System.Threading.Thread.Sleep(5));
-            }
+                for (var i = 0; i < MAXTHREADS; i++)
+                {
+                    _unitUnderTest.DoWork(() =>
+                    {
+                        workStarted.Signal();
+                        finishWork.Wait(TestContext.CancellationToken);
+                    });
+                }
 
-            _unitUnderTest.AbortAll();
-            Assert.IsFalse(_unitUnderTest.HasRunningThreads());
+                //Aborting cancels work that has not started yet, so make sure all of it is running
+                workStarted.Wait(TestContext.CancellationToken);
+                _unitUnderTest.AbortAll();
+                Assert.IsFalse(_unitUnderTest.HasRunningThreads());
+
+                finishWork.Set();
+                WaitForCompletedWork(MAXTHREADS);
+            }
+        }
+
+        [TestMethod]
+        public void DoWork_CalledAfterDispose_ThrowsObjectDisposedException()
+        {
+            _unitUnderTest.Dispose();
+
+            Assert.ThrowsExactly<ObjectDisposedException>(() => _unitUnderTest.DoWork(() => { }));
+        }
+
+        [TestMethod]
+        public void Dispose_CalledTwice_DoesNotThrow()
+        {
+            _unitUnderTest.Dispose();
+            _unitUnderTest.Dispose();
+        }
+
+        [TestMethod]
+        public void Dispose_WhileThreadsAreRunning_DoesNotThrow()
+        {
+            using (var workStarted = new CountdownEvent(MAXTHREADS))
+            using (var finishWork = new ManualResetEventSlim())
+            {
+                for (var i = 0; i < MAXTHREADS; i++)
+                {
+                    _unitUnderTest.DoWork(() =>
+                    {
+                        workStarted.Signal();
+                        finishWork.Wait(TestContext.CancellationToken);
+                    });
+                }
+
+                //Disposing cancels work that has not started yet, so make sure all of it is running
+                workStarted.Wait(TestContext.CancellationToken);
+                _unitUnderTest.Dispose();
+
+                //Let the running threads finish against the disposed instance
+                finishWork.Set();
+                WaitForCompletedWork(MAXTHREADS);
+            }
+        }
+
+        //Waits until the thread manager under test has finished the given number of work items, including its own bookkeeping
+        protected void WaitForCompletedWork(int count)
+        {
+            var completedWork = ((ICompletedWorkSignal)_unitUnderTest).CompletedWork;
+            for (var i = 0; i < count; i++)
+                completedWork.Wait(TestContext.CancellationToken);
+        }
+
+        /// <summary>
+        /// Implemented by the thread managers under test: released once for every work item they finish
+        /// </summary>
+        protected interface ICompletedWorkSignal
+        {
+            SemaphoreSlim CompletedWork { get; }
         }
     }
 }

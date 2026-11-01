@@ -9,32 +9,50 @@ namespace Abot2.Util
     /// <summary>
     /// A ThreadManager implementation that will use tpl Tasks to handle concurrency.
     /// </summary>
+    [Obsolete("Abot no longer uses thread managers: the crawler processes pages on its own async workers, limited by CrawlConfiguration.MaxConcurrentThreads. For your own work, use Task.Run with SemaphoreSlim.WaitAsync, or Parallel.ForEachAsync on .NET 6 and later.")]
     public class TaskThreadManager : ThreadManager
     {
-        readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        readonly CancellationTokenSource _cancellationTokenSource;
+        readonly bool _ownsCancellationTokenSource;
+        int _isTaskThreadManagerDisposed;
 
         public TaskThreadManager(int maxConcurrentTasks)
             :this(maxConcurrentTasks, null)
         {
         }
 
+        /// <param name="maxConcurrentTasks">Max number of tasks to run at the same time</param>
+        /// <param name="cancellationTokenSource">Cancelled by AbortAll() and Dispose(). Owned by the caller, who must dispose it; if null, an internal one is created and disposed with this instance.</param>
         public TaskThreadManager(int maxConcurrentTasks, CancellationTokenSource cancellationTokenSource)
             : base(maxConcurrentTasks)
         {
-            _cancellationTokenSource = cancellationTokenSource ?? _cancellationTokenSource;
+            _ownsCancellationTokenSource = cancellationTokenSource == null;
+            _cancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();
         }
 
         public override void AbortAll()
         {
-            _cancellationTokenSource.Cancel();
+            try
+            {
+                _cancellationTokenSource.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+                //Already disposed, either with this instance or by the caller that owns it, so there is nothing left to cancel
+            }
             base.AbortAll();
         }
 
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            base.Dispose();
-            if (!_cancellationTokenSource.IsCancellationRequested)
-                _cancellationTokenSource.Cancel();
+            if (Interlocked.Exchange(ref _isTaskThreadManagerDisposed, 1) != 0)
+                return;
+
+            //Cancels running tasks through AbortAll() before the token source is disposed
+            base.Dispose(disposing);
+
+            if (disposing && _ownsCancellationTokenSource)
+                _cancellationTokenSource.Dispose();
         }
 
         protected override void RunActionOnDedicatedThread(Action action)

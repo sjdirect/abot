@@ -1,8 +1,6 @@
 ﻿using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Abot2.Tests.Unit.Poco
 {
@@ -38,8 +36,8 @@ namespace Abot2.Tests.Unit.Poco
         [TestMethod]
         public void GetHashCode_ReturnsUriHashcode()
         {
-            Assert.AreEqual(yahoo1.HrefValue.GetHashCode(), yahoo1.GetHashCode());
-            Assert.AreEqual(yahoo3.HrefValue.GetHashCode(), yahoo3.GetHashCode());
+            Assert.AreEqual(yahoo1.HrefValue.AbsoluteUri.GetHashCode(), yahoo1.GetHashCode());
+            Assert.AreEqual(yahoo3.HrefValue.AbsoluteUri.GetHashCode(), yahoo3.GetHashCode());
         }
 
         [TestMethod]

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Abot2.Tests.Unit
 {
-    public class FakeHttpContent : HttpContent
+    internal class FakeHttpContent : HttpContent
     {
         public string Content { get; set; }
 

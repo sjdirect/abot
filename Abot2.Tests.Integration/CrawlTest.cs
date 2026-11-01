@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Abot2.Crawler;
 using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Serilog;
 
 namespace Abot2.Tests.Integration
 {
@@ -13,19 +12,27 @@ namespace Abot2.Tests.Integration
     public class CrawlTest : CrawlTestBase
     {
         public CrawlTest()
-            :base(new Uri("http://localhost.fiddler:1111/"), 25)
+            :base(SetupAssemblyInitializer.Site.BaseUri)
         {
 
         }
+
+        //The tests that do not test request timeouts have no request timeout instead of the crawler's 15 s,
+        //so a slow first request on a busy machine (cold start, mostly on .NET Framework) cannot fail them.
+        //Hangs are caught by the test timeout in testconfig.json.
+        const int NoCrawlerRequestTimeout = CrawlConfiguration.NoHttpRequestTimeout;
+
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public async Task Crawl_VerifyCrawlResultIsAsExpected()
         {
             var config = new CrawlConfiguration()
             {
-                IsExternalPageCrawlingEnabled = true
+                IsExternalPageCrawlingEnabled = true,
+                HttpRequestTimeoutInSeconds = NoCrawlerRequestTimeout
             };
-            await base.CrawlAndAssert(new PoliteWebCrawler(config));
+            await base.CrawlAndAssert(new PoliteWebCrawler(config), TestContext.CancellationToken);
         }
 
         [TestMethod]
@@ -34,15 +41,16 @@ namespace Abot2.Tests.Integration
             var configuration = new CrawlConfiguration
             {
                 IsExternalPageCrawlingEnabled = true,
-                MaxPagesToCrawl = 5
+                MaxPagesToCrawl = 5,
+                HttpRequestTimeoutInSeconds = NoCrawlerRequestTimeout
             };
 
             var pagesCrawledCount = 0;
 
-            var crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
-            crawler.PageCrawlCompleted += (a, b) => pagesCrawledCount++;
+            var crawler = new PoliteWebCrawler(configuration);
+            crawler.PageCrawlCompleted += (a, b) => Interlocked.Increment(ref pagesCrawledCount);
 
-            await crawler.CrawlAsync(new Uri("http://localhost.fiddler:1111/"));
+            await crawler.CrawlAsync(SetupAssemblyInitializer.Site.BaseUri, TestContext.CancellationToken);
 
             Assert.AreEqual(5, pagesCrawledCount);
         }
@@ -52,13 +60,14 @@ namespace Abot2.Tests.Integration
         {
             var configuration = new CrawlConfiguration();
             configuration.MaxPagesToCrawl = 25;
+            configuration.HttpRequestTimeoutInSeconds = NoCrawlerRequestTimeout;
 
             var pagesCrawledCount = 0;
 
-            var crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
-            crawler.PageCrawlCompleted += (a, b) => pagesCrawledCount++;
+            var crawler = new PoliteWebCrawler(configuration);
+            crawler.PageCrawlCompleted += (a, b) => Interlocked.Increment(ref pagesCrawledCount);
 
-            await crawler.CrawlAsync(new Uri("http://localhost.fiddler:1111/"));
+            await crawler.CrawlAsync(SetupAssemblyInitializer.Site.BaseUri, TestContext.CancellationToken);
 
             Assert.AreEqual(25, pagesCrawledCount);
         }
@@ -69,13 +78,14 @@ namespace Abot2.Tests.Integration
             var configuration = new CrawlConfiguration();
             configuration.MinCrawlDelayPerDomainMilliSeconds = 1000; //adding delay since it increases the chance of issues with abot crawling more than MaxPagesToCrawl.
             configuration.MaxPagesToCrawl = 5;
+            configuration.HttpRequestTimeoutInSeconds = NoCrawlerRequestTimeout;
 
             var pagesCrawledCount = 0;
 
-            var crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
-            crawler.PageCrawlCompleted += (a, b) => pagesCrawledCount++;
+            var crawler = new PoliteWebCrawler(configuration);
+            crawler.PageCrawlCompleted += (a, b) => Interlocked.Increment(ref pagesCrawledCount);
 
-            await crawler.CrawlAsync(new Uri("http://localhost.fiddler:1111/"));
+            await crawler.CrawlAsync(SetupAssemblyInitializer.Site.BaseUri, TestContext.CancellationToken);
 
             Assert.AreEqual(5, pagesCrawledCount);
         }
@@ -85,58 +95,86 @@ namespace Abot2.Tests.Integration
         {
             var configuration = new CrawlConfiguration();
             configuration.CrawlTimeoutSeconds = 2;
+            configuration.HttpRequestTimeoutInSeconds = NoCrawlerRequestTimeout;
 
             var pagesCrawledCount = 0;
 
-            var crawler = new PoliteWebCrawler(configuration, null, null, null, null, null, null, null, null);
-            crawler.PageCrawlCompleted += (a, b) => pagesCrawledCount++;
+            //The site holds every response until the crawl timeout has fired, so the crawl cannot get anywhere before it,
+            //however late the timeout fires, and finishes right after it
+            using (var site = await TestSite.StartHoldingResponsesAsync(TestContext.CancellationToken))
+            {
+                var crawler = new TimeoutNotifyingCrawler(configuration, site.ReleaseResponses);
+                crawler.PageCrawlCompleted += (a, b) => Interlocked.Increment(ref pagesCrawledCount);
 
-            var result = await crawler.CrawlAsync(new Uri("http://localhost.fiddler:1111/"));
+                var result = await crawler.CrawlAsync(site.BaseUri, TestContext.CancellationToken);
 
-            Assert.IsFalse(result.ErrorOccurred);
-            Assert.IsTrue(result.Elapsed.TotalSeconds < 8, "Took more than 8 seconds");
-            Assert.IsTrue(pagesCrawledCount < 2, "Crawled more than 2 pages");
+                Assert.IsFalse(result.ErrorOccurred);
+                Assert.IsTrue(result.CrawlContext.IsCrawlHardStopRequested, "The crawl timeout should have stopped the crawl");
+                Assert.IsLessThan(2, pagesCrawledCount, "Crawled more than 2 pages");
+            }
         }
 
         [TestMethod]
         public async Task Crawl_Synchronous_CancellationTokenCancelled_StopsCrawl()
         {
-            var cancellationTokenSource = new CancellationTokenSource();
-            var timer = new System.Timers.Timer(800);
-            timer.Elapsed += (o, e) =>
+            //A slow server: the first request is held, the crawl is cancelled while waiting for it, then the response arrives
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            using (var site = await TestSite.StartHoldingResponsesAsync(TestContext.CancellationToken))
+            using (var crawler = new PoliteWebCrawler())
             {
-                cancellationTokenSource.Cancel();
-                timer.Stop();
-                timer.Dispose();
-            };
-            timer.Start();
+                site.RequestReceived += uri =>
+                {
+                    cancellationTokenSource.Cancel();
+                    site.ReleaseResponses();
+                };
 
-            var crawler = new PoliteWebCrawler();
-            var result = await crawler.CrawlAsync(new Uri("http://localhost.fiddler:1111/"), cancellationTokenSource);
+                var result = await crawler.CrawlAsync(site.BaseUri, cancellationTokenSource.Token);
 
-            Assert.IsTrue(result.ErrorOccurred);
-            Assert.IsTrue(result.ErrorException is OperationCanceledException);
+                Assert.IsTrue(result.ErrorOccurred);
+                Assert.IsTrue(result.ErrorException is OperationCanceledException);
+            }
         }
 
         [TestMethod]
-        public void Crawl_Asynchronous_CancellationTokenCancelled_StopsCrawl()
+        public async Task Crawl_Asynchronous_CancellationTokenCancelled_StopsCrawl()
         {
-            var cancellationTokenSource = new CancellationTokenSource();
-            var timer = new System.Timers.Timer(800);
-            timer.Elapsed += (o, e) =>
+            //A slow server: the first request is held, the crawl is cancelled while waiting for it, then the response arrives
+            using (var cancellationTokenSource = new CancellationTokenSource())
+            using (var site = await TestSite.StartHoldingResponsesAsync(TestContext.CancellationToken))
+            using (var crawler = new PoliteWebCrawler())
             {
-                cancellationTokenSource.Cancel();
-                timer.Stop();
-                timer.Dispose();
-            };
-            timer.Start();
+                site.RequestReceived += uri =>
+                {
+                    cancellationTokenSource.Cancel();
+                    site.ReleaseResponses();
+                };
 
-            var crawler = new PoliteWebCrawler();
-            var task = Task.Factory.StartNew<CrawlResult>( () => crawler.CrawlAsync(new Uri("http://localhost.fiddler:1111/"), cancellationTokenSource).Result);
-            var result = task.Result;
+                //The crawl runs on another task, as when an application starts it in the background
+                var result = await Task.Run(() => crawler.CrawlAsync(site.BaseUri, cancellationTokenSource.Token), TestContext.CancellationToken);
 
-            Assert.IsTrue(result.ErrorOccurred);
-            Assert.IsTrue(result.ErrorException is OperationCanceledException);
+                Assert.IsTrue(result.ErrorOccurred);
+                Assert.IsTrue(result.ErrorException is OperationCanceledException);
+            }
+        }
+
+        [TestMethod]
+        public async Task Crawl_ServerDoesNotRespondInTime_PageReportsRequestTimeout()
+        {
+            var configuration = new CrawlConfiguration { HttpRequestTimeoutInSeconds = 1 };
+            CrawledPage crawledPage = null;
+
+            //A server that never answers while the crawl runs, so the request can only end by timing out
+            using (var site = await TestSite.StartHoldingResponsesAsync(TestContext.CancellationToken))
+            {
+                var crawler = new PoliteWebCrawler(configuration);
+                crawler.PageCrawlCompleted += (s, e) => crawledPage = e.CrawledPage;
+
+                await crawler.CrawlAsync(site.BaseUri, TestContext.CancellationToken);
+            }
+
+            Assert.IsNotNull(crawledPage);
+            Assert.IsNotNull(crawledPage.HttpRequestException);
+            Assert.StartsWith("Request timeout occurred", crawledPage.HttpRequestException.Message);
         }
 
         [TestMethod]
@@ -145,18 +183,20 @@ namespace Abot2.Tests.Integration
             var configuration = new CrawlConfiguration();
             configuration.MaxPagesToCrawl = 3;
             configuration.MinCrawlDelayPerDomainMilliSeconds = 1000; // 1 second * 2 pages = 2 (or more) seconds
+            configuration.HttpRequestTimeoutInSeconds = NoCrawlerRequestTimeout;
 
             var pagesCrawledCount = 0;
 
             var crawler = new PoliteWebCrawler(configuration);
-            crawler.PageCrawlCompleted += (a, b) => pagesCrawledCount++;
+            crawler.PageCrawlCompleted += (a, b) => Interlocked.Increment(ref pagesCrawledCount);
 
-            var uriToCrawl = new Uri("http://localhost.fiddler:1111/");
-            var start = DateTime.Now;
-            await crawler.CrawlAsync(uriToCrawl);
-            var elapsed = DateTime.Now - start;
+            var uriToCrawl = SetupAssemblyInitializer.Site.BaseUri;
+            //A guaranteed minimum: rate limiting really waits. Stopwatch, unlike DateTime.Now, cannot jump
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            await crawler.CrawlAsync(uriToCrawl, TestContext.CancellationToken);
+            timer.Stop();
 
-            Assert.IsTrue(elapsed.TotalMilliseconds > 2000);
+            Assert.IsGreaterThan(2000, timer.ElapsedMilliseconds);
             Assert.AreEqual(3, pagesCrawledCount);
         }
 
@@ -167,134 +207,34 @@ namespace Abot2.Tests.Integration
             {
                 MaxRetryCount = 3,
                 MinRetryDelayInMilliseconds = 2000,
-                IsExternalPageCrawlingEnabled = true
+                IsExternalPageCrawlingEnabled = true,
+                HttpRequestTimeoutInSeconds = NoCrawlerRequestTimeout
             };
 
-            await base.CrawlAndAssert(new PoliteWebCrawler(configuration));
+            await base.CrawlAndAssert(new PoliteWebCrawler(configuration), TestContext.CancellationToken);
         }
 
-        [TestMethod]
-        public async Task CrawlAsync_SlowLoadingSite_CrawlsAllPages_Zalahat()
+        private protected override List<PageResult> GetExpectedCrawlResult()
         {
-            await AssertSlowSiteIsCrawledAsExpected(25, new Uri("http://zalahat.com"));
+            return SetupAssemblyInitializer.Site.GetAllPages();
         }
 
-        [TestMethod, Ignore("Zalahat test above covers this test, just leaving in case the slow loading site crawl becomes an issue again")]
-        public async Task CrawlAsync_SlowLoadingSite_CrawlsAllPages_Gamble1x2()
+        //Calls back once the crawl timeout has hard-stopped the crawl
+        private class TimeoutNotifyingCrawler : PoliteWebCrawler
         {
-            await AssertSlowSiteIsCrawledAsExpected(5, new Uri("https://gamble1x2.com"));
-        }
+            readonly Action _onCrawlTimeout;
 
-        [TestMethod, Ignore("Zalahat test above covers this test, just leaving in case the slow loading site crawl becomes an issue again")]
-        public async Task CrawlAsync_SlowLoadingSite_CrawlsAllPages_Casinosms()
-        {
-            await AssertSlowSiteIsCrawledAsExpected(25, new Uri("https://casinosms.pl"));
-        }
-
-        [TestMethod, Ignore("Zalahat test above covers this test, just leaving in case the slow loading site crawl becomes an issue again")]
-        public async Task CrawlAsync_SlowLoadingSite_CrawlsAllPages_Centrodeapostas()
-        {
-            await AssertSlowSiteIsCrawledAsExpected(25, new Uri("https://centrodeapostas.com"));
-        }
-
-
-        protected override List<PageResult> GetExpectedCrawlResult()
-        {
-            var expectedCrawlResult = new List<PageResult>
+            public TimeoutNotifyingCrawler(CrawlConfiguration crawlConfiguration, Action onCrawlTimeout)
+                : base(crawlConfiguration)
             {
-                new PageResult { Url = "http://localhost.fiddler:1111/", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/PageGenerator/Generate?Status200Count=5&Status403Count=1&Status404Count=2&Status500Count=3&Status503Count=4&Page=1", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/PageGenerator/Generate?Status200Count=5&Status403Count=1&Status404Count=2&Status500Count=3&Status503Count=4&Page=3", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/PageGenerator/Generate?Status200Count=5&Status403Count=1&Status404Count=2&Status500Count=3&Status503Count=4&Page=2", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/PageGenerator/Generate?Status200Count=5&Status403Count=1&Status404Count=2&Status500Count=3&Status503Count=4&Page=4", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page1", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page3", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page2", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page4", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page5", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status403/Page1", HttpStatusCode = 403},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status404/Page2", HttpStatusCode = 404},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status404/Page1", HttpStatusCode = 404},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page1", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page3", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page2", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page2", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page1", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page12", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page11", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page3", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page4", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page13", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page14", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page15", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status403/Page3", HttpStatusCode = 403},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status404/Page5", HttpStatusCode = 404},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status404/Page6", HttpStatusCode = 404},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page7", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page8", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page6", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page9", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page9", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page7", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page12", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page10", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page11", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page8", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page9", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page10", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status403/Page2", HttpStatusCode = 403},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status404/Page3", HttpStatusCode = 404},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status404/Page4", HttpStatusCode = 404},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page4", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page5", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page16", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page6", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page6", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page5", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page17", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page18", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page19", HttpStatusCode = 200},
-                new PageResult { Url = "http://yahoo.com/", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page8", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status200/Page20", HttpStatusCode = 200},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page7", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status403/Page4", HttpStatusCode = 403},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status404/Page7", HttpStatusCode = 404},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page11", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page10", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status404/Page8", HttpStatusCode = 404},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page13", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status500/Page12", HttpStatusCode = 500},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page14", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page15", HttpStatusCode = 503},
-                new PageResult { Url = "http://localhost.fiddler:1111/HttpResponse/Status503/Page16", HttpStatusCode = 503},
-                new PageResult { Url = "http://zoogle.com/", HttpStatusCode = 200}
-            };
+                _onCrawlTimeout = onCrawlTimeout;
+            }
 
-            return expectedCrawlResult;
-        }
-
-        private async Task AssertSlowSiteIsCrawledAsExpected(int maxPagesToCrawl, Uri uri)
-        {
-            var configuration = new CrawlConfiguration
+            protected override void HandleCrawlTimeout(object sender, System.Timers.ElapsedEventArgs e)
             {
-                IsExternalPageCrawlingEnabled = false,
-                MaxPagesToCrawl = maxPagesToCrawl,
-                MaxConcurrentThreads = 10
-            };
-
-            var pagesCrawledCount = 0;
-
-            var crawler = new PoliteWebCrawler(configuration);
-            crawler.PageCrawlCompleted += (a, b) =>
-            {
-                Interlocked.Increment(ref pagesCrawledCount);
-            };
-            
-
-            await crawler.CrawlAsync(uri);
-
-            Assert.AreEqual(maxPagesToCrawl, pagesCrawledCount);
+                base.HandleCrawlTimeout(sender, e);
+                _onCrawlTimeout();
+            }
         }
     }
 }

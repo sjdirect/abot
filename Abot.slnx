@@ -1,0 +1,15 @@
+<Solution>
+  <Project Path="Abot2/Abot2.csproj" />
+  <Folder Name="/Solution Items/">
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.targets" />
+    <File Path="global.json" />
+    <File Path="License.txt" />
+    <File Path="README.md" />
+    <File Path="UPGRADING.md" />
+  </Folder>
+  <Project Path="Abot2.Demo/Abot2.Demo.csproj" />
+  <Project Path="Abot2.Tests.Integration/Abot2.Tests.Integration.csproj" />
+  <Project Path="Abot2.Tests.Unit/Abot2.Tests.Unit.csproj" />
+</Solution>

@@ -19,17 +19,15 @@ namespace Abot2.Tests.Unit.Crawler
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_CrawledPage_IsNull()
         {
-            new PageCrawlCompletedArgs(new CrawlContext(), null);
+            Assert.ThrowsExactly<ArgumentNullException>(() => new PageCrawlCompletedArgs(new CrawlContext(), null));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_CrawlContext_IsNull()
         {
-            new PageCrawlCompletedArgs(null, new CrawledPage(new Uri("http://aaa.com/")));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new PageCrawlCompletedArgs(null, new CrawledPage(new Uri("http://aaa.com/"))));
         }
     }
 }

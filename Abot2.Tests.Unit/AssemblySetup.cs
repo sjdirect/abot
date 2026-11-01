@@ -1,13 +1,13 @@
-﻿using System.Runtime.CompilerServices;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 
-[assembly: InternalsVisibleTo("Abot2.Tests.Unit")]
+//Each test method runs in parallel with the others; timing-sensitive classes opt out with [DoNotParallelize]
+[assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]
 
 namespace Abot2.Tests.Integration
 {
     [TestClass]
-    public class SetupAssemblyInitializer
+    public static class SetupAssemblyInitializer
     {
         [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)

@@ -115,3 +115,6 @@ Settings.StyleCop
 \.vs/
 /.idea
 /Abot2/Properties/launchSettings.json
+
+# Machine-specific settings overrides, never committed
+appsettings.Local.json

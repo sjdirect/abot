@@ -28,8 +28,8 @@ namespace Abot2.Core
 
     public class RobotsDotText : IRobotsDotText
     {
-        IRobots _robotsDotTextUtil;
-        readonly Uri _rootUri;
+        private Robots.Robots _robotsDotTextUtil;
+        private readonly Uri _rootUri;
 
         public RobotsDotText(Uri rootUri, string content)
         {
@@ -43,7 +43,7 @@ namespace Abot2.Core
 
         public int GetCrawlDelay(string userAgentString)
         {
-            return _robotsDotTextUtil.GetCrawlDelay(userAgentString);
+            return _robotsDotTextUtil.GetCrawlDelay(UserAgentOrAll(userAgentString));
         }
 
         public bool IsUrlAllowed(string url, string userAgentString)
@@ -51,15 +51,18 @@ namespace Abot2.Core
             if (!_rootUri.IsBaseOf(new Uri(url)))
                 return true;
 
-            return _robotsDotTextUtil.Allowed(url, userAgentString);
+            return _robotsDotTextUtil.Allowed(url, UserAgentOrAll(userAgentString));
         }
 
         public bool IsUserAgentAllowed(string userAgentString)
         {
-            return _robotsDotTextUtil.Allowed(_rootUri.AbsoluteUri, userAgentString);
+            return _robotsDotTextUtil.Allowed(_rootUri.AbsoluteUri, UserAgentOrAll(userAgentString));
         }
 
-        public IRobots Robots { get { return _robotsDotTextUtil; } }
+        public IRobots Robots => _robotsDotTextUtil;
+
+        //A null user agent means every agent ("*"), as in 2.x. NRobotsCore 1.x treated null that way itself; newer versions throw.
+        private static string UserAgentOrAll(string userAgentString) => userAgentString ?? "*";
 
         private void Load(Uri rootUri, string content)
         {

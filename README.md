@@ -4,7 +4,7 @@
 
 ###### C# web crawler built for speed and flexibility.
 
-Abot is an open source C# web crawler framework built for speed and flexibility. It takes care of the low level plumbing (multithreading, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process. Abot Nuget package version >= 2.0 targets Dotnet Standard 2.0 and Abot Nuget package version < 2.0 targets .NET version 4.0 which makes it highly compatible with many .net framework/core implementations.
+Abot is an open source C# web crawler framework built for speed and flexibility. It takes care of the low level plumbing (concurrency, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process. Abot 3.0 targets .NET 10, .NET 8, .NET Framework 4.6.2 and 4.7.2, and .NET Standard 2.0, so it runs on .NET Framework 4.6.2 and later, .NET Core 2.0 and later, and .NET 5 and later. Abot 2.x targets .NET Standard 2.0, and versions before 2.0 target .NET Framework 4.0.
 
 ###### What's So Great About It?
   * Open Source (Free for commercial and personal use)
@@ -45,6 +45,12 @@ Abot is an open source C# web crawler framework built for speed and flexibility.
 PM> Install-Package Abot
 ```
 
+Abot 3.0 is currently a pre-release, which the command above does not install. To use it:
+
+```command
+dotnet add package Abot --version 3.0.0-preview.1
+```
+
 ###### Using Abot 
 ```c#
 using System;
@@ -78,7 +84,7 @@ namespace TestAbotUse
                 MaxPagesToCrawl = 10, //Only crawl 10 pages
                 MinCrawlDelayPerDomainMilliSeconds = 3000 //Wait this many millisecs between requests
             };
-            var crawler = new PoliteWebCrawler(config);
+            using var crawler = new PoliteWebCrawler(config);
 
             crawler.PageCrawlCompleted += PageCrawlCompleted;//Several events available...
 
@@ -87,7 +93,8 @@ namespace TestAbotUse
 
         private static async Task DemoSinglePageRequest()
         {
-            var pageRequester = new PageRequester(new CrawlConfiguration(), new WebContentExtractor());
+            using var contentExtractor = new WebContentExtractor();
+            using var pageRequester = new PageRequester(new CrawlConfiguration(), contentExtractor);
 
             var crawledPage = await pageRequester.MakeRequestAsync(new Uri("http://google.com"));
             Log.Logger.Information("{result}", new
@@ -113,7 +120,7 @@ Abot's Abot2.Poco.CrawlConfiguration class has a ton of configuration options. Y
 ```c#
 var crawlConfig = new CrawlConfiguration();
 crawlConfig.CrawlTimeoutSeconds = 100;
-crawlConfig.MaxConcurrentThreads = 10;
+crawlConfig.MaxConcurrentThreads = 10; //Pages processed at the same time
 crawlConfig.MaxPagesToCrawl = 1000;
 crawlConfig.UserAgentString = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36";
 crawlConfig.ConfigurationExtensions.Add("SomeCustomConfigValue1", "1111");
@@ -166,7 +173,7 @@ void crawler_PageCrawlDisallowed(object sender, PageCrawlDisallowedArgs e)
 ## Custom objects and the dynamic crawl bag
 Add any number of custom objects to the dynamic crawl bag or page bag. These objects will be available in the CrawlContext.CrawlBag object, PageToCrawl.PageBag object or CrawledPage.PageBag object.
 ```c#
-var crawler crawler = new PoliteWebCrawler();
+using var crawler = new PoliteWebCrawler();
 crawler.CrawlBag.MyFoo1 = new Foo();
 crawler.CrawlBag.MyFoo2 = new Foo();
 crawler.PageCrawlStarting += crawler_ProcessPageCrawlStarting;
@@ -176,8 +183,8 @@ crawler.PageCrawlStarting += crawler_ProcessPageCrawlStarting;
 void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
 {
     //Get your Foo instances from the CrawlContext object
-    var foo1 = e.CrawlConext.CrawlBag.MyFoo1;
-    var foo2 = e.CrawlConext.CrawlBag.MyFoo2;
+    var foo1 = e.CrawlContext.CrawlBag.MyFoo1;
+    var foo2 = e.CrawlContext.CrawlBag.MyFoo2;
 
     //Also add a dynamic value to the PageToCrawl or CrawledPage
     e.PageToCrawl.PageBag.Bar = new Bar();
@@ -185,12 +192,18 @@ void crawler_ProcessPageCrawlStarting(object sender, PageCrawlStartingArgs e)
 ```
 
 ## Cancellation
+Pass a cancellation token to stop a crawl. Cancelling also cancels the requests and waits in progress.
 ```c#
-CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
 
-var crawler = new PoliteWebCrawler();
-var result = await crawler.CrawlAsync(new Uri("addurihere"), cancellationTokenSource);
+using var crawler = new PoliteWebCrawler();
+var result = await crawler.CrawlAsync(new Uri("addurihere"), cancellationTokenSource.Token);
+
+if (result.ErrorOccurred)
+	Console.WriteLine($"Crawl stopped early: {result.ErrorException.Message}"); //an OperationCanceledException when cancelled
 ```
+
+From an event handler or a crawl decision delegate you can cancel the crawl with `e.CrawlContext.CancellationTokenSource.Cancel()`.
 
 <br /><br /><br />
 <hr />
@@ -239,32 +252,38 @@ crawler.ShouldCrawlPageLinksDecisionMaker = (crawledPage, crawlContext) =>
 PoliteWebCrawler is the master of orchestrating the crawl. Its job is to coordinate all the utility classes to "crawl" a site. PoliteWebCrawler accepts an alternate implementation for all its dependencies through its constructor.
  
 ```c#
-var crawler = new PoliteWebCrawler(
-    	new CrawlConfiguration(),
+using var scheduler = new YourScheduler();
+using var pageRequester = new YourPageRequester();
+using var memoryManager = new YourMemoryManager();
+using var crawler = new PoliteWebCrawler(
+	new CrawlConfiguration(),
 	new YourCrawlDecisionMaker(),
-	new YourThreadMgr(), 
-	new YourScheduler(), 
-	new YourPageRequester(), 
-	new YourHyperLinkParser(), 
-	new YourMemoryManager(), 
-    	new YourDomainRateLimiter,
+	scheduler,
+	pageRequester,
+	new YourHtmlParser(),
+	memoryManager,
+	new YourDomainRateLimiter(),
 	new YourRobotsDotTextFinder());
 ```
 
-Passing null for any implementation will use the default. The example below will use your custom implementation for the IPageRequester and IHyperLinkParser but will use the default for all others.
+Passing null for any implementation will use the default. The example below will use your custom implementation for the IPageRequester and IHtmlParser but will use the default for all others.
 
 ```c#
-var crawler = new PoliteWebCrawler(
-	null, 
-	null, 
-    	null,
-    	null,
-	new YourPageRequester(), 
-	new YourHyperLinkParser(), 
+using var pageRequester = new YourPageRequester();
+using var crawler = new PoliteWebCrawler(
 	null,
-    	null, 
+	null,
+	null,
+	pageRequester,
+	new YourHtmlParser(),
+	null,
+	null,
 	null);
 ```
+
+The crawler disposes the defaults it creates, but never the implementations you pass in: you created them, so you dispose them, after the crawler. With `using var` that happens in the right order, as above.
+
+The constructor also takes an optional last parameter, a `TimeProvider`. The crawler then uses that clock for its timeout, its politeness and retry waits and its timestamps, which lets you test code that uses Abot without real waiting.
 
 The following are explanations of each interface that PoliteWebCrawler relies on to do the real work.
 
@@ -293,44 +312,18 @@ public interface ICrawlDecisionMaker
 	/// Decides whether the page's content should be dowloaded
 	/// </summary>
 	CrawlDecision ShouldDownloadPageContent(CrawledPage crawledPage, CrawlContext crawlContext);
+
+	/// <summary>
+	/// Decides whether the page should be re-crawled
+	/// </summary>
+	CrawlDecision ShouldRecrawlPage(CrawledPage crawledPage, CrawlContext crawlContext);
 }
 ```
 
 
-###### IThreadManager
-The IThreadManager interface deals with the multithreading details. It is used by the crawler to manage concurrent http requests. 
+###### Concurrency
+The crawler processes up to `CrawlConfiguration.MaxConcurrentThreads` pages at the same time, on async workers that don't block a thread while they wait. Each page is processed completely (politeness and retry waits, request, parsing, scheduling its links and firing its events) before its worker takes the next one. There is no interface to replace for this: the IThreadManager interface and its implementations from Abot 2.x are obsolete and no longer used by the crawler.
 
-[TaskThreadManager.cs](https://github.com/sjdirect/abot/blob/master/Abot2/Util/TaskThreadManager.cs) is the default IThreadManager used by Abot. 
-
-
-```c#
-/// <summary>
-/// Handles the multithreading implementation details
-/// </summary>
-public interface IThreadManager : IDisposable
-{
-	/// <summary>
-	/// Max number of threads to use.
-	/// </summary>
-	int MaxThreads { get; }
-
-	/// <summary>
-	/// Will perform the action asynchrously on a seperate thread
-	/// </summary>
-	/// <param name="action">The action to perform</param>
-	void DoWork(Action action);
-
-	/// <summary>
-	/// Whether there are running threads
-	/// </summary>
-	bool HasRunningThreads();
-
-	/// <summary>
-	/// Abort all running threads
-	/// </summary>
-	void AbortAll();
-}
-```
 
 
 ###### IScheduler
@@ -342,7 +335,7 @@ The IScheduler interface deals with managing what pages need to be crawled. The 
 /// <summary>
 /// Handles managing the priority of what pages need to be crawled
 /// </summary>
-public interface IScheduler
+public interface IScheduler : IDisposable
 {
 	/// <summary>
 	/// Count of remaining items that are currently scheduled
@@ -368,8 +361,28 @@ public interface IScheduler
 	/// Clear all currently scheduled pages
 	/// </summary>
 	void Clear();
+
+	/// <summary>
+	/// Add the Url to the list of crawled Url without scheduling it to be crawled.
+	/// Returns true if the Url was not known before. This is atomic, so of several callers racing for the same Url exactly one gets true,
+	/// which lets that caller alone evaluate the Url.
+	/// </summary>
+	bool AddKnownUri(Uri uri);
+
+	/// <summary>
+	/// Schedules a page whose Url the caller has already marked as known with AddKnownUri, without checking for a duplicate again
+	/// </summary>
+	void AddKnownPage(PageToCrawl page);
+
+	/// <summary>
+	/// Returns whether or not the specified Uri was already scheduled to be crawled or simply added to the
+	/// list of known Uris.
+	/// </summary>
+	bool IsUriKnown(Uri uri);
 }
 ```
+
+The crawler calls the scheduler from several workers at the same time, so an implementation must be thread safe.
 
 
 ###### IPageRequester
@@ -383,30 +396,31 @@ public interface IPageRequester : IDisposable
 	/// <summary>
 	/// Make an http web request to the url and download its content
 	/// </summary>
-	Task<CrawledPage> MakeRequestAsync(Uri uri);
+	/// <param name="cancellationToken">Cancels the request; the returned task is then cancelled instead of reporting an error on the page</param>
+	Task<CrawledPage> MakeRequestAsync(Uri uri, CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Make an http web request to the url and download its content based on the param func decision
 	/// </summary>
-	Task<CrawledPage> MakeRequestAsync(Uri uri, Func<CrawledPage, CrawlDecision> shouldDownloadContent);
+	/// <param name="cancellationToken">Cancels the request; the returned task is then cancelled instead of reporting an error on the page</param>
+	Task<CrawledPage> MakeRequestAsync(Uri uri, Func<CrawledPage, CrawlDecision> shouldDownloadContent, CancellationToken cancellationToken = default);
 }
 ```
 
-###### IHyperLinkParser
-The IHyperLinkParser interface deals with parsing the links out of raw html.
+The crawler cancels the token when the crawl is cancelled, hard stopped or times out, so pass it on to your http calls.
 
-[AngleSharpHyperLinkParser.cs](https://github.com/sjdirect/abot/blob/master/Abot2/Core/AngleSharpHyperLinkParser.cs) is the default IHyperLinkParser used by the crawler. It uses the well known [AngleSharp](https://github.com/AngleSharp/AngleSharp) to do the html parsing. AngleSharp uses a css style selector like jquery but all in c#. 
+###### IHtmlParser
+The IHtmlParser interface deals with parsing the links out of raw html.
+
+[AngleSharpHyperLinkParser.cs](https://github.com/sjdirect/abot/blob/master/Abot2/Core/AngleSharpHyperLinkParser.cs) is the default IHtmlParser used by the crawler. It uses the well known [AngleSharp](https://github.com/AngleSharp/AngleSharp) to do the html parsing. AngleSharp uses a css style selector like jquery but all in c#. 
 
 ```c#
-/// <summary>
-/// Handles parsing hyperlikns out of the raw html
-/// </summary>
-public interface IHyperLinkParser
+public interface IHtmlParser
 {
 	/// <summary>
-	/// Parses html to extract hyperlinks, converts each into an absolute url
+	/// Parses html to extract hyperlinks, converts each into an absolute url representation.
 	/// </summary>
-	IEnumerable<Uri> GetLinks(CrawledPage crawledPage);
+	IEnumerable<HyperLink> GetLinks(CrawledPage crawledPage);
 }
 ```
 
@@ -447,12 +461,28 @@ public interface IDomainRateLimiter
 	/// <summary>
 	/// If the domain of the param has been flagged for rate limiting, it will be rate limited according to the configured minimum crawl delay
 	/// </summary>
+	[Obsolete("Blocks the calling thread while it waits. Use RateLimitAsync, which waits without blocking a thread and can be cancelled.")]
 	void RateLimit(Uri uri);
+
+	/// <summary>
+	/// Waits until a request to the domain of the param is allowed, according to its minimum crawl delay. The wait does not block a thread.
+	/// </summary>
+	Task RateLimitAsync(Uri uri, CancellationToken cancellationToken = default);
 
 	/// <summary>
 	/// Add a domain entry so that domain may be rate limited according the the param minumum crawl delay
 	/// </summary>
 	void AddDomain(Uri uri, long minCrawlDelayInMillisecs);
+
+	/// <summary>
+	/// Add/Update a domain entry so that domain may be rate limited according the the param minumum crawl delay
+	/// </summary>
+	void AddOrUpdateDomain(Uri uri, long minCrawlDelayInMillisecs);
+
+	/// <summary>
+	/// Remove a domain entry so that it will no longer be rate limited
+	/// </summary>
+	void RemoveDomain(Uri uri);
 }
 ```
 
@@ -470,8 +500,11 @@ public interface IRobotsDotTextFinder
 {
 	/// <summary>
 	/// Finds the robots.txt file using the rootUri. 
-        /// 
-	IRobotsDotText Find(Uri rootUri);
+	/// If rootUri is http://yahoo.com, it will look for robots at http://yahoo.com/robots.txt.
+	/// If rootUri is http://music.yahoo.com, it will look for robots at http://music.yahoo.com/robots.txt
+	/// </summary>
+	/// <returns>Object representing the robots.txt file or returns null</returns>
+	Task<IRobotsDotText> FindAsync(Uri rootUri, CancellationToken cancellationToken = default);
 }
 ```
 

@@ -1,0 +1,8 @@
+is_global = true
+
+# Enforce the dispose pattern (CA1063, CA1816) and that disposable objects are disposed by their owner (CA1001, CA2000, CA2213)
+dotnet_diagnostic.CA1001.severity = error
+dotnet_diagnostic.CA1063.severity = error
+dotnet_diagnostic.CA1816.severity = error
+dotnet_diagnostic.CA2000.severity = error
+dotnet_diagnostic.CA2213.severity = error

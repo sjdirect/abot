@@ -41,8 +41,15 @@ namespace Abot2.Core
 
         public void Dispose()
         {
-           
-            //BloomFilter = null;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Nothing to release here. Derived classes that own resources override this and call base.Dispose(disposing).
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
         }
     }
 }

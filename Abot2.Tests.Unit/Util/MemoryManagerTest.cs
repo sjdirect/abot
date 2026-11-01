@@ -27,10 +27,9 @@ namespace Abot2.Tests.Unit.Util
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_MemoryMonitorIsNull()
         {
-            new MemoryManager(null);
+            Assert.ThrowsExactly<ArgumentNullException>(() => new MemoryManager(null));
         }
 
 
@@ -81,6 +80,14 @@ namespace Abot2.Tests.Unit.Util
         public void IsSpaceAvailable_NotAvailable_ReturnsFalse()
         {
             Assert.IsFalse(_uut.IsSpaceAvailable(9999999));
+        }
+
+        [TestMethod]
+        public void Dispose_DoesNotDisposeMemoryMonitorPassedIn()
+        {
+            _uut.Dispose();
+
+            _fakeMemoryManager.Verify(f => f.Dispose(), Times.Never);
         }
     }
 }

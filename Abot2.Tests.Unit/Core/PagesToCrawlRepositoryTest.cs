@@ -5,7 +5,6 @@ using System;
 
 namespace Abot2.Tests.Unit.Core
 {
-    [TestClass]
     public abstract class PagesToCrawlRepositoryTest
     {
         protected IPagesToCrawlRepository _unitUnderTest;

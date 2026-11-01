@@ -1,26 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSTest.Sdk/4.5.2">
 
-    <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+  <PropertyGroup>
+    <!-- One test target per build of Abot: net10.0, netstandard2.0 (used by net8.0) and net462 (used by net462 and net472,
+         which pick different builds of Abot's dependencies). Every .NET Framework target runs on the installed 4.8.x runtime. -->
+    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
+    <MSTestAnalysisMode>Recommended</MSTestAnalysisMode>
+  </PropertyGroup>
 
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Abot2\Abot2.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
-        <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
-        <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Testing.Extensions.TrxReport" Version="2.5.2" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Abot2\Abot2.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="MSTest.TestAdapter" Version="4.5.2" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <Content Include="..\TestResponses.saz">
-        <Link>TestResponses.saz</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="MSTest.TestFramework" Version="4.5.2" />
+  </ItemGroup>
 
 </Project>

@@ -24,7 +24,15 @@ namespace Abot2.Util
 
         public void Dispose()
         {
-            //do nothing
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Nothing to release here. Derived classes that own resources override this and call base.Dispose(disposing).
+        /// </summary>
+        protected virtual void Dispose(bool disposing)
+        {
         }
     }
 }

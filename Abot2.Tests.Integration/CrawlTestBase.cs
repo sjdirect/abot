@@ -4,30 +4,28 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 
 namespace Abot2.Tests.Integration
 {
-    [TestClass]
     public abstract class CrawlTestBase
     {
         ConcurrentBag<PageResult> _actualCrawledPages = new ConcurrentBag<PageResult>();
-        int _maxSecondsToCrawl;
         Uri _rootUri;
 
-        public CrawlTestBase(Uri rootUri, int maxSecondsToCrawl)
+        public CrawlTestBase(Uri rootUri)
         {
             _rootUri = rootUri;
-            _maxSecondsToCrawl = maxSecondsToCrawl;
         }
 
-        public async Task CrawlAndAssert(IWebCrawler crawler)
+        protected async Task CrawlAndAssert(IWebCrawler crawler, CancellationToken cancellationToken)
         {
             crawler.PageCrawlCompleted += crawler_PageCrawlCompleted;
 
-            CrawlResult result = await crawler.CrawlAsync(_rootUri);
+            CrawlResult result = await crawler.CrawlAsync(_rootUri, cancellationToken);
 
             Assert.IsNull(result.ErrorException);
             Assert.IsFalse(result.ErrorOccurred);
@@ -36,11 +34,10 @@ namespace Abot2.Tests.Integration
             List<Discrepancy> descrepancies = GetDescrepancies();
             PrintDescrepancies(descrepancies);
 
-            Assert.AreEqual(0, descrepancies.Count, "There were discrepancies between expected and actual crawl results. See ouput window for details.");
-            Assert.IsTrue(result.Elapsed.TotalSeconds < _maxSecondsToCrawl, string.Format("Elapsed Time to crawl {0}, over {1} second threshold", result.Elapsed.TotalSeconds, _maxSecondsToCrawl));
+            Assert.IsEmpty(descrepancies, "There were discrepancies between expected and actual crawl results. See ouput window for details.");
         }
 
-        protected abstract List<PageResult> GetExpectedCrawlResult();
+        private protected abstract List<PageResult> GetExpectedCrawlResult();
 
         private void PrintDescrepancies(List<Discrepancy> allDescrepancies)
         {
@@ -132,7 +129,7 @@ namespace Abot2.Tests.Integration
         }
     }
 
-    public class PageResult
+    internal class PageResult
     {
         public string Url { get; set; }
 
@@ -161,7 +158,7 @@ namespace Abot2.Tests.Integration
         }
     }
 
-    public class Discrepancy
+    internal class Discrepancy
     {
         public PageResult Expected { get; set; }
 
@@ -170,7 +167,7 @@ namespace Abot2.Tests.Integration
         public DiscrepencyType DiscrepencyType { get; set; }
     }
 
-    public enum DiscrepencyType
+    internal enum DiscrepencyType
     {
         UnexpectedPageInResult,
         UnexpectedHttpStatus,

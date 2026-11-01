@@ -9,6 +9,8 @@ namespace Abot2.Tests.Unit.Core
     [TestClass]
     public class WebContentExtractorTest
     {
+        public TestContext TestContext { get; set; }
+
         WebContentExtractor _uut;
         string _contentString = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\nblahblahblah"; 
 
@@ -32,11 +34,11 @@ namespace Abot2.Tests.Unit.Core
 
             using (var response = httpResponseMessage)
             {
-                result = await _uut.GetContentAsync(response);
+                result = await _uut.GetContentAsync(response, TestContext.CancellationToken);
             }
 
             MakeCommonAssertions(result, null);
-            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.StartsWith(_contentString, result.Text);
         }
 
         [TestMethod]
@@ -52,11 +54,11 @@ namespace Abot2.Tests.Unit.Core
             PageContent result;
             using (var response = httpResponseMessage)
             {
-                result = await _uut.GetContentAsync(response);
+                result = await _uut.GetContentAsync(response, TestContext.CancellationToken);
             }
 
             MakeCommonAssertions(result, "utf-16", "System.Text.UnicodeEncoding");
-            Assert.IsFalse(result.Text.StartsWith(_contentString));//This should be random japanese text since we are using unicode
+            Assert.DoesNotStartWith(_contentString, result.Text);//This should be random japanese text since we are using unicode
         }
 
         [TestMethod]
@@ -71,11 +73,11 @@ namespace Abot2.Tests.Unit.Core
 
             using (var response = httpResponseMessage)
             {
-                result = await _uut.GetContentAsync(response);
+                result = await _uut.GetContentAsync(response, TestContext.CancellationToken);
             }
 
             MakeCommonAssertions(result, JapaneseCharset);
-            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.StartsWith(_contentString, result.Text);
         }
 
 
@@ -91,11 +93,11 @@ namespace Abot2.Tests.Unit.Core
 
             using (var response = httpResponseMessage)
             {
-                result = await _uut.GetContentAsync(response);
+                result = await _uut.GetContentAsync(response, TestContext.CancellationToken);
             }
 
             MakeCommonAssertions(result, JapaneseCharset);
-            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.StartsWith(_contentString, result.Text);
         }
 
         [TestMethod]
@@ -110,11 +112,11 @@ namespace Abot2.Tests.Unit.Core
 
             using (var response = httpResponseMessage)
             {
-                result = await _uut.GetContentAsync(response);
+                result = await _uut.GetContentAsync(response, TestContext.CancellationToken);
             }
 
             MakeCommonAssertions(result, JapaneseCharset);
-            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.StartsWith(_contentString, result.Text);
         }
 
 
@@ -130,11 +132,11 @@ namespace Abot2.Tests.Unit.Core
 
             using (var response = httpResponseMessage)
             {
-                result = await _uut.GetContentAsync(response);
+                result = await _uut.GetContentAsync(response, TestContext.CancellationToken);
             }
 
             MakeCommonAssertions(result, JapaneseCharset);
-            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.StartsWith(_contentString, result.Text);
         }
 
 
@@ -150,17 +152,17 @@ namespace Abot2.Tests.Unit.Core
 
             using (var response = httpResponseMessage)
             {
-                result = await _uut.GetContentAsync(response);
+                result = await _uut.GetContentAsync(response, TestContext.CancellationToken);
             }
 
             MakeCommonAssertions(result, "windows-1251");
-            Assert.IsTrue(result.Text.StartsWith(_contentString));
+            Assert.StartsWith(_contentString, result.Text);
         }
 
         private void MakeCommonAssertions(PageContent result, string expectedCharset, string expectedEncodingString = JapaneseEncodingString)
         {
             Assert.IsNotNull(result.Bytes);
-            Assert.AreNotEqual(0, result.Bytes.Length);
+            Assert.IsNotEmpty(result.Bytes);
             Assert.AreEqual(expectedCharset, result.Charset);
 
             // Different between local and build server... Expected:<System.Text.UTF8Encoding+UTF8EncodingSealed> (local machine). Actual:<System.Text.DBCSCodePageEncoding> (Build server)

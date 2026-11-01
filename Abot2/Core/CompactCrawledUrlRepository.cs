@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Abot2.Util;
+using System;
 using System.Collections.Concurrent;
 
 namespace Abot2.Core
@@ -13,19 +14,44 @@ namespace Abot2.Core
         /// <inheritDoc />
         public bool Contains(Uri uri)
         {
-            return _mUrlRepository.ContainsKey(uri.GetHashCode());
+            return GetRepository().ContainsKey(GetKey(uri));
         }
 
         /// <inheritDoc />
         public bool AddIfNew(Uri uri)
         {
-            return _mUrlRepository.TryAdd(uri.GetHashCode(), 0);
+            return GetRepository().TryAdd(GetKey(uri), 0);
         }
 
         /// <inheritDoc />
-        public virtual void Dispose()
+        public void Dispose()
         {
-            _mUrlRepository = null;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                _mUrlRepository = null;
+        }
+
+        /// <summary>
+        /// A 64-bit hash that is the same in every process, unlike Uri.GetHashCode(), which is only 32 bits and seeded randomly per process on .NET.
+        /// It covers the parts of the uri that Uri.Equals compares (not user info or fragment), so the same uris count as duplicates.
+        /// </summary>
+        private static long GetKey(Uri uri)
+        {
+            var value = uri.IsAbsoluteUri
+                ? uri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.SafeUnescaped)
+                : uri.OriginalString;
+
+            return StableHash.Hash64(value);
+        }
+
+        private ConcurrentDictionary<long, byte> GetRepository()
+        {
+            return _mUrlRepository ?? throw new ObjectDisposedException(GetType().FullName);
         }
     }
 }

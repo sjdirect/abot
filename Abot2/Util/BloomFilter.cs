@@ -138,7 +138,7 @@ namespace Abot2.Util
 		public void Add(T item)
 		{
 			// start flipping bits for each hash of item
-			var primaryHash = item.GetHashCode();
+			var primaryHash = GetPrimaryHash(item);
 			var secondaryHash = this._getHashSecondary(item);
 			for (var i = 0; i < this._hashFunctionCount; i++)
 			{
@@ -154,7 +154,7 @@ namespace Abot2.Util
 		/// <returns> The <see cref="bool"/>. </returns>
 		public bool Contains(T item)
 		{
-			var primaryHash = item.GetHashCode();
+			var primaryHash = GetPrimaryHash(item);
 			var secondaryHash = this._getHashSecondary(item);
 			for (var i = 0; i < this._hashFunctionCount; i++)
 			{
@@ -168,6 +168,16 @@ namespace Abot2.Util
 			return true;
 		}
  
+		/// <summary>
+		/// Strings use a stable hash, because string.GetHashCode() is seeded randomly per process on .NET,
+		/// which would make the filter's false positives differ from run to run.
+		/// </summary>
+		private static int GetPrimaryHash(T item)
+		{
+			var s = item as string;
+			return s != null ? StableHash.Hash32(s) : item.GetHashCode();
+		}
+
 		/// <summary>
 		/// The best k.
 		/// </summary>
