@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Abot2.Core;
 using Abot2.Poco;
+using AngleSharp.Html.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -90,6 +91,36 @@ namespace Abot2.Tests.Unit.Core
         public void Constructor_NullContentExtractor()
         {
             Assert.ThrowsExactly<ArgumentNullException>(() => new PageRequester(_crawlConfig, null));
+        }
+
+        [TestMethod]
+        public void Constructor_NullHtmlParserFactory()
+        {
+            Assert.ThrowsExactly<ArgumentNullException>(() => new PageRequester(_crawlConfig, _fakeWebContentExtractor.Object, _fakeHttpClient.Object, null, null));
+        }
+
+        [TestMethod]
+        public async Task MakeRequestAsync_HtmlParserFactoryPassedIn_ParsesThePageWithIt()
+        {
+            //Arrange
+            var dummyHttpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                RequestMessage = new HttpRequestMessage()
+            };
+            _fakeHttpClient.Setup(f => f.SendAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>())).ReturnsAsync(dummyHttpResponseMessage);
+            _fakeWebContentExtractor.Setup(f => f.GetContentAsync(dummyHttpResponseMessage, It.IsAny<CancellationToken>())).ReturnsAsync(new PageContent { Text = "hi there" });
+            var fakeHtmlParserFactory = new Mock<IAngleSharpHtmlParserFactory>();
+            fakeHtmlParserFactory.Setup(f => f.Create()).Returns(new HtmlParser());
+
+            using (var unitUnderTest = new PageRequester(_crawlConfig, _fakeWebContentExtractor.Object, _fakeHttpClient.Object, null, fakeHtmlParserFactory.Object))
+            {
+                //Act
+                var result = await unitUnderTest.MakeRequestAsync(_validUri, TestContext.CancellationToken);
+
+                //Assert
+                Assert.AreEqual("hi there", result.AngleSharpHtmlDocument.Body.TextContent);
+                fakeHtmlParserFactory.Verify(f => f.Create(), Times.Once());
+            }
         }
 
         [TestMethod]

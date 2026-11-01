@@ -259,12 +259,12 @@ Dependencies now differ per build:
 
 | Package | 2.x | 3.0 |
 |---|---|---|
-| AngleSharp | 0.14.0 | 1.8.5 |
+| AngleSharp | 0.14.0 | 1.9.0 |
 | Serilog | 2.10.0 | 4.4.0 |
 | Serilog.Sinks.Console | 3.1.1 | 6.1.1 |
 | Serilog.Enrichers.Thread | 3.1.0 | 4.0.0 |
 
-**AngleSharp**: 0.14.0 has a known vulnerability (GHSA-pgww-w46g-26qg). If your code works with `CrawledPage.AngleSharpHtmlDocument` beyond basic querying, check it against the [AngleSharp changelog](https://github.com/AngleSharp/AngleSharp/blob/devel/CHANGELOG.md) for the 1.x releases. If your application references AngleSharp itself, it must now reference 1.8.5 or later.
+**AngleSharp**: 0.14.0 has a known vulnerability (GHSA-pgww-w46g-26qg). If your code works with `CrawledPage.AngleSharpHtmlDocument` beyond basic querying, check it against the [AngleSharp changelog](https://github.com/AngleSharp/AngleSharp/blob/devel/CHANGELOG.md) for the 1.x releases; for example, since 1.8.6 `IsEqualNode` no longer compares base URLs, and `<` and `>` in attribute values are serialized as `&lt;` and `&gt;`. If your application references AngleSharp itself, it must now reference 1.9.0 or later.
 
 **Serilog**: Abot still logs through Serilog's static `Log.Logger`, so you configure logging exactly as before:
 
@@ -326,7 +326,23 @@ if (result.ErrorOccurred)
 
 ### 5.5 Very deeply nested HTML is flattened in `AngleSharpHtmlDocument`
 
-Several AngleSharp 1.x members walk the document tree recursively, one call per nesting level, among them `TextContent`, `GetElementsByTagName`, `Clone` and `Normalize`. A malformed or hostile page with thousands of unclosed tags could make them throw a `StackOverflowException`, which .NET cannot catch and which kills the process. `CrawledPage.AngleSharpHtmlDocument` now caps nesting at `CrawledPage.MaxHtmlDocumentDepth` (512 levels, the same limit Chrome uses). Deeper elements are moved up into siblings in document order, so no text, elements or links are lost. Pages within the limit are not changed. `CrawledPage.Content.Text` always contains the original HTML.
+A malformed or hostile page with thousands of unclosed tags parses into a tree thousands of levels deep. Code that walks such a tree recursively, one call per nesting level, throws a `StackOverflowException`, which .NET cannot catch and which kills the process. AngleSharp's own members no longer overflow the stack on such trees since 1.9.0, but your code or other libraries might. `CrawledPage.AngleSharpHtmlDocument` therefore caps nesting at `CrawledPage.MaxHtmlDocumentDepth` (512 levels, the same limit Chrome uses). Deeper elements are moved up into siblings in document order, so no text, elements or links are lost. Pages within the limit are not changed. `CrawledPage.Content.Text` always contains the original HTML.
+
+AngleSharp 1.8.6 added a limit of its own, `HtmlParserOptions.MaximumDepth` (512 by default), which attaches deeper elements as siblings while parsing; text that follows them can come out of source order. Abot lifts that limit (`MaximumDepth = Int32.MaxValue`), so its own flattening, which keeps document order, decides. Apart from that, Abot parses with AngleSharp's default options, as in 2.x.
+
+To parse with other options, or with your own AngleSharp browsing context, pass an `IAngleSharpHtmlParserFactory` to `PageRequester`. It creates the parser for each page. `AngleSharpHtmlParserFactory` creates a new `HtmlParser` with the options you give it, and `AngleSharpHtmlParserFactory.DefaultOptions` returns a new copy of Abot's defaults to start from. Start from `DefaultOptions`, because an `HtmlParserOptions` you create yourself has AngleSharp's limit of 512:
+
+```csharp
+var config = new CrawlConfiguration();
+var parserOptions = AngleSharpHtmlParserFactory.DefaultOptions;
+parserOptions.IsKeepingSourceReferences = true;
+
+using var contentExtractor = new WebContentExtractor();
+using var pageRequester = new PageRequester(config, contentExtractor, null, null, new AngleSharpHtmlParserFactory(parserOptions));
+using var crawler = new PoliteWebCrawler(config, null, null, pageRequester, null, null, null, null);
+```
+
+The setting belongs to that `PageRequester` instance; there is no process-wide setting, so crawlers in the same process can use different options. With a dependency injection container, register an `IAngleSharpHtmlParserFactory` next to your `IPageRequester`. Pages can be parsed on several threads at the same time, so a factory of your own should return a parser that no other thread uses, as `AngleSharpHtmlParserFactory` does.
 
 ### 5.6 `DomainRateLimiter` is disposable and shares limits correctly
 

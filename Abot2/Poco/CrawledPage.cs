@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Abot2.Core;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using AngleSharp.Html.Parser;
 using Serilog;
 
 namespace Abot2.Poco
@@ -12,8 +12,9 @@ namespace Abot2.Poco
     {
         /// <summary>
         /// Max node nesting depth kept in AngleSharpHtmlDocument, the same limit Chrome's html parser uses. Overly deep paths are flattened
-        /// into siblings (keeping document order) so AngleSharp members that recurse once per level, such as TextContent, GetElementsByTagName,
-        /// Clone and Normalize, can't overflow the stack.
+        /// into siblings, keeping document order, so code that walks the document recursively, one call per level, can't overflow the stack.
+        /// AngleSharp's own members no longer do so since 1.9.0; AngleSharp's parser limit (HtmlParserOptions.MaximumDepth) is lifted by
+        /// AngleSharpHtmlParserFactory.DefaultOptions because it can put text out of source order.
         /// </summary>
         public const int MaxHtmlDocumentDepth = 512;
 
@@ -22,13 +23,21 @@ namespace Abot2.Poco
         /// </summary>
         const int KeepIntactSubtreeHeight = 64;
 
-        HtmlParser _angleSharpHtmlParser;
+        readonly IAngleSharpHtmlParserFactory _htmlParserFactory;
 
         readonly Lazy<IHtmlDocument> _angleSharpHtmlDocument;
 
         public CrawledPage(Uri uri)
+            : this(uri, AngleSharpHtmlParserFactory.Default)
+        {
+        }
+
+        /// <param name="uri">The url of the page</param>
+        /// <param name="htmlParserFactory">Creates the parser for AngleSharpHtmlDocument when it is first read</param>
+        public CrawledPage(Uri uri, IAngleSharpHtmlParserFactory htmlParserFactory)
             : base(uri)
         {
+            _htmlParserFactory = htmlParserFactory ?? throw new ArgumentNullException(nameof(htmlParserFactory));
             _angleSharpHtmlDocument = new Lazy<IHtmlDocument>(InitializeAngleSharpHtmlParser);
 
             Content = new PageContent();
@@ -110,18 +119,17 @@ namespace Abot2.Poco
 
         private IHtmlDocument InitializeAngleSharpHtmlParser()
         {
-            if(_angleSharpHtmlParser == null)
-                _angleSharpHtmlParser = new HtmlParser();
+            var angleSharpHtmlParser = _htmlParserFactory.Create();
 
             IHtmlDocument document;
             try
             {
-                document = _angleSharpHtmlParser.ParseDocument(Content.Text);
+                document = angleSharpHtmlParser.ParseDocument(Content.Text);
                 FlattenNodesDeeperThan(document, MaxHtmlDocumentDepth);
             }
             catch (Exception e)
             {
-                document = _angleSharpHtmlParser.ParseDocument("");
+                document = angleSharpHtmlParser.ParseDocument("");
 
                 Log.Error("Error occurred while loading AngularSharp object for Url [{0}] {@Exception}", Uri, e);
             }

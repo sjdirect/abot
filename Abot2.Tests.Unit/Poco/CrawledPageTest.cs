@@ -1,7 +1,9 @@
 ﻿using Abot2.Core;
 using Abot2.Poco;
 using AngleSharp.Dom;
+using AngleSharp.Html.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +11,6 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Abot2.Tests.Unit.Poco
 {
@@ -35,6 +36,61 @@ namespace Abot2.Tests.Unit.Poco
         public void Constructor_InvalidUri_ThrowsException()
         {
             Assert.ThrowsExactly<ArgumentNullException>(() => new CrawledPage(null));
+        }
+
+        [TestMethod]
+        public void Constructor_NullHtmlParserFactory_ThrowsException()
+        {
+            Assert.ThrowsExactly<ArgumentNullException>(() => new CrawledPage(new Uri("http://a.com/"), null));
+        }
+
+        [TestMethod]
+        public void AngleSharpHtmlDocument_HtmlParserFactoryPassedIn_CreatesOneParserOnFirstRead()
+        {
+            var fakeHtmlParserFactory = new Mock<IAngleSharpHtmlParserFactory>();
+            fakeHtmlParserFactory.Setup(f => f.Create()).Returns(new HtmlParser());
+
+            var unitUnderTest = new CrawledPage(new Uri("http://a.com/"), fakeHtmlParserFactory.Object)
+            {
+                Content = new PageContent
+                {
+                    Text = "hi there"
+                }
+            };
+            fakeHtmlParserFactory.Verify(f => f.Create(), Times.Never());
+
+            var firstRead = unitUnderTest.AngleSharpHtmlDocument;
+            var secondRead = unitUnderTest.AngleSharpHtmlDocument;
+
+            Assert.AreEqual("hi there", firstRead.Body.TextContent);
+            Assert.AreSame(firstRead, secondRead);
+            fakeHtmlParserFactory.Verify(f => f.Create(), Times.Once());
+        }
+
+        [TestMethod]
+        public void AngleSharpHtmlDocument_HtmlParserFactoryWithOwnOptions_ParsesWithThem()
+        {
+            var options = AngleSharpHtmlParserFactory.DefaultOptions;
+            options.IsKeepingSourceReferences = true;
+
+            var unitUnderTest = new CrawledPage(new Uri("http://a.com/"), new AngleSharpHtmlParserFactory(options))
+            {
+                Content = new PageContent
+                {
+                    Text = "<p>hi there</p>"
+                }
+            };
+
+            var withDefaultOptions = new CrawledPage(new Uri("http://a.com/"))
+            {
+                Content = new PageContent
+                {
+                    Text = "<p>hi there</p>"
+                }
+            };
+
+            Assert.IsNotNull(unitUnderTest.AngleSharpHtmlDocument.QuerySelector("p").SourceReference);
+            Assert.IsNull(withDefaultOptions.AngleSharpHtmlDocument.QuerySelector("p").SourceReference);
         }
 
         [TestMethod]
@@ -70,7 +126,7 @@ namespace Abot2.Tests.Unit.Poco
         [TestMethod]
         public void AngleSharpHtmlDocument_ToManyNestedTagsInSource1_DoesNotCauseStackOverflowException()
         {
-            //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
+            //FYI this test will not fail, it will just throw an uncatchable stackoverflow exception that will kill the process that runs this test
             var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
             {
                 Content = new PageContent
@@ -86,7 +142,7 @@ namespace Abot2.Tests.Unit.Poco
         [TestMethod]
         public void AngleSharpHtmlDocument_ToManyNestedTagsInSource2_DoesNotCauseStackOverflowException()
         {
-            //FYI this test will not fail, it will just throw an uncatchable stackoverflowexception that will kill the process that runs this test
+            //FYI this test will not fail, it will just throw an uncatchable stackoverflow exception that will kill the process that runs this test
             var unitUnderTest = new CrawledPage(new Uri("http://a.com/"))
             {
                 Content = new PageContent

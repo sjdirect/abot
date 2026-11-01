@@ -34,6 +34,7 @@ namespace Abot2.Core
         private readonly CookieContainer _cookieContainer = new CookieContainer();
         private readonly bool _ownsHttpClient;
         private readonly TimeProvider _timeProvider;
+        private readonly IAngleSharpHtmlParserFactory _htmlParserFactory;
         private HttpClients _httpClients;
         private int _isDisposed;
 
@@ -42,6 +43,16 @@ namespace Abot2.Core
         /// <param name="httpClient">Owned by the caller, who must dispose it; if null, an internal one is created on the first request and disposed with this instance.</param>
         /// <param name="timeProvider">Clock for the request and download times on the crawled pages; if null, the system clock (TimeProvider.System)</param>
         public PageRequester(CrawlConfiguration config, IWebContentExtractor contentExtractor, HttpClient httpClient = null, TimeProvider timeProvider = null)
+            : this(config, contentExtractor, httpClient, timeProvider, AngleSharpHtmlParserFactory.Default)
+        {
+        }
+
+        /// <param name="config">Configurable crawl values</param>
+        /// <param name="contentExtractor">Extracts the content of a response. Owned by the caller, who must dispose it.</param>
+        /// <param name="httpClient">Owned by the caller, who must dispose it; if null, an internal one is created on the first request and disposed with this instance.</param>
+        /// <param name="timeProvider">Clock for the request and download times on the crawled pages; if null, the system clock (TimeProvider.System)</param>
+        /// <param name="htmlParserFactory">Creates the parser for each crawled page's AngleSharpHtmlDocument; AngleSharpHtmlParserFactory.Default is what the other constructor uses</param>
+        public PageRequester(CrawlConfiguration config, IWebContentExtractor contentExtractor, HttpClient httpClient, TimeProvider timeProvider, IAngleSharpHtmlParserFactory htmlParserFactory)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             if (_config.HttpRequestTimeoutInSeconds < CrawlConfiguration.NoHttpRequestTimeout)
@@ -59,6 +70,7 @@ namespace Abot2.Core
             if (httpClient != null)
                 _httpClients = new HttpClients(null, httpClient);
             _timeProvider = timeProvider ?? TimeProvider.System;
+            _htmlParserFactory = htmlParserFactory ?? throw new ArgumentNullException(nameof(htmlParserFactory));
         }
 
         /// <summary>
@@ -82,7 +94,7 @@ namespace Abot2.Core
 
             var httpClients = GetHttpClients(uri);
 
-            var crawledPage = new CrawledPage(uri);
+            var crawledPage = new CrawledPage(uri, _htmlParserFactory);
             HttpResponseMessage response = null;
             try
             {
