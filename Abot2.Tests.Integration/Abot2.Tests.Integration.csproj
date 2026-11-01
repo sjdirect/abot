@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSTest.Sdk/4.5.1">
+﻿<Project Sdk="MSTest.Sdk/4.5.2">
 
   <PropertyGroup>
     <!-- One test target per build of Abot: net10.0, netstandard2.0 (used by net8.0) and net462 (used by net462 and net472,
@@ -11,6 +11,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abot2\Abot2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Testing.Extensions.TrxReport" Version="2.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="MSTest.TestAdapter" Version="4.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="MSTest.TestFramework" Version="4.5.2" />
   </ItemGroup>
 
 </Project>
