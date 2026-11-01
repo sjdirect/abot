@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Abot2.Util;
+﻿using Abot2.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 

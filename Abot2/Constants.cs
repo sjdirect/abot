@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Abot2
+﻿namespace Abot2
 {
     public class Constants
     {

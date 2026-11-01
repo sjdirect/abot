@@ -1,8 +1,6 @@
 ﻿using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Abot2.Tests.Unit.Poco
 {

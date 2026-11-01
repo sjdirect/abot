@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Abot2.Crawler;
 using Abot2.Poco;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Serilog;
 
 namespace Abot2.Tests.Integration
 {
