@@ -1,6 +1,4 @@
 ﻿using Abot2.Core;
-using Abot2.Poco;
-using Moq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
