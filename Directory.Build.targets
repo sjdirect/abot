@@ -1,0 +1,18 @@
+<Project>
+
+	<!-- IsAotCompatible makes the SDK reference Microsoft.NET.ILLink.Tasks implicitly, at the version
+	     its KnownILLinkPack table lists per target (8.0.x for net8.0, 10.0.x for net10.0). Two versions
+	     of one package in one project make Visual Studio's NuGet Consolidate tab report it, so every
+	     target uses the trimmer of the SDK doing the build instead; the SDK itself already shares one
+	     trimmer across net5.0 to net7.0. Following the SDK's bundled version keeps it current without
+	     pinning. Today only Abot2's net10.0 target is AOT-enabled, so this changes nothing yet; it
+	     takes effect once a second .NETCoreApp target is (net10.0 next to net11.0).
+	     This is a .targets file because the SDK defines the KnownILLinkPack items after it imports
+	     Directory.Build.props, where the Update would match nothing.
+	     KnownILLinkPack is SDK-internal and undocumented: if an SDK renames or reshapes it, this goes
+	     inert or fails the restore - drop it then. -->
+	<ItemGroup>
+		<KnownILLinkPack Update="Microsoft.NET.ILLink.Tasks" ILLinkPackVersion="$(BundledNETCoreAppPackageVersion)" />
+	</ItemGroup>
+
+</Project>

@@ -4,7 +4,7 @@
 
 ###### C# web crawler built for speed and flexibility.
 
-Abot is an open source C# web crawler framework built for speed and flexibility. It takes care of the low level plumbing (concurrency, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process. Abot 3.0 targets .NET 10, .NET Framework 4.6.2 and .NET Standard 2.0, so it runs on .NET Framework 4.6.2 and later, .NET Core 2.0 and later, and .NET 5 and later. Abot 2.x targets .NET Standard 2.0, and versions before 2.0 target .NET Framework 4.0.
+Abot is an open source C# web crawler framework built for speed and flexibility. It takes care of the low level plumbing (concurrency, http requests, scheduling, link parsing, etc..). You just register for events to process the page data. You can also plugin your own implementations of core interfaces to take complete control over the crawl process. Abot 3.0 targets .NET 10, .NET 8, .NET Framework 4.6.2 and 4.7.2, and .NET Standard 2.0, so it runs on .NET Framework 4.6.2 and later, .NET Core 2.0 and later, and .NET 5 and later. Abot 2.x targets .NET Standard 2.0, and versions before 2.0 target .NET Framework 4.0.
 
 ###### What's So Great About It?
   * Open Source (Free for commercial and personal use)

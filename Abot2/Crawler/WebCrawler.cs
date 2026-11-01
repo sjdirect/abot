@@ -1046,7 +1046,8 @@ namespace Abot2.Crawler
             dest.LastRequest = src.LastRequest;
             dest.IsRoot = src.IsRoot;
             dest.IsInternal = src.IsInternal;
-            dest.PageBag = CombinePageBags(src.PageBag, dest.PageBag);
+            // The object casts keep this a static call: dynamic arguments would bind it at runtime, which isn't AOT/trim safe
+            dest.PageBag = CombinePageBags((object)src.PageBag, (object)dest.PageBag);
             dest.CrawlDepth = src.CrawlDepth;
             dest.RedirectedFrom = src.RedirectedFrom;
             dest.RedirectPosition = src.RedirectPosition;

@@ -1,6 +1,6 @@
 # Upgrading from Abot 2.x to 3.0
 
-Abot 3.0 modernises the library: it targets .NET 10 alongside .NET Standard 2.0, updates its dependencies to current, patched versions, and makes disposal and concurrency behave the way .NET developers expect. The crawler now runs on async workers instead of blocking threads, takes a `CancellationToken`, and no longer polls. Most applications that only use `PoliteWebCrawler` with its default components upgrade without code changes, apart from passing a `CancellationToken` instead of a `CancellationTokenSource`. Applications that pass their own components into the crawler, implement Abot's interfaces, or derive from Abot's classes need to read the sections below.
+Abot 3.0 modernises the library: it targets .NET 10, .NET 8 and .NET Framework alongside .NET Standard 2.0, updates its dependencies to current, patched versions, and makes disposal and concurrency behave the way .NET developers expect. The crawler now runs on async workers instead of blocking threads, takes a `CancellationToken`, and no longer polls. Most applications that only use `PoliteWebCrawler` with its default components upgrade without code changes, apart from passing a `CancellationToken` instead of a `CancellationTokenSource`. Applications that pass their own components into the crawler, implement Abot's interfaces, or derive from Abot's classes need to read the sections below.
 
 3.0 is currently published as a pre-release:
 
@@ -16,7 +16,7 @@ dotnet add package Abot --version 3.0.0-preview.1
 | [`Dispose()` is no longer virtual](#2-dispose-is-no-longer-virtual-override-disposebool) | Classes that derive from Abot types and override `Dispose()` | Override `Dispose(bool)` instead |
 | [`ObjectDisposedException` after `Dispose`](#3-using-an-object-after-dispose-throws-objectdisposedexception) | Code that uses an Abot object after disposing it | Don't use objects after disposing them |
 | [Dependency upgrades](#4-supported-platforms-and-dependencies) | Apps using AngleSharp or Serilog APIs directly, or older Serilog sinks | Check the AngleSharp and Serilog versions you use |
-| [`HttpServicePointConnectionLimit` now applies on .NET 10](#51-httpservicepointconnectionlimit-now-works-on-net-10) | Apps on .NET 10+ that relied on unlimited connections per host | Raise the limit or set it to `0` |
+| [`HttpServicePointConnectionLimit` now applies on .NET 8 and later](#51-httpservicepointconnectionlimit-now-works-on-net-8-and-later) | Apps on .NET 8+ that relied on unlimited connections per host | Raise the limit or set it to `0` |
 | [Other behaviour changes](#5-behaviour-changes) | Mostly subclasses of `WebCrawler` | Review the list |
 | [Async workers; thread managers are obsolete](#61-pages-are-processed-by-async-workers-thread-managers-are-obsolete) | Anyone passing a thread manager, or relying on more than `MaxConcurrentThreads` requests at once | Use the constructors without a thread manager; tune `MaxConcurrentThreads` |
 | [`CrawlAsync` takes a `CancellationToken`](#62-crawlasync-takes-a-cancellationtoken) | Anyone passing a `CancellationTokenSource` to `CrawlAsync` | Pass `source.Token` instead |
@@ -229,20 +229,30 @@ If you catch `InvalidOperationException` from `ThreadManager.DoWork` to detect a
 
 ### Target frameworks
 
-The package now contains three builds, where 2.x had one (`netstandard2.0`):
+The package now contains five builds, where 2.x had one (`netstandard2.0`):
 
 | Your application runs on | Build used |
 |---|---|
 | .NET 10 or later | `net10.0` |
-| .NET Framework 4.6.2 to 4.8.1 | `net462` |
-| .NET Core 2.0 to .NET 9, and other .NET Standard 2.0 platforms such as Mono and Unity | `netstandard2.0` |
+| .NET 8 and 9 | `net8.0` |
+| .NET Framework 4.7.2 to 4.8.1 | `net472` |
+| .NET Framework 4.6.2 to 4.7.1 | `net462` |
+| .NET Core 2.0 to .NET 7, and other .NET Standard 2.0 platforms such as Mono and Unity | `netstandard2.0` |
+
+The `net8.0` and `net10.0` builds are trim- and AOT-compatible: Abot itself causes no trim or AOT warnings when you publish with `PublishTrimmed` or `PublishAot`. Code of your own that uses `CrawlBag` or `PageBag` as `dynamic` (`crawler.CrawlBag.MyFoo = ...`) does cause them, because `dynamic` needs runtime code generation. In a trimmed or AOT application, use the bags as `IDictionary<string, object>` instead. Convert them through `object`, because a cast straight from `dynamic` is itself a dynamic operation:
+
+```csharp
+var crawlBag = (IDictionary<string, object>)(object)crawler.CrawlBag;
+crawlBag["MyFoo"] = new Foo();
+```
 
 The minimum .NET Framework version is now **4.6.2**, because that is the oldest version Abot's updated dependencies support. .NET Framework applications now get a build made for .NET Framework instead of the .NET Standard one, which avoids the extra facade assemblies and binding redirects that .NET Standard libraries can need on .NET Framework 4.6.2 to 4.7.1.
 
 Dependencies now differ per build:
 
 - **`net10.0`** no longer pulls in `Microsoft.CSharp`, `System.Net.Http` or `System.Security.Cryptography.X509Certificates`, because they are part of .NET.
-- **`net462`** uses `Microsoft.CSharp`, `System.Net.Http` and `System.Net.Http.WebRequest` from .NET Framework itself, so it doesn't pull in those packages either, including the vulnerable `System.Net.Http` 4.1.0 that NRobotsCore brought in through 2.x's .NET Standard build. It depends on `Microsoft.Bcl.TimeProvider`, which provides `TimeProvider` (see [section 5.8](#58-abot-can-run-on-a-clock-you-control)).
+- **`net8.0`** no longer pulls in `Microsoft.CSharp` either. It has `System.Net.Http` (4.3.4) and `System.Security.Cryptography.X509Certificates` (4.3.2) as explicit dependencies, for the same reason as `netstandard2.0` below: NuGet removes the vulnerable 4.1.0 versions that NRobotsCore pulls in only for applications that target .NET 10 or later. At run time .NET 8 and 9 use their own, newer copies of these assemblies.
+- **`net462`** and **`net472`** use `Microsoft.CSharp`, `System.Net.Http` and `System.Net.Http.WebRequest` from .NET Framework itself, so it doesn't pull in those packages either, including the vulnerable `System.Net.Http` 4.1.0 that NRobotsCore brought in through 2.x's .NET Standard build. It depends on `Microsoft.Bcl.TimeProvider`, which provides `TimeProvider` (see [section 5.8](#58-abot-can-run-on-a-clock-you-control)).
 - **`netstandard2.0`** has `System.Net.Http` (4.3.4) and `System.Security.Cryptography.X509Certificates` (4.3.2) as explicit dependencies. They replace the vulnerable 4.1.0 versions that NRobotsCore pulled in before (GHSA-7jgj-8wvc-jh57 and GHSA-7mfr-774f-w5r9). It also depends on `Microsoft.Bcl.TimeProvider`; `TimeProvider` is built into .NET 8 and later.
 
 ### Dependency upgrades
@@ -270,15 +280,15 @@ Your application now gets Serilog 4.4.0 or later. If you use other Serilog sinks
 
 ## 5. Behaviour changes
 
-### 5.1 `HttpServicePointConnectionLimit` now works on .NET 10
+### 5.1 `HttpServicePointConnectionLimit` now works on .NET 8 and later
 
 `CrawlConfiguration.HttpServicePointConnectionLimit` (default 200) limits the number of concurrent connections per host. In 2.x it set `ServicePointManager.DefaultConnectionLimit`, which has no effect on `HttpClient` on .NET Core and later, so on modern .NET the limit was silently ignored.
 
-On the `net10.0` build it now sets `HttpClientHandler.MaxConnectionsPerServer`, so a crawl on .NET 10 or later really is limited to 200 connections per host by default. That limit applies only to the crawler's own `HttpClient`. Nothing changes on the other builds: on .NET Framework (`net462`) the limit works as before, and on .NET Core 2.0 to .NET 9 (`netstandard2.0`) it is still ignored.
+On the `net8.0` and `net10.0` builds it now sets `HttpClientHandler.MaxConnectionsPerServer`, so a crawl on .NET 8 or later really is limited to 200 connections per host by default. That limit applies only to the crawler's own `HttpClient`. Nothing changes on the other builds: on .NET Framework (`net462` and `net472`) the limit works as before, and on .NET Core 2.0 to .NET 7 (`netstandard2.0`) it is still ignored.
 
 On those other builds, Abot still sets `ServicePointManager.DefaultConnectionLimit` whenever a `PageRequester` is created, as 2.x did. That setting is process-wide: on .NET Framework it changes the limit for every `HttpClient` and `HttpWebRequest` in your application, and the last crawler created wins. If your application relies on its own value, set `HttpServicePointConnectionLimit` to `0`, so that Abot leaves it alone.
 
-To keep the 2.x behaviour on .NET 10 (no limit set by Abot), set it to `0`:
+To keep the 2.x behaviour on .NET 8 and later (no limit set by Abot), set it to `0`:
 
 ```csharp
 var config = new CrawlConfiguration
@@ -349,7 +359,7 @@ Everything in Abot that waits or reads the time can take a .NET `TimeProvider`: 
 - `PageRequester`, `CachedMemoryMonitor` and `DomainRateLimiter`
 - `RateLimiter` (obsolete, see [section 6.5](#65-classes-that-derive-from-domainratelimiter))
 
-If you pass nothing, Abot uses the system clock, so nothing changes. Passing a fake clock lets you test code that uses Abot without real waiting, for example with Microsoft's `FakeTimeProvider` (package `Microsoft.Extensions.TimeProvider.Testing`, for .NET 8 and later):
+If you pass nothing, Abot uses the system clock, so nothing changes. Passing a fake clock lets you test code that uses Abot without real waiting, for example with Microsoft's `FakeTimeProvider` (package `Microsoft.Extensions.TimeProvider.Testing`, for .NET 8 and later and .NET Framework 4.6.2 and later):
 
 ```csharp
 var time = new FakeTimeProvider();
@@ -537,7 +547,7 @@ Other changes for subclasses:
 3. Rename references to `ThreadManager._isDisplosed` to `_isDisposed`.
 4. For every object you pass into an Abot constructor, make sure you dispose it after the crawler ([section 1](#1-abot-no-longer-disposes-objects-you-pass-in)).
 5. If you pass in your own `HttpClient`, configure its timeout, user agent and handler settings yourself.
-6. On .NET 10 or later, decide whether the default limit of 200 connections per host suits you ([section 5.1](#51-httpservicepointconnectionlimit-now-works-on-net-10)).
+6. On .NET 8 or later, decide whether the default limit of 200 connections per host suits you ([section 5.1](#51-httpservicepointconnectionlimit-now-works-on-net-8-and-later)).
 7. Update Serilog sinks and enrichers to versions that support Serilog 4, and check direct use of AngleSharp APIs against AngleSharp 1.x.
 8. Replace `catch (InvalidOperationException)` around `ThreadManager.DoWork` with `catch (ObjectDisposedException)` if you used it to detect a disposed thread manager.
 9. Pass a `CancellationToken` to `CrawlAsync` instead of a `CancellationTokenSource` ([section 6.2](#62-crawlasync-takes-a-cancellationtoken)).
@@ -546,4 +556,4 @@ Other changes for subclasses:
 12. If you derive from `WebCrawler`, fix every `CS0672` warning by overriding the `CancellationToken` overload instead: the crawler no longer calls the old ones ([section 6.4](#64-classes-that-derive-from-webcrawler)). If you derive from `DomainRateLimiter`, move `GetRateLimiter` overrides to `GetDomainSchedule` ([section 6.5](#65-classes-that-derive-from-domainratelimiter)).
 13. Recompile everything that references Abot, because method signatures changed.
 14. If your crawl decision maker or scheduler can throw while links are scheduled, expect the crawl to stop with that error instead of silently dropping the link ([section 5.3](#53-errors-during-a-crawl-no-longer-crash-the-process)).
-15. On .NET Framework, set `HttpServicePointConnectionLimit` to `0` if your application sets `ServicePointManager.DefaultConnectionLimit` itself ([section 5.1](#51-httpservicepointconnectionlimit-now-works-on-net-10)).
+15. On .NET Framework, set `HttpServicePointConnectionLimit` to `0` if your application sets `ServicePointManager.DefaultConnectionLimit` itself ([section 5.1](#51-httpservicepointconnectionlimit-now-works-on-net-8-and-later)).

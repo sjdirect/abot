@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<!-- net462 serves .NET Framework 4.6.2 to 4.8.1, netstandard2.0 serves .NET Core 2.0 to .NET 9 and other platforms -->
-		<TargetFrameworks>netstandard2.0;net462;net10.0</TargetFrameworks>
+		<!-- net462 serves .NET Framework 4.6.2 to 4.7.1, net472 serves 4.7.2 to 4.8.1, net8.0 serves .NET 8 and 9,
+		     net10.0 serves .NET 10 and later, netstandard2.0 serves .NET Core 2.0 to .NET 7 and other platforms -->
+		<TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
+		<TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);net462;net472</TargetFrameworks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<!-- Not every public member has an XML comment yet -->
@@ -25,8 +27,12 @@
 		<FileVersion>3.0.0.0</FileVersion>
 	</PropertyGroup>
 
-	<!-- Keep the System.* pins below effective for netstandard2.0 instead of having the .NET 10 SDK prune them -->
-	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+	<PropertyGroup Condition=" '$(TargetFramework)' != 'netstandard2.0' And !$(TargetFramework.StartsWith('net4')) ">
+		<IsAotCompatible>true</IsAotCompatible>
+	</PropertyGroup>
+
+	<!-- Keep the System.* pins below effective for netstandard2.0 and net8.0 instead of having the .NET 10 SDK prune them -->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'net8.0'">
 		<RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
 	</PropertyGroup>
 
@@ -42,7 +48,7 @@
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 	</ItemGroup>
 
-	<!-- Built into net10.0. Microsoft.Bcl.TimeProvider provides System.TimeProvider.
+	<!-- Built into net8.0 and net10.0. Microsoft.Bcl.TimeProvider provides System.TimeProvider.
        The System.* pins are not used directly: they put patched minimums in the package's
        netstandard2.0 dependencies so consumers don't get the vulnerable 4.1.0 versions pulled in by
        NRobotsCore -> System.Net.Requests. On .NET Framework NRobotsCore has no dependencies. -->
@@ -53,8 +59,15 @@
 		<PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
 	</ItemGroup>
 
+	<!-- The same pins for net8.0: NuGet prunes the 4.1.0 versions NRobotsCore pulls in only for consumers that target
+	     .NET 10 or later, so without them .NET 8 and 9 applications get the vulnerable versions in their package graph -->
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
+	</ItemGroup>
+
 	<!-- System.Net.Http and Microsoft.CSharp are part of .NET Framework -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+	<ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
 		<PackageReference Include="Microsoft.Bcl.TimeProvider" Version="10.0.14" />
 		<Reference Include="Microsoft.CSharp" />
 		<Reference Include="System.Net.Http" />

@@ -1,8 +1,15 @@
 ﻿using System.Collections.Generic;
+#if NET
+using System.Diagnostics.CodeAnalysis;
+#endif
 
 namespace Abot2.Poco
 {
-    public class CrawlConfiguration 
+    // WebCrawler.PrintConfigValues logs the public properties of the instance's runtime type, derived types included
+#if NET
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+#endif
+    public class CrawlConfiguration
     {
         public CrawlConfiguration()
         {
