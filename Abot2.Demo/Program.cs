@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Net.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abot2.Core;
 using Abot2.Crawler;
 using Abot2.Poco;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using Serilog.Formatting.Json;
+using Serilog.Context;
 
 namespace Abot2.Demo
 {
@@ -14,10 +14,14 @@ namespace Abot2.Demo
     {
         public static async Task Main(string[] args)
         {
+            //The demos run in parallel, so every line says which demo wrote it: [Demo] comes from the LogContext RunDemo sets,
+            //or is Main outside the demos. WithProperty must come after FromLogContext, as it only adds Demo when it isn't set yet.
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .Enrich.WithThreadId()
-                .WriteTo.Console(outputTemplate: Constants.LogFormatTemplate)
+                .Enrich.FromLogContext()
+                .Enrich.WithProperty("Demo", "Main")
+                .WriteTo.Console(outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss:fff zzz}] [{ThreadId}] [{Level:u3}] [{Demo}] - {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
             Log.Information("Demo starting up!");
@@ -30,22 +34,28 @@ namespace Abot2.Demo
                 .AddJsonFile("appsettings.Local.json", optional: true)
                 .Build();
 
-            var ranAny = false;
+            //The enabled demos run at the same time, to show Abot's parts can be used from several threads at once
+            var demos = new List<Task>();
             if (IsDemoEnabled(settings, "PageRequester"))
-            {
-                await DemoPageRequester(GetDemoUri(settings, "PageRequester"));
-                ranAny = true;
-            }
+                demos.Add(RunDemo("PageRequester", () => DemoPageRequester(GetDemoUri(settings, "PageRequester"))));
             if (IsDemoEnabled(settings, "SimpleCrawler"))
-            {
-                await DemoSimpleCrawler(GetDemoUri(settings, "SimpleCrawler"));
-                ranAny = true;
-            }
-            if (!ranAny)
+                demos.Add(RunDemo("SimpleCrawler", () => DemoSimpleCrawler(GetDemoUri(settings, "SimpleCrawler"))));
+            if (demos.Count == 0)
                 Log.Warning("No demo is enabled: set Demos:<name>:Enabled to true in appsettings.json");
+
+            await Task.WhenAll(demos);
 
             Log.Information("Demo done!");
             Console.ReadKey();
+        }
+
+        private static Task RunDemo(string demo, Func<Task> run)
+        {
+            return Task.Run(async () =>
+            {
+                using (LogContext.PushProperty("Demo", demo))
+                    await run();
+            });
         }
 
         private static bool IsDemoEnabled(IConfiguration settings, string demo)
@@ -79,7 +89,10 @@ namespace Abot2.Demo
 
             crawler.PageCrawlCompleted += Crawler_PageCrawlCompleted;
 
+            Log.Information("SimpleCrawler demo: crawling [{uri}]", uri);
             var crawlResult = await crawler.CrawlAsync(uri);
+            Log.Information("SimpleCrawler demo done: crawled [{pages}] pages in [{elapsed}], error: [{error}]",
+                crawlResult.CrawlContext.CrawledCount, crawlResult.Elapsed, crawlResult.ErrorException?.Message ?? "none");
         }
 
         private static void Crawler_PageCrawlCompleted(object sender, PageCrawlCompletedArgs e)
@@ -92,9 +105,9 @@ namespace Abot2.Demo
             using var contentExtractor = new WebContentExtractor();
             using var pageRequester = new PageRequester(new CrawlConfiguration(), contentExtractor);
 
+            Log.Information("PageRequester demo: requesting [{uri}]", uri);
             var result = await pageRequester.MakeRequestAsync(uri);
-            Log.Information("{result}", new { url = result.Uri, status = Convert.ToInt32(result.HttpResponseMessage.StatusCode) });
-
+            Log.Information("PageRequester demo done: {result}", new { url = result.Uri, status = Convert.ToInt32(result.HttpResponseMessage.StatusCode) });
         }
     }
 }
