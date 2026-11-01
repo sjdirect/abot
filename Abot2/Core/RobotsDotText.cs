@@ -28,8 +28,8 @@ namespace Abot2.Core
 
     public class RobotsDotText : IRobotsDotText
     {
-        IRobots _robotsDotTextUtil;
-        readonly Uri _rootUri;
+        private Robots.Robots _robotsDotTextUtil;
+        private readonly Uri _rootUri;
 
         public RobotsDotText(Uri rootUri, string content)
         {
@@ -59,7 +59,7 @@ namespace Abot2.Core
             return _robotsDotTextUtil.Allowed(_rootUri.AbsoluteUri, userAgentString);
         }
 
-        public IRobots Robots { get { return _robotsDotTextUtil; } }
+        public IRobots Robots => _robotsDotTextUtil;
 
         private void Load(Uri rootUri, string content)
         {
